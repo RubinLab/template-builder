@@ -1,4 +1,5 @@
 import React from 'react';
+// import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import AddCircle from '@material-ui/icons/AddCircle';
@@ -7,18 +8,17 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Toolbar from '@material-ui/core/Toolbar';
 
-const useStyles = makeStyles(theme => ({
+const useStyles = makeStyles(() => ({
   root: {
     flexGrow: 1,
-    background: '#4056a1',
-    padding: theme.spacing(2),
+    background: '#8c1717',
   },
   button: {
-    color: '#c5cbe3',
-    marginLeft: '20px',
+    color: '#E3E0D8',
+    marginLeft: '10px',
     '&:hover': {
       color: 'white',
-      border: '1px solid #c5cbe3',
+      border: '1px solid #E3E0D8',
     },
   },
   title: {

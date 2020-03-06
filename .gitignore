@@ -17,6 +17,11 @@
 .env.development.local
 .env.test.local
 .env.production.local
+.prettierrc.json
+.eslintrc.json
+
+#info
+config.json
 
 npm-debug.log*
 yarn-debug.log*
