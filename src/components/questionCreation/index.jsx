@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
@@ -8,6 +8,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Form from './form.jsx';
+import DetailCreation from './detailsCreation.jsx';
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -15,17 +16,37 @@ const useStyles = makeStyles(theme => ({
     marginBottom: theme.spacing(0),
     paddingBottom: theme.spacing(0),
   },
+  button: {
+    display: 'block',
+    marginTop: theme.spacing(3),
+    marginLeft: theme.spacing(1),
+
+    background: '#E3E0D8',
+    '&:hover': {
+      background: '#CCBC8E',
+    },
+  },
+  checkbox: {
+    marginLeft: theme.spacing(1),
+    marginTop: theme.spacing(3),
+  },
 }));
 
 export default function QuestionCreation(props) {
   const classes = useStyles();
   const { open, templateName, handleClose } = props;
-  // const [question, setQuestion] = useState({});
+  const [showDetailCreation, setShowDetailCreation] = useState(false);
+  const [details, setDetails] = useState([]);
+  const [question, setQuestion] = useState({});
 
-  // const handleQuestionInput = input => {
-  //   const newQuestion = { ...question, ...input };
-  //   setQuestion(newQuestion);
-  // };
+  console.log(question);
+
+  const handleSaveDetail = detail => {
+    const newDetails = [...details];
+    newDetails.push(detail);
+    setDetails(newDetails);
+    setShowDetailCreation(false);
+  };
 
   return (
     <React.Fragment>
@@ -42,7 +63,23 @@ export default function QuestionCreation(props) {
           <DialogContentText>
             {`Fill the form and save to add a new question to the template ${templateName}`}
           </DialogContentText>
-          <Form />
+          <Form postQuestion={setQuestion} />
+          <Button
+            variant="outlined"
+            className={classes.button}
+            onClick={() => setShowDetailCreation(true)}
+          >
+            Add details
+          </Button>
+
+          {showDetailCreation && (
+            <DetailCreation
+              open={showDetailCreation}
+              handleClose={setShowDetailCreation}
+              handleSave={handleSaveDetail}
+              setQuestion={setQuestion}
+            />
+          )}
         </DialogContent>
         <DialogActions>
           <Button onClick={() => handleClose(false)} color="primary">

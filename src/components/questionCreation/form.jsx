@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Accessibility from '@material-ui/icons/Accessibility';
 import Visibility from '@material-ui/icons/Visibility';
@@ -15,7 +16,7 @@ import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Select from '@material-ui/core/Select';
 import Checkbox from '@material-ui/core/Checkbox';
-import Button from '@material-ui/core/Button';
+// import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import SearchResults from './searchResults.jsx';
 import AnswerList from './answersList.jsx';
@@ -117,22 +118,41 @@ const materialUseStyles = makeStyles(theme => ({
   },
 }));
 
-export default function Form() {
+export default function Form(props) {
   const classes = materialUseStyles();
-
+  const { postQuestion } = props;
   const [searchResults, setSearchResults] = useState(data);
+  const [question, setQuestion] = useState('');
+  const [questionType, setQuestionType] = useState('');
   const [showSearchResults, setShowSearchResults] = useState(false);
-  const [searchTerm, setSearchTerm] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
   const [selectedTerms, setTermSelection] = useState(null);
-  const [minCard, setMinCard] = useState(null);
-  const [maxCard, setMaxCard] = useState(null);
+  const [minCard, setMinCard] = useState('');
+  const [maxCard, setMaxCard] = useState('');
   const [disabled, setDisabled] = useState(false);
-  // const [nextId, setNextID] = useState(null);
-  // const [noMore, setNoMore] = useState(null);
-  // const [showConfidence, setshowConfidence] = useState(null);
+  const [nextId, setNextID] = useState(null);
+  const [noMore, setNoMore] = useState(null);
+  const [showConfidence, setshowConfidence] = useState(null);
+  const [answerType, setAnswerType] = useState('');
+
+  const formInput = {
+    questionType,
+    question,
+    selectedTerms,
+    minCard,
+    maxCard,
+    nextId,
+    noMore,
+    showConfidence,
+  };
 
   const handleSearch = () => {
     setShowSearchResults(true);
+  };
+
+  const handleQuestionType = async e => {
+    setQuestionType(e.target.value);
+    postQuestion({ ...formInput, questionType: e.target.value });
   };
 
   const handleSearchInput = e => {
@@ -140,8 +160,9 @@ export default function Form() {
   };
 
   const handleSelection = termIndex => {
+    let newSelected;
     if (typeof termIndex === 'number') {
-      let newSelected = { ...selectedTerms };
+      newSelected = { ...selectedTerms };
       if (selectedTerms) {
         newSelected[searchTerm] = searchResults[termIndex];
       } else {
@@ -151,33 +172,31 @@ export default function Form() {
       setShowSearchResults(false);
       setSearchResults([]);
     }
+    postQuestion({ ...formInput, selectedTerms: newSelected });
   };
 
-  const [answerType, setAnswerType] = useState(null);
+  const assignDefaultVals = (min, max, disabledBool) => {
+    setMinCard(min);
+    setMaxCard(max);
+    setDisabled(disabledBool);
+    postQuestion({ ...formInput, minCard: min, maxCard: max });
+  };
 
   const handleAnswerTypeSelection = e => {
     const selection = e.target.value;
     setAnswerType(selection);
     switch (selection) {
       case 'single':
-        setMinCard(1);
-        setMaxCard(1);
-        setDisabled(true);
+        assignDefaultVals(1, 1, true);
         break;
       case 'multi':
-        setMinCard(0);
-        setMaxCard(3);
-        setDisabled(false);
+        assignDefaultVals(0, 3, false);
         break;
       case 'scale':
-        setMinCard(null);
-        setMaxCard(null);
-        setDisabled(true);
+        assignDefaultVals(null, null, true);
         break;
       case 'text':
-        setMinCard(null);
-        setMaxCard(null);
-        setDisabled(true);
+        assignDefaultVals(null, null, true);
         break;
       default:
         setMinCard(null);
@@ -185,6 +204,11 @@ export default function Form() {
     }
   };
   const handleDeleteSelectedTerm = () => {};
+
+  const handleQuestion = e => {
+    setQuestion(e.target.value);
+    postQuestion({ ...formInput, question: e.target.value });
+  };
 
   return (
     <div className={classes.root}>
@@ -194,6 +218,8 @@ export default function Form() {
           <Select
             labelId="questionType"
             id="questionType-controlled-open-select"
+            value={questionType}
+            onChange={handleQuestionType}
           >
             <MenuItem value={'anatomic'}>
               <Accessibility className={classes.icon} />
@@ -215,7 +241,7 @@ export default function Form() {
           className={classes.textField}
           label="Question"
           multiline={true}
-          onChange={setSearchTerm}
+          onChange={handleQuestion}
         />
       </div>
       <div className={classes.answerGroup}>
@@ -224,6 +250,7 @@ export default function Form() {
           <Select
             labelId="answerType"
             id="answerType-controlled-open-select"
+            value={answerType}
             onChange={handleAnswerTypeSelection}
           >
             <MenuItem value={'single'}>
@@ -268,13 +295,12 @@ export default function Form() {
         <TextField
           className={maxCard ? classes.filledText : classes.inputField}
           label="Max Cardinality"
-          defaultValue={maxCard}
           value={maxCard}
           onChange={e => {
             setMaxCard(e.target.value);
           }}
           InputLabelProps={{
-            shrink: maxCard || disabled,
+            shrink: maxCard >= 0 || disabled,
           }}
           type="number"
           size="small"
@@ -283,13 +309,12 @@ export default function Form() {
         <TextField
           className={minCard ? classes.filledText : classes.inputField}
           label="Min Cardinality"
-          defaultValue={minCard}
           value={minCard}
           onChange={e => {
             setMinCard(e.target.value);
           }}
           InputLabelProps={{
-            shrink: minCard || minCard === 0 || disabled,
+            shrink: minCard >= 0 || minCard === 0 || disabled,
           }}
           type="number"
           size="small"
@@ -299,6 +324,9 @@ export default function Form() {
           className={classes.inputField}
           label="Next ID"
           size="small"
+          onChange={e => {
+            setNextID(e.target.value);
+          }}
         />
         <FormControlLabel
           className={classes.checkbox}
@@ -306,11 +334,11 @@ export default function Form() {
           control={<Checkbox color="primary" />}
           label="No more question"
           labelPlacement="end"
+          onChange={e => {
+            setNoMore(e.target.value);
+          }}
         />
       </div>
-      <Button variant="outlined" className={classes.button}>
-        Add details
-      </Button>
       <div>
         <FormControlLabel
           className={classes.checkbox}
@@ -318,6 +346,9 @@ export default function Form() {
           control={<Checkbox color="primary" />}
           label="Show annotator confidence"
           labelPlacement="start"
+          onChange={e => {
+            setshowConfidence(e.target.value);
+          }}
         />
       </div>
       {showSearchResults && (
@@ -332,3 +363,7 @@ export default function Form() {
     </div>
   );
 }
+
+Form.propTypes = {
+  postQuestion: PropTypes.func,
+};
