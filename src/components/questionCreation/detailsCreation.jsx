@@ -21,7 +21,6 @@ export default function DetailsCreation(props) {
   const { open, handleClose, handleSave } = props;
   const classes = materialUseStyles();
   const [question, setQuestion] = useState({});
-  console.log(question);
 
   return (
     <React.Fragment>

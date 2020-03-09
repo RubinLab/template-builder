@@ -1,5 +1,5 @@
 import React from 'react';
-// import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import AppBar from '@material-ui/core/AppBar';
 import AddCircle from '@material-ui/icons/AddCircle';
@@ -27,8 +27,9 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export default function Navbar() {
+export default function Navbar(props) {
   const classes = useStyles();
+  const { handleAddQuestion } = props;
 
   return (
     <div className={classes.root}>
@@ -41,6 +42,7 @@ export default function Navbar() {
             className={classes.button}
             variant="outlined"
             startIcon={<AddCircle />}
+            onClick={() => handleAddQuestion(true)}
           >
             Add Question
           </Button>
@@ -56,3 +58,7 @@ export default function Navbar() {
     </div>
   );
 }
+
+Navbar.propTypes = {
+  handleAddQuestion: PropTypes.func,
+};

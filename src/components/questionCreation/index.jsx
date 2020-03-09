@@ -9,6 +9,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Form from './form.jsx';
 import DetailCreation from './detailsCreation.jsx';
+import QuestionList from '../common/questionList.jsx';
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -34,18 +35,21 @@ const useStyles = makeStyles(theme => ({
 
 export default function QuestionCreation(props) {
   const classes = useStyles();
-  const { open, templateName, handleClose } = props;
+  const { open, templateName, handleClose, handleSaveQuestion } = props;
   const [showDetailCreation, setShowDetailCreation] = useState(false);
   const [details, setDetails] = useState([]);
   const [question, setQuestion] = useState({});
-
-  console.log(question);
 
   const handleSaveDetail = detail => {
     const newDetails = [...details];
     newDetails.push(detail);
     setDetails(newDetails);
     setShowDetailCreation(false);
+  };
+
+  const handleSave = () => {
+    handleSaveQuestion(question);
+    handleClose(false);
   };
 
   return (
@@ -72,6 +76,7 @@ export default function QuestionCreation(props) {
             Add details
           </Button>
 
+          {details.length > 0 && <QuestionList questions={details} />}
           {showDetailCreation && (
             <DetailCreation
               open={showDetailCreation}
@@ -85,7 +90,7 @@ export default function QuestionCreation(props) {
           <Button onClick={() => handleClose(false)} color="primary">
             Close
           </Button>
-          <Button onClick={() => handleClose(false)} color="primary">
+          <Button onClick={handleSave} color="primary">
             Save question
           </Button>
         </DialogActions>
@@ -98,4 +103,5 @@ QuestionCreation.propTypes = {
   open: PropTypes.bool,
   templateName: PropTypes.string,
   handleClose: PropTypes.func,
+  handleSaveQuestion: PropTypes.func,
 };
