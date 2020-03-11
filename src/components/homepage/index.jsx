@@ -6,14 +6,20 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
+import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import QuestionList from '../common/questionList.jsx';
 import QuestionCreation from '../questionCreation/index.jsx';
+import TemplatePreview from './templatePreview.jsx';
+import template1 from '../../utils/recist.1.json';
+import template2 from '../../utils/recist.2.json';
 
 const materialUseStyles = makeStyles(theme => ({
   root: {
     margin: theme.spacing(2),
-    width: 300,
+    marginLeft: theme.spacing(4),
+    // margin: 'auto',
+    witdh: '-webkit-fill-available',
   },
   form: {
     margin: theme.spacing(2),
@@ -21,6 +27,7 @@ const materialUseStyles = makeStyles(theme => ({
   },
   container: {
     direction: 'column',
+    justify: 'space-between',
   },
   textField: {
     marginTop: theme.spacing(3),
@@ -33,6 +40,20 @@ const materialUseStyles = makeStyles(theme => ({
   formControl: {
     marginTop: theme.spacing(3),
     minWidth: 150,
+  },
+  preview: {
+    width: '45%',
+    minWidth: 300,
+  },
+  templateContent: {
+    width: '45%',
+    minWidth: 300,
+    marginRight: theme.spacing(4),
+  },
+  title: {
+    margin: theme.spacing(2),
+    marginTop: theme.spacing(5),
+    color: '#8c1717',
   },
 }));
 
@@ -61,37 +82,55 @@ export default function HomePage(props) {
   const handleDelete = () => {};
   const handleLink = () => {};
 
+  const template = questions.length === 1 ? template1 : template2;
+
   return (
     <div className={classes.root}>
-      <Grid>
-        <form className={classes.form} noValidate autoComplete="off">
-          <TextField
-            className={classes.textField}
-            id="standard-basic"
-            label="Template Name"
-            onChange={handleChangeTemplateName}
-          />
-          <FormControl className={classes.formControl}>
-            <InputLabel id="templateLevel">Template Level</InputLabel>
-            <Select
-              labelId="templateLevel"
-              id="demo-controlled-open-select"
-              value={templateLevel}
-              onChange={handleChangeTemplateLevel}
-            >
-              <MenuItem value={'study'}>Study</MenuItem>
-              <MenuItem value={'series'}>Series</MenuItem>
-              <MenuItem value={'image'}>Image</MenuItem>
-            </Select>
-          </FormControl>
-        </form>
+      <Grid container={true} className={classes.container}>
+        <div className={classes.templateContent}>
+          <form className={classes.form} noValidate autoComplete="off">
+            <TextField
+              className={classes.textField}
+              id="standard-basic"
+              label="Template Name"
+              onChange={handleChangeTemplateName}
+            />
+            <FormControl className={classes.formControl}>
+              <InputLabel id="templateLevel">Template Level</InputLabel>
+              <Select
+                labelId="templateLevel"
+                id="demo-controlled-open-select"
+                value={templateLevel}
+                onChange={handleChangeTemplateLevel}
+              >
+                <MenuItem value={'study'}>Study</MenuItem>
+                <MenuItem value={'series'}>Series</MenuItem>
+                <MenuItem value={'image'}>Image</MenuItem>
+              </Select>
+            </FormControl>
+          </form>
+          {questions.length > 0 && (
+            <>
+              <Typography variant="h6" className={classes.title}>
+                Questions
+              </Typography>
+              <QuestionList
+                handleEdit={handleEdit}
+                handleDelete={handleDelete}
+                questions={questions}
+                handleLink={handleLink}
+              />
+            </>
+          )}
+        </div>
         {questions.length > 0 && (
-          <QuestionList
-            handleEdit={handleEdit}
-            handleDelete={handleDelete}
-            questions={questions}
-            handleLink={handleLink}
-          />
+          <>
+            <TemplatePreview
+              className={classes.preview}
+              template={template}
+              noOfQuestions={questions.length}
+            />
+          </>
         )}
       </Grid>
       {showDialog && (

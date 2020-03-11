@@ -19,6 +19,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import SearchResults from './searchResults.jsx';
 import AnswerList from './answersList.jsx';
+import { getResults } from '../../services/apiServices';
 
 const data = [
   { id: 'http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C12468' },
@@ -146,6 +147,7 @@ export default function Form(props) {
   };
 
   const handleSearch = () => {
+    getResults();
     setShowSearchResults(true);
   };
 
@@ -164,14 +166,15 @@ export default function Form(props) {
       newSelected = { ...selectedTerms };
       if (selectedTerms) {
         newSelected[searchTerm] = searchResults[termIndex];
+        postQuestion({ ...formInput, selectedTerms: newSelected });
       } else {
         newSelected = { [searchTerm]: searchResults[termIndex] };
+        postQuestion({ ...formInput, selectedTerms: newSelected });
       }
       setTermSelection(newSelected);
       setShowSearchResults(false);
-      setSearchResults([]);
+      // setSearchResults([]);
     }
-    postQuestion({ ...formInput, selectedTerms: newSelected });
   };
 
   const assignDefaultVals = (min, max, disabledBool) => {

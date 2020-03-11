@@ -1,0 +1,64 @@
+{
+  "TemplateContainer": {
+    "uid": "2.25.5886502342623758457547593170234",
+    "name": "VK Template",
+    "authors": "The AIM team",
+    "version": "2.0",
+    "creationDate": "2018-02-13",
+    "description": "This template is used to collect annotations for RECIST evaluation",
+    "xsi:schemaLocation": "gme://caCORE.caCORE/3.2/edu.northwestern.radiology.AIMTemplate AIMTemplate_v2rv13.xsd",
+    "xmlns": "gme://caCORE.caCORE/3.2/edu.northwestern.radiology.AIMTemplate",
+    "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+    "Template": [
+      {
+        "uid": "2.25.14127115639382804046523562737575775778671",
+        "name": "RECIST_v2",
+        "authors": "epaduser",
+        "version": "2.0",
+        "creationDate": "2018-02-13",
+        "description": "Template used for RECIST measurements",
+        "codeMeaning": "Tumor assessment",
+        "codeValue": "RECIST_v2",
+        "codingSchemeDesignator": "99EPAD",
+        "codingSchemeVersion": "1.0",
+        "Component": [
+          {
+            "label": "Lesion Status",
+            "itemNumber": 3,
+            "authors": "epaduser",
+            "explanatoryText": "Status of lesion",
+            "minCardinality": 1,
+            "maxCardinality": 1,
+            "shouldDisplay": true,
+            "annotatorConfidence": false,
+            "id": "2.25.436905441089.13054168484973.21324571207",
+            "AllowedTerm": [
+              {
+                "codeValue": "RID28472",
+                "codeMeaning": "Present Lesion",
+                "codingSchemeDesignator": "RadLex"
+              },
+              {
+                "codeValue": "RID39162",
+                "codeMeaning": "Progressive Lesion",
+                "codingSchemeDesignator": "RadLex"
+              },
+              {
+                "codeValue": "S73",
+                "codeMeaning": "New Lesion",
+                "codingSchemeDesignator": "99EPAD",
+                "codingSchemeVersion": "1.0"
+              },
+              {
+                "codeValue": "S74",
+                "codeMeaning": "Resolved Lesion",
+                "codingSchemeDesignator": "99EPAD",
+                "codingSchemeVersion": "1.0"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

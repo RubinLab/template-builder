@@ -6,6 +6,8 @@ function App() {
   const [showDialog, setShowDialog] = useState(false);
 
   const handleAddQuestion = value => {
+    // const preview = document.getElementById('questionaire');
+    // if (preview) preview.remove();
     setShowDialog(value);
   };
 

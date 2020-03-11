@@ -10,6 +10,7 @@
     "@testing-library/user-event": "^7.2.1",
     "array-move": "^2.2.1",
     "axios": "^0.19.2",
+    "jquery": "^3.4.1",
     "prop-types": "^15.7.2",
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
@@ -38,6 +39,7 @@
     ]
   },
   "devDependencies": {
+    "@types/jquery": "^3.3.33",
     "eslint": "^6.8.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-config-prettier": "^6.10.0",

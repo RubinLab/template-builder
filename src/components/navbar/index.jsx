@@ -8,22 +8,26 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Toolbar from '@material-ui/core/Toolbar';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
     background: '#8c1717',
   },
   button: {
     color: '#E3E0D8',
-    marginLeft: '10px',
+    marginLeft: theme.spacing(3),
     '&:hover': {
       color: 'white',
       border: '1px solid #E3E0D8',
     },
   },
+  buttonGroup: {
+    marginRight: theme.spacing(6),
+  },
   title: {
     flexGrow: 1,
     fontWeight: 'bold',
+    marginLeft: theme.spacing(4),
   },
 }));
 
@@ -38,21 +42,23 @@ export default function Navbar(props) {
           <Typography variant="h5" className={classes.title}>
             Template Builder
           </Typography>
-          <Button
-            className={classes.button}
-            variant="outlined"
-            startIcon={<AddCircle />}
-            onClick={() => handleAddQuestion(true)}
-          >
-            Add Question
-          </Button>
-          <Button
-            className={classes.button}
-            variant="outlined"
-            startIcon={<GetApp />}
-          >
-            Download
-          </Button>
+          <div className={classes.buttonGroup}>
+            <Button
+              className={classes.button}
+              variant="outlined"
+              startIcon={<AddCircle />}
+              onClick={() => handleAddQuestion(true)}
+            >
+              Add Question
+            </Button>
+            <Button
+              className={classes.button}
+              variant="outlined"
+              startIcon={<GetApp />}
+            >
+              Download
+            </Button>
+          </div>
         </Toolbar>
       </AppBar>
     </div>
