@@ -21,48 +21,6 @@ import SearchResults from './searchResults.jsx';
 import AnswerList from './answersList.jsx';
 import { getResults } from '../../services/apiServices';
 
-const data = [
-  { id: 'http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C12468' },
-  { id: 'http://purl.obolibrary.org/obo/NCIT_C12468' },
-  { id: 'http://purl.jp/bio/4/id/200906085331650597' },
-  { id: 'http://purl.org/sig/ont/fma/fma7195' },
-  { id: 'http://purl.bioontology.org/ontology/LNC/LP199934-3' },
-  { id: 'http://purl.bioontology.org/ontology/LNC/LA4579-4' },
-  { id: 'http://purl.bioontology.org/ontology/LNC/MTHU008683' },
-  { id: 'http://purl.bioontology.org/ontology/LNC/LP7407-2' },
-  { id: 'http://purl.bioontology.org/ontology/RCD/7N225' },
-  { id: 'http://purl.bioontology.org/ontology/MESH/D008168' },
-  { id: 'http://purl.bioontology.org/ontology/OMIM/MTHU016106' },
-  { id: 'http://purl.bioontology.org/ontology/OMIM/MTHU000106' },
-  { id: 'http://purl.bioontology.org/ontology/CSP/2612-7088' },
-  { id: 'http://radlex.org/RID/RID1301' },
-  { id: 'http://purl.obolibrary.org/obo/BTO_0000763' },
-  { id: 'http://purl.obolibrary.org/obo/UBERON_0002048' },
-  { id: 'http://purl.jp/bio/11/meo/MEO_0000506' },
-  { id: 'http://purl.obolibrary.org/obo/UBERON_0002048' },
-  { id: 'http://purl.obolibrary.org/obo/UBERON_0002048' },
-  { id: 'http://purl.obolibrary.org/obo/UBERON_0002048' },
-  { id: 'http://purl.obolibrary.org/obo/UBERON_0002048' },
-  { id: 'http://purl.obolibrary.org/obo/UBERON_0002048' },
-  { id: 'http://purl.obolibrary.org/obo/UBERON_0002048' },
-  { id: 'http://purl.obolibrary.org/obo/UBERON_0002048' },
-  { id: 'http://purl.obolibrary.org/obo/XAO_0000119' },
-  { id: 'http://purl.org/sig/ont/fma/fma7195' },
-  { id: 'http://phenomebrowser.net/ontologies/mesh/mesh.owl#D008168' },
-  { id: 'http://phenomebrowser.net/ontologies/mesh/mesh.owl#A04.411' },
-  { id: 'http://purl.obolibrary.org/obo/UBERON_0002048' },
-  { id: 'http://www.ebi.ac.uk/efo/EFO_0000934' },
-  { id: 'http://purl.obolibrary.org/obo/BTO_0000763' },
-  { id: 'http://purl.obolibrary.org/obo/UBERON_0002048' },
-  { id: 'http://scai.fraunhofer.de/CSEO#Lung' },
-  { id: 'http://ontology.apa.org/apaonto/termsonlyOUT%20(5).owl#Lung' },
-  { id: 'http://www.co-ode.org/ontologies/galen#Lung' },
-  { id: 'http://sig.uw.edu/fma#Lung' },
-  { id: 'http://www.icn.ch/icnp#Lung' },
-  { id: 'http://purl.obolibrary.org/obo/UBERON_0002048' },
-  { id: 'http://purl.obolibrary.org/obo/MA_0000415' },
-  { id: 'http://purl.obolibrary.org/obo/UBERON_0002048' },
-];
 const materialUseStyles = makeStyles(theme => ({
   root: { direction: 'row', marginLeft: theme.spacing(1) },
   formControl: {
@@ -121,7 +79,7 @@ const materialUseStyles = makeStyles(theme => ({
 export default function Form(props) {
   const classes = materialUseStyles();
   const { postQuestion } = props;
-  const [searchResults, setSearchResults] = useState(data);
+  const [searchResults, setSearchResults] = useState({});
   const [question, setQuestion] = useState('');
   const [questionType, setQuestionType] = useState('');
   const [showSearchResults, setShowSearchResults] = useState(false);
@@ -146,9 +104,13 @@ export default function Form(props) {
     showConfidence,
   };
 
-  const handleSearch = () => {
-    getResults();
-    setShowSearchResults(true);
+  const handleSearch = async () => {
+    getResults(searchTerm)
+      .then(res => {
+        setSearchResults(res.data);
+        setShowSearchResults(true);
+      })
+      .catch(err => console.log(err));
   };
 
   const handleQuestionType = async e => {
@@ -353,7 +315,7 @@ export default function Form(props) {
           }}
         />
       </div>
-      {showSearchResults && (
+      {showSearchResults > 0 && (
         <SearchResults
           results={searchResults}
           open={showSearchResults}
