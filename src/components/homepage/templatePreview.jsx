@@ -38,21 +38,23 @@ export default function TemplatePreview(props) {
 
   useEffect(() => {
     let element = document.getElementById('questionaire');
+    //element.innerHTML = '';
     if (props.noOfQuestions > 1) {
-      element.remove();
-      element = document.createElement('div');
-      element.id = 'questionaire';
-      element.style = 'color: black;';
-      const component = document.getElementById('templatePreview');
-      component.appendChild(element);
+      //element.remove();
+      //element = document.createElement('div');
+      //element.id = 'questionaire';
+      //element.style = 'color: black;';
+      //const component = document.getElementById('templatePreview');
+      //component.appendChild(element);
     }
+
     const semanticAnswers = new questionaire.AimEditor(
       element,
       validateForm,
       renderButtons,
     );
     semanticAnswers.loadTemplates([props.template, recist]);
-    semanticAnswers.createViewerWindow();
+    semanticAnswers.showTemplatePreview();
   });
 
   const classes = materialUseStyles();

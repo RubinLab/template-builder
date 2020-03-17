@@ -268,6 +268,129 @@ export var AimEditor = function(
     templateDiv.style.width = '100%';
   };
 
+  this.showTemplatePreview = function() {
+    //var x = document.createElement("INPUT");
+    //x.setAttribute("type", "file");
+    //x.addEventListener('change', self.readx, false);
+    self.userWindow.innerHTML = '';
+
+    self.mainWindowDiv = document.createElement('div');
+    self.mainWindowDiv.innerHTML = '';
+    // below section needs to be uncommented for testing purpose
+    //self.mainButtonsDiv = document.createElement('div');
+    //this.addButtons(this.mainWindowDiv);
+    //this.mainWindowDiv.appendChild(x);
+    // above section needs to be uncommented for testing purpose
+    // self.templateListDiv = document.createElement('div');
+    // self.templateListDiv.id = 'tlist';
+    // self.templateListDiv.style.width = '100%';
+
+    //check below
+    // self.shapeDiv = document.createElement('div');
+    // self.shapeDiv.id = 'shape';
+
+    self.accordion1Div = document.createElement('div');
+    self.accordion1Div.id = 'accordion1';
+    self.accordion1Div.className = ' ui accordion';
+    self.accordion1Div.style = 'background-color: inherit; width:inherit;';
+
+    // var accordion2Div = document.createElement('div');
+    // accordion2Div.id = 'accordion2';
+    // accordion2Div.className = ' ui accordion';
+
+    //self.mainWindowDiv.appendChild(self.templateListDiv);
+    //self.mainWindowDiv.appendChild(self.shapeDiv);
+    self.mainWindowDiv.appendChild(self.accordion1Div);
+    //check below ends
+
+    //self.mainWindowDiv.appendChild(accordion2Div);
+
+    //below line needs to be uncommented for testing purpose
+    //self.mainWindowDiv.appendChild(self.mainButtonsDiv);
+
+    //creating template select drop down
+    // self.arrayTemplates = ["Select ", "short.json", "multiImage.json", "short1.json", "test3.json", "ATS_Template.json", "BeaulieuBoneTemplate_rev13.json", "coordinationTest.json", "Liver_Template_ePad_CFB_rev15.json", "LT.json", "asdf.json", "BeaulieuBoneTemplate_rev18.json", "LungNoduleFeaturesV2LT1.json", "meduloblastoma.json"];
+    var templateDiv = document.createElement('div');
+    // self.templateSelect = document.createElement('select');
+    // templateDiv.id = 'Temp';
+    // self.templateSelect.id = 'S1';
+
+    // self.templateSelect.className = 'ui dropdown';
+    // templateDiv.appendChild(self.templateSelect);
+    // var i = 0;
+    // var templateOption = document.createElement('option');
+    // templateOption.value = '-1';
+    // templateOption.text = 'Select Template';
+    // self.templateSelect.appendChild(templateOption);
+
+    // for (i = 0; i < self.arrayTemplatesJsonObjects.length; i++) {
+    //   var templateOption = document.createElement('option');
+    //   templateOption.value = i;
+    //   templateOption.text =
+    //     self.arrayTemplatesJsonObjects[i].TemplateContainer.Template[0].name;
+    //   //templateOption.innerHTML = this.arrayTemplatesJsonObjects[i].key;
+    //   self.templateSelect.appendChild(templateOption);
+    // }
+
+    // var lblTxt = document.createTextNode("Select template:");
+
+    //self.templateListDiv.appendChild(self.templateSelect);
+    self.userWindow.appendChild(self.mainWindowDiv);
+
+    // self.templateSelect.onchange = function() {
+    //   self.aimComment = '';
+    //   self.aimName = '';
+    //   self.aimType = '';
+    //   self.aimTypeCode = '';
+    //   self.templateSelectedIndex = this.value;
+
+    //   self.jsonTemplateCopy = '';
+    //   self.accordion1Div.innerHTML = '';
+    //   self.shapeDiv.innerHTML = '';
+    //   //uncomment below line for testing
+    //   //self.mainButtonsDiv.innerHTML = "";
+
+    //   self.mapCardinalitiesToCheckId = new Map();
+    //   self.mapStatusAllowedTermBlocks = new Map();
+    //   //self.mapHtmlObjects = new Map(); not used
+    //   //self.mapHtmlSelectObjectsKeyValue = new Map(); not used
+    //   //self.mapAllowedTermCollectionByCodeValue = new Map(); not used
+    //   //self.mapTemplateCodeValueByIndex = new Map();
+    //   self.mapLabelAnnotatorConfidence = new Map();
+    //   self.mapLabelAnnotConfJson = new Map();
+    //   self.mapLabelSubComment = new Map();
+    //   self.mapLabelCommentJson = new Map();
+    //   self.mapLabelUid = new Map();
+    //   if (self.templateSelectedIndex > -1) {
+    //     self.jsonTemplateCopy = self.arrayTemplatesJsonObjects[this.value];
+    //     self.extractTemplate(self.jsonTemplateCopy);
+    //     self.renderButtonhandler(true);
+    //   } else {
+    //     self.renderButtonhandler(false);
+    //   }
+    // };
+    self.aimComment = '';
+    self.aimName = '';
+    self.aimType = '';
+    self.aimTypeCode = '';
+    self.jsonTemplateCopy = '';
+    self.accordion1Div.innerHTML = '';
+    //self.shapeDiv.innerHTML = '';
+    self.mapCardinalitiesToCheckId = new Map();
+    self.mapStatusAllowedTermBlocks = new Map();
+    self.mapLabelAnnotatorConfidence = new Map();
+    self.mapLabelAnnotConfJson = new Map();
+    self.mapLabelSubComment = new Map();
+    self.mapLabelCommentJson = new Map();
+    self.mapLabelUid = new Map();
+    self.jsonTemplateCopy = self.arrayTemplatesJsonObjects[0];
+    self.extractTemplate(self.jsonTemplateCopy);
+    //$('select[class^="ui dropdown"]').dropdown();
+    //document.getElementById('tlist').children[0].style.width = '100%';
+    //self.templateSelect.style.width = '100%';
+    templateDiv.style.width = '100%';
+  };
+
   this.extractTemplate = function(json) {
     var a = 0;
 
