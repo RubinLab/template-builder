@@ -3,11 +3,15 @@ import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Pagination from '@material-ui/lab/Pagination';
 import List from '@material-ui/core/List';
+import Link from '@material-ui/core/Link';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Dialog from '@material-ui/core/Dialog';
 import Typography from '@material-ui/core/Typography';
+import Checkbox from '@material-ui/core/Checkbox';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Backdrop from '@material-ui/core/Backdrop';
 import { getTitle } from '../../services/apiServices';
 
 const useStyles = makeStyles(theme => ({
@@ -21,6 +25,14 @@ const useStyles = makeStyles(theme => ({
     color: 'gray',
     fontSize: '12px',
   },
+  listItemTextContainer: {
+    flexDirection: 'row',
+  },
+  listItemContainer: {
+    '&:hover': {
+      background: '#ededed',
+    },
+  },
 }));
 
 export default function SearchResults(props) {
@@ -29,6 +41,7 @@ export default function SearchResults(props) {
   const [page, setPage] = useState(1);
   const [title, setTitle] = useState({ 1: [] });
   const [listItems, setListItems] = useState([]);
+  const [showBackdrop, setShowBackdrop] = useState(true);
   const resultList = results.collection || [];
   const pageSize = 25;
   const totalNoOfPage = resultList.length / pageSize;
@@ -42,26 +55,41 @@ export default function SearchResults(props) {
         linkTitle = titlesObj[pageNo][k].title.substring(0, pipeIndex).trim();
       }
 
+      const idIndex = (page - 1) * pageSize + k;
       nodeList.push(
         <ListItem
-          // button
-          onClick={() => {
-            handleSelection(k);
-            window.open(titlesObj[pageNo][k].url, '_blank', '');
-          }}
           key={`${titlesObj[pageNo][k].url}-${k}`}
           className={classes.listItemContainer}
         >
-          <ListItemText
-            primary={
-              <>
-                <Typography className={classes.listItemTitle} component="span">
-                  {linkTitle}
-                </Typography>
-              </>
-            }
+          <Checkbox
+            onClick={() => {
+              window.setTimeout(() => {
+                handleSelection(k);
+              }, 1000);
+            }}
           />
-        </ListItem>
+          <div className={classes.listItemTextContainer}>
+            <Link
+              component="button"
+              variant="body2"
+              className={classes.listItemTitle}
+              onClick={() => {
+                window.open(titlesObj[pageNo][k].url, '_blank', '');
+              }}
+            >
+              {linkTitle}
+            </Link>
+            <ListItemText
+              secondary={
+                <>
+                  <Typography className={classes.listItemUrl} component="span">
+                    {results.collection[idIndex]['@id']}
+                  </Typography>
+                </>
+              }
+            />
+          </div>
+        </ListItem>,
       );
     }
     setListItems(nodeList);
@@ -80,6 +108,7 @@ export default function SearchResults(props) {
         currentTitle[pageNo] = res;
         setTitle(currentTitle);
         populateList(currentTitle, pageNo);
+        setShowBackdrop(false);
       })
       .catch(err => console.log(err));
   };
@@ -96,26 +125,35 @@ export default function SearchResults(props) {
   }, [page]);
 
   return (
-    <Dialog onClose={handleClose} open={open} onClick={handleSelection}>
-      <DialogTitle id="simple-dialog-title">{`${resultList.length} results for ${term}`}</DialogTitle>
-      <List>{listItems}</List>
-      {resultList.length > 0 && (
-        <>
-          <Pagination
-            count={totalNoOfPage}
-            page={page}
-            onChange={handleChange}
-          />
-        </>
-      )}
-    </Dialog>
+    <>
+      <Backdrop className={classes.backdrop} open={showBackdrop}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
+
+      <Dialog
+        onClose={handleClose}
+        open={!showBackdrop}
+        onClick={handleSelection}
+      >
+        <DialogTitle id="simple-dialog-title">{`Results for "${term}"`}</DialogTitle>
+        <List>{listItems}</List>
+        {resultList.length > 0 && (
+          <>
+            <Pagination
+              count={totalNoOfPage}
+              page={page}
+              onChange={handleChange}
+            />
+          </>
+        )}
+      </Dialog>
+    </>
   );
 }
 
 SearchResults.propTypes = {
   handleClose: PropTypes.func,
   handleSelection: PropTypes.func,
-  open: PropTypes.bool,
   results: PropTypes.object,
   term: PropTypes.string,
 };

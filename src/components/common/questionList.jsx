@@ -36,18 +36,19 @@ export default function QuestionsList(props) {
   const { handleDelete, handleEdit, handleLink } = props;
   const [questions, setQuestions] = useState([...props.questions]);
   const [open, setOpen] = useState([]);
-
   const handleQuestionClick = index => {
     const newOpen = [...open];
     newOpen[index] = !open[index];
     setOpen(newOpen);
   };
   useEffect(() => {
-    let newQuestion;
-    if (props.questions.length > questions.length) {
-      newQuestion = props.questions.pop();
-      const newList = [...questions];
-      newList.push(newQuestion);
+    const newList = [...questions];
+    const newLength = props.questions.length;
+    const diff = newLength - questions.length;
+    if (diff > 0) {
+      for (let i = 1; i <= diff; i += 1) {
+        newList.push({ ...props.questions[newLength - i] });
+      }
       setQuestions(newList);
     }
   }, [props.questions, questions]);
@@ -65,7 +66,6 @@ export default function QuestionsList(props) {
           <IconButton onClick={() => handleQuestionClick(sortIndex)}>
             {open[sortIndex] ? <ExpandLess /> : <ExpandMore />}
           </IconButton>
-
           <ListItemText
             primary={el.question}
             className={classes.listItemText}

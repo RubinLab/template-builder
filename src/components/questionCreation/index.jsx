@@ -48,7 +48,7 @@ export default function QuestionCreation(props) {
   };
 
   const handleSave = () => {
-    handleSaveQuestion(question);
+    handleSaveQuestion([question, ...details]);
     handleClose(false);
   };
 
