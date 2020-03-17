@@ -66,8 +66,8 @@ export default function HomePage(props) {
   const { handleAddQuestion, showDialog } = props;
 
   const handleSaveQuestion = questionInput => {
-    const newQuestions = [...questions];
-    newQuestions.push(questionInput);
+    // const newQuestions = [...questions];
+    const newQuestions = questions.concat(questionInput);
     setQuestions(newQuestions);
   };
   const handleChangeTemplateName = e => {

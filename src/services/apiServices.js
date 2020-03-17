@@ -12,9 +12,7 @@ const getResults = keyword => {
 function getTitle(url) {
   return new Promise(function(resolve) {
     axios
-      .get(`https://textance.herokuapp.com/rest/title/${url}`, {
-        headers: { Authorization: `apikey token=${config.API_KEY}` },
-      })
+      .get(`https://textance.herokuapp.com/rest/title/${url}`)
       .then(res => {
         resolve({ url, title: res.data });
       })

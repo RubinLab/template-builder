@@ -17,6 +17,8 @@ import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Select from '@material-ui/core/Select';
 import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Backdrop from '@material-ui/core/Backdrop';
 import SearchResults from './searchResults.jsx';
 import AnswerList from './answersList.jsx';
 import { getResults } from '../../services/apiServices';
@@ -74,6 +76,10 @@ const materialUseStyles = makeStyles(theme => ({
   filledText: {
     paddingTop: theme.spacing(0.5),
   },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#fff',
+  },
 }));
 
 export default function Form(props) {
@@ -92,6 +98,7 @@ export default function Form(props) {
   const [noMore, setNoMore] = useState(null);
   const [showConfidence, setshowConfidence] = useState(null);
   const [answerType, setAnswerType] = useState('');
+  const [showBackdrop, setShowBackdrop] = useState(false);
 
   const formInput = {
     questionType,
@@ -105,10 +112,12 @@ export default function Form(props) {
   };
 
   const handleSearch = async () => {
+    setShowBackdrop(true);
     getResults(searchTerm)
       .then(res => {
         setSearchResults(res.data);
         setShowSearchResults(true);
+        setShowBackdrop(false)
       })
       .catch(err => console.log(err));
   };
@@ -167,11 +176,11 @@ export default function Form(props) {
         setMaxCard(null);
     }
   };
-  const handleDeleteSelectedTerm = () => {};
 
   const handleQuestion = e => {
     setQuestion(e.target.value);
     postQuestion({ ...formInput, question: e.target.value });
+
   };
 
   return (
@@ -251,7 +260,7 @@ export default function Form(props) {
           <AnswerList
             answerType={answerType}
             answers={Object.keys(selectedTerms)}
-            handleDelete={handleDeleteSelectedTerm}
+            // handleDelete={handleDeleteSelectedTerm}
           />
         </div>
       )}
@@ -315,10 +324,12 @@ export default function Form(props) {
           }}
         />
       </div>
+      <Backdrop className={classes.backdrop} open={showBackdrop}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
       {showSearchResults > 0 && (
         <SearchResults
           results={searchResults}
-          open={showSearchResults}
           handleSelection={handleSelection}
           handleClose={() => setShowSearchResults(false)}
           term={searchTerm}
