@@ -23,32 +23,37 @@
         "codingSchemeVersion": "1.0",
         "Component": [
           {
-            "label": "Location",
-            "itemNumber": 1,
+            "label": "Lesion Status",
+            "itemNumber": 3,
             "authors": "epaduser",
-            "explanatoryText": "Anatomic Location of lesion",
+            "explanatoryText": "Status of lesion",
             "minCardinality": 1,
             "maxCardinality": 1,
             "shouldDisplay": true,
-            "id": "2.25.4369054531089.1305416223173.217635712047",
-            "AnatomicEntity": {
-              "annotatorConfidence": false
-            },
+            "annotatorConfidence": false,
+            "id": "2.25.436905441089.13054168484973.21324571207",
             "AllowedTerm": [
               {
-                "codeValue": "RID58",
-                "codeMeaning": "liver",
+                "codeValue": "RID28472",
+                "codeMeaning": "Present Lesion",
                 "codingSchemeDesignator": "RadLex"
               },
               {
-                "codeValue": "RID170",
-                "codeMeaning": "pancreas",
+                "codeValue": "RID39162",
+                "codeMeaning": "Progressive Lesion",
                 "codingSchemeDesignator": "RadLex"
               },
               {
-                "codeValue": "RID86",
-                "codeMeaning": "spleen",
-                "codingSchemeDesignator": "RadLex"
+                "codeValue": "S73",
+                "codeMeaning": "New Lesion",
+                "codingSchemeDesignator": "99EPAD",
+                "codingSchemeVersion": "1.0"
+              },
+              {
+                "codeValue": "S74",
+                "codeMeaning": "Resolved Lesion",
+                "codingSchemeDesignator": "99EPAD",
+                "codingSchemeVersion": "1.0"
               }
             ]
           }

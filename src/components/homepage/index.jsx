@@ -8,6 +8,8 @@ import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
 import QuestionList from '../common/questionList.jsx';
 import QuestionCreation from '../questionCreation/index.jsx';
 import TemplatePreview from './templatePreview.jsx';
@@ -16,18 +18,22 @@ import template2 from '../../utils/recist.2.json';
 
 const materialUseStyles = makeStyles(theme => ({
   root: {
-    margin: theme.spacing(2),
-    marginLeft: theme.spacing(4),
-    // margin: 'auto',
-    witdh: '-webkit-fill-available',
+    margin: theme.spacing(3),
+    padding: theme.spacing(3),
+    width: '-webkit-fill-available',
+    [theme.breakpoints.down('sm')]: {
+      margin: theme.spacing(1),
+      padding: theme.spacing(1),
+    },
+    [theme.breakpoints.up('lg')]: {
+      marginRight: theme.spacing(20),
+      marginLeft: theme.spacing(20),
+      // padding: theme.spacing(10),
+    },
   },
   form: {
-    margin: theme.spacing(2),
-    width: 300,
-  },
-  container: {
-    direction: 'column',
-    justify: 'space-between',
+    // margin: theme.spacing(2),
+    // width: 300,
   },
   textField: {
     marginTop: theme.spacing(3),
@@ -41,19 +47,27 @@ const materialUseStyles = makeStyles(theme => ({
     marginTop: theme.spacing(3),
     minWidth: 150,
   },
-  preview: {
-    width: '45%',
-    minWidth: 300,
-  },
   templateContent: {
     width: '45%',
     minWidth: 300,
-    marginRight: theme.spacing(4),
+  },
+  contentCard: {
+    boxShadow: 'none',
+    background: '#fafafa',
   },
   title: {
-    margin: theme.spacing(2),
-    marginTop: theme.spacing(5),
+    marginTop: theme.spacing(3),
     color: '#8c1717',
+  },
+
+  templateGrid: {
+    paddingTop: theme.spacing(2),
+  },
+  templateCard: {
+    paddingTop: theme.spacing(2),
+    [theme.breakpoints.down('sm')]: {
+      margin: 'auto',
+    },
   },
 }));
 
@@ -61,7 +75,7 @@ export default function HomePage(props) {
   const classes = materialUseStyles();
   const [templateName, setTemplateName] = useState('');
   const [templateLevel, setTemplateLevel] = useState('');
-  const [questions, setQuestions] = useState([]);
+  const [questions, setQuestions] = useState(['jhgfgdgfdfgd']);
 
   const { handleAddQuestion, showDialog } = props;
 
@@ -85,53 +99,72 @@ export default function HomePage(props) {
   const template = questions.length === 1 ? template1 : template2;
 
   return (
-    <div className={classes.root}>
-      <Grid container={true} className={classes.container}>
-        <div className={classes.templateContent}>
-          <form className={classes.form} noValidate autoComplete="off">
-            <TextField
-              className={classes.textField}
-              id="standard-basic"
-              label="Template Name"
-              onChange={handleChangeTemplateName}
-            />
-            <FormControl className={classes.formControl}>
-              <InputLabel id="templateLevel">Template Level</InputLabel>
-              <Select
-                labelId="templateLevel"
-                id="demo-controlled-open-select"
-                value={templateLevel}
-                onChange={handleChangeTemplateLevel}
-              >
-                <MenuItem value={'study'}>Study</MenuItem>
-                <MenuItem value={'series'}>Series</MenuItem>
-                <MenuItem value={'image'}>Image</MenuItem>
-              </Select>
-            </FormControl>
-          </form>
-          {questions.length > 0 && (
-            <>
-              <Typography variant="h6" className={classes.title}>
-                Questions
-              </Typography>
-              <QuestionList
-                handleEdit={handleEdit}
-                handleDelete={handleDelete}
-                questions={questions}
-                handleLink={handleLink}
-              />
-            </>
-          )}
-        </div>
-        {questions.length > 0 && (
-          <>
-            <TemplatePreview
-              className={classes.preview}
-              template={template}
-              noOfQuestions={questions.length}
-            />
-          </>
-        )}
+    <>
+      <Grid
+        container={true}
+        className={classes.root}
+        sm={12}
+        xl={6}
+        spacing={2}
+        justify={'space-between'}
+      >
+        <Grid item={true}>
+          <Card className={classes.contentCard}>
+            <div className={classes.templateContent}>
+              <form className={classes.form} noValidate autoComplete="off">
+                <TextField
+                  className={classes.textField}
+                  id="standard-basic"
+                  label="Template Name"
+                  onChange={handleChangeTemplateName}
+                />
+                <FormControl className={classes.formControl}>
+                  <InputLabel id="templateLevel">Template Level</InputLabel>
+                  <Select
+                    labelId="templateLevel"
+                    id="demo-controlled-open-select"
+                    value={templateLevel}
+                    onChange={handleChangeTemplateLevel}
+                  >
+                    <MenuItem value={'study'}>Study</MenuItem>
+                    <MenuItem value={'series'}>Series</MenuItem>
+                    <MenuItem value={'image'}>Image</MenuItem>
+                  </Select>
+                </FormControl>
+              </form>
+              {questions.length > 0 && (
+                <>
+                  <Typography variant="h6" className={classes.title}>
+                    Questions
+                  </Typography>
+                  <QuestionList
+                    handleEdit={handleEdit}
+                    handleDelete={handleDelete}
+                    questions={questions}
+                    handleLink={handleLink}
+                  />
+                </>
+              )}
+            </div>
+          </Card>
+        </Grid>
+        <Grid item={true} className={classes.templateGrid}>
+          <Card>
+            {questions.length > 0 && (
+              <>
+                <CardContent>
+                  <Typography variant="h5" className={classes.title}>
+                    Template Preview
+                  </Typography>
+                  <TemplatePreview
+                    template={template}
+                    noOfQuestions={questions.length}
+                  />
+                </CardContent>
+              </>
+            )}
+          </Card>
+        </Grid>
       </Grid>
       {showDialog && (
         <QuestionCreation
@@ -141,7 +174,7 @@ export default function HomePage(props) {
           handleSaveQuestion={handleSaveQuestion}
         />
       )}
-    </div>
+    </>
   );
 }
 

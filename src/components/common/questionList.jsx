@@ -7,7 +7,7 @@ import InsertLinkIcon from '@material-ui/icons/InsertLink';
 import ExpandLess from '@material-ui/icons/ExpandLess';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import Remove from '@material-ui/icons/Remove';
-
+import Typography from '@material-ui/core/Typography';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
@@ -25,9 +25,12 @@ const useStyles = makeStyles(theme => ({
     paddingTop: theme.spacing(0),
     paddingBottom: theme.spacing(0),
   },
-  listItemText: { margin: theme.spacing(1), witdh: '-webkit-fill-available' },
+  listItemText: { witdh: '-webkit-fill-available' },
   nestedListItemText: {
     paddingLeft: theme.spacing(8),
+  },
+  listItemHeader: {
+    fontSize: '1.2rem',
   },
 }));
 
@@ -67,7 +70,13 @@ export default function QuestionsList(props) {
             {open[sortIndex] ? <ExpandLess /> : <ExpandMore />}
           </IconButton>
           <ListItemText
-            primary={el.question}
+            primary={
+              <>
+                <Typography className={classes.listItemHeader}>
+                  {el.question}
+                </Typography>
+              </>
+            }
             className={classes.listItemText}
           />
           <IconButton onClick={() => handleEdit(el)}>

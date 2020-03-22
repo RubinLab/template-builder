@@ -6,28 +6,42 @@ import AddCircle from '@material-ui/icons/AddCircle';
 import GetApp from '@material-ui/icons/GetApp';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import Toolbar from '@material-ui/core/Toolbar';
 
 const useStyles = makeStyles(theme => ({
   root: {
     flexGrow: 1,
+    display: 'flex',
+    flexDirection: 'row',
     background: '#8c1717',
+    justifyContent: 'space-between',
+    paddingRight: theme.spacing(8),
+    paddingLeft: theme.spacing(8),
+    paddingTop: theme.spacing(2),
+    paddingBottom: theme.spacing(2),
+    [theme.breakpoints.down('sm')]: {
+      paddingRight: theme.spacing(3),
+      paddingLeft: theme.spacing(3),
+    },
+    [theme.breakpoints.up('lg')]: {
+      paddingRight: theme.spacing(25),
+      paddingLeft: theme.spacing(25),
+    },
   },
   button: {
     color: '#E3E0D8',
-    marginLeft: theme.spacing(3),
+    marginLeft: theme.spacing(2),
     '&:hover': {
       color: 'white',
       border: '1px solid #E3E0D8',
     },
   },
   buttonGroup: {
-    marginRight: theme.spacing(6),
+    display: 'flex',
+    justifyContent: 'flex-end',
   },
   title: {
     flexGrow: 1,
     fontWeight: 'bold',
-    marginLeft: theme.spacing(4),
   },
 }));
 
@@ -36,32 +50,30 @@ export default function Navbar(props) {
   const { handleAddQuestion } = props;
 
   return (
-    <div className={classes.root}>
-      <AppBar position="static" className={classes.root}>
-        <Toolbar>
-          <Typography variant="h5" className={classes.title}>
-            Template Builder
-          </Typography>
-          <div className={classes.buttonGroup}>
-            <Button
-              className={classes.button}
-              variant="outlined"
-              startIcon={<AddCircle />}
-              onClick={() => handleAddQuestion(true)}
-            >
-              Add Question
-            </Button>
-            <Button
-              className={classes.button}
-              variant="outlined"
-              startIcon={<GetApp />}
-            >
-              Download
-            </Button>
-          </div>
-        </Toolbar>
-      </AppBar>
-    </div>
+    <AppBar position="static" className={classes.root}>
+      <div>
+        <Typography variant="h5" className={classes.title}>
+          Template Builder
+        </Typography>
+      </div>
+      <div className={classes.buttonGroup}>
+        <Button
+          className={classes.button}
+          variant="outlined"
+          startIcon={<AddCircle />}
+          onClick={() => handleAddQuestion(true)}
+        >
+          Add Question
+        </Button>
+        <Button
+          className={classes.button}
+          variant="outlined"
+          startIcon={<GetApp />}
+        >
+          Download
+        </Button>
+      </div>
+    </AppBar>
   );
 }
 

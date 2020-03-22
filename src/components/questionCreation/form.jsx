@@ -117,7 +117,7 @@ export default function Form(props) {
       .then(res => {
         setSearchResults(res.data);
         setShowSearchResults(true);
-        setShowBackdrop(false)
+        setShowBackdrop(false);
       })
       .catch(err => console.log(err));
   };
@@ -180,7 +180,6 @@ export default function Form(props) {
   const handleQuestion = e => {
     setQuestion(e.target.value);
     postQuestion({ ...formInput, question: e.target.value });
-
   };
 
   return (

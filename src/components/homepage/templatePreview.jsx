@@ -7,22 +7,27 @@ import recist from '../../utils/recist.json';
 
 const materialUseStyles = makeStyles(theme => ({
   root: {
-    margin: theme.spacing(2),
+    margin: 'auto',
     width: 'fit-content',
-    color: 'black',
-    borderLeft: '3px solid #8c1717',
+    // color: 'black',
+    // borderLeft: '3px solid #8c1717',
+    // paddingLeft: theme.spacing(10),
   },
   title: {
-    margin: theme.spacing(4),
+    margin: theme.spacing(3),
     color: '#8c1717',
   },
   questionaire: {
     margin: theme.spacing(4),
     padding: theme.spacing(6),
-    // paddingLeft:
     border: '1px solid #8c1717',
-    width: 400,
+    width: '-webkit-fill-available',
+    minWidth: 300,
     background: '#E3E0D8',
+    [theme.breakpoints.down('sm')]: {
+      margin: theme.spacing(3),
+      padding: theme.spacing(3),
+    },
   },
 }));
 
@@ -37,21 +42,11 @@ export default function TemplatePreview(props) {
   };
 
   useEffect(() => {
-    let element = document.getElementById('questionaire');
-    //element.innerHTML = '';
-    if (props.noOfQuestions > 1) {
-      //element.remove();
-      //element = document.createElement('div');
-      //element.id = 'questionaire';
-      //element.style = 'color: black;';
-      //const component = document.getElementById('templatePreview');
-      //component.appendChild(element);
-    }
-
+    const element = document.getElementById('questionaire');
     const semanticAnswers = new questionaire.AimEditor(
       element,
       validateForm,
-      renderButtons,
+      renderButtons
     );
     semanticAnswers.loadTemplates([props.template, recist]);
     semanticAnswers.showTemplatePreview();
@@ -59,14 +54,11 @@ export default function TemplatePreview(props) {
 
   const classes = materialUseStyles();
   return (
-    <div className={classes.root}>
-      <Typography variant="h5" className={classes.title}>
-        Template Preview
-      </Typography>
-      <div className={classes.questionaire} id="templatePreview">
-        <div id="questionaire" />
-      </div>
+    // <div className={classes.root}>
+    <div className={classes.questionaire} id="templatePreview">
+      <div id="questionaire" />
     </div>
+    // </div>ş
   );
 }
 

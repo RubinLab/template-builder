@@ -23,68 +23,149 @@
         "codingSchemeVersion": "1.0",
         "Component": [
           {
-            "label": "Type",
-            "itemNumber": 2,
+            "label": "Location",
+            "itemNumber": 1,
             "authors": "epaduser",
-            "explanatoryText": "Type of lesion",
+            "explanatoryText": "Anatomic Location of lesion",
             "minCardinality": 1,
             "maxCardinality": 1,
             "shouldDisplay": true,
-            "id": "2.25.4369054532228.1305416224313.217635712143",
-            "annotatorConfidence": false,
+            "id": "2.25.4369054531089.1305416223173.217635712047",
+            "AnatomicEntity": {
+              "annotatorConfidence": false
+            },
             "AllowedTerm": [
               {
-                "codeValue": "S71",
-                "codeMeaning": "Target Lesion",
-                "codingSchemeDesignator": "99EPAD",
-                "codingSchemeVersion": "1.0"
+                "codeValue": "RID58",
+                "codeMeaning": "liver",
+                "codingSchemeDesignator": "RadLex"
               },
               {
-                "codeValue": "S72",
-                "codeMeaning": "Non-Target Lesion",
-                "codingSchemeDesignator": "99EPAD",
-                "codingSchemeVersion": "1.0"
+                "codeValue": "RID170",
+                "codeMeaning": "pancreas",
+                "codingSchemeDesignator": "RadLex"
               },
               {
-                "codeValue": "S75",
-                "codeMeaning": "Non-cancer Lesion",
-                "codingSchemeDesignator": "99EPAD",
-                "codingSchemeVersion": "1.0"
+                "codeValue": "RID86",
+                "codeMeaning": "spleen",
+                "codingSchemeDesignator": "RadLex"
               }
             ]
           },
           {
-            "label": "Lesion Status",
-            "itemNumber": 3,
+            "label": "Lesion Quality",
+            "itemNumber": 2,
             "authors": "epaduser",
-            "explanatoryText": "Status of lesion",
             "minCardinality": 1,
             "maxCardinality": 1,
             "shouldDisplay": true,
-            "annotatorConfidence": false,
-            "id": "2.25.436905441089.13054168484973.21324571207",
+            "id": "2.25.4369054531658.1305416223742.217635712095",
+            "ImagingObservation": {
+              "annotatorConfidence": false,
+              "ImagingObservationCharacteristic": [
+                {
+                  "label": "Type",
+                  "itemNumber": 2,
+                  "authors": "epaduser",
+                  "explanatoryText": "Type of lesion",
+                  "minCardinality": 1,
+                  "maxCardinality": 1,
+                  "shouldDisplay": true,
+                  "id": "2.25.4369054532228.1305416224313.217635712143",
+                  "annotatorConfidence": false,
+                  "AllowedTerm": [
+                    {
+                      "codeValue": "S71",
+                      "codeMeaning": "Target Lesion",
+                      "codingSchemeDesignator": "99EPAD",
+                      "codingSchemeVersion": "1.0"
+                    },
+                    {
+                      "codeValue": "S72",
+                      "codeMeaning": "Non-Target Lesion",
+                      "codingSchemeDesignator": "99EPAD",
+                      "codingSchemeVersion": "1.0"
+                    },
+                    {
+                      "codeValue": "S75",
+                      "codeMeaning": "Non-cancer Lesion",
+                      "codingSchemeDesignator": "99EPAD",
+                      "codingSchemeVersion": "1.0"
+                    }
+                  ]
+                },
+                {
+                  "label": "Lesion Status",
+                  "itemNumber": 3,
+                  "authors": "epaduser",
+                  "explanatoryText": "Status of lesion",
+                  "minCardinality": 1,
+                  "maxCardinality": 1,
+                  "shouldDisplay": true,
+                  "annotatorConfidence": false,
+                  "id": "2.25.436905441089.13054168484973.21324571207",
+                  "AllowedTerm": [
+                    {
+                      "codeValue": "RID28472",
+                      "codeMeaning": "Present Lesion",
+                      "codingSchemeDesignator": "RadLex"
+                    },
+                    {
+                      "codeValue": "RID39162",
+                      "codeMeaning": "Progressive Lesion",
+                      "codingSchemeDesignator": "RadLex"
+                    },
+                    {
+                      "codeValue": "S73",
+                      "codeMeaning": "New Lesion",
+                      "codingSchemeDesignator": "99EPAD",
+                      "codingSchemeVersion": "1.0"
+                    },
+                    {
+                      "codeValue": "S74",
+                      "codeMeaning": "Resolved Lesion",
+                      "codingSchemeDesignator": "99EPAD",
+                      "codingSchemeVersion": "1.0"
+                    }
+                  ]
+                },
+                {
+                  "label": "Lesion Enhancement",
+                  "itemNumber": 3,
+                  "authors": "epaduser",
+                  "explanatoryText": "Enhancement state of lesion",
+                  "minCardinality": 0,
+                  "maxCardinality": 1,
+                  "shouldDisplay": true,
+                  "annotatorConfidence": false,
+                  "id": "2.25.436905441089.13054164543173.217634571207",
+                  "AllowedTerm": [
+                    {
+                      "codeValue": "RID6055",
+                      "codeMeaning": "Enhancing",
+                      "codingSchemeDesignator": "RadLex"
+                    },
+                    {
+                      "codeValue": "RID6056",
+                      "codeMeaning": "Nonenhancing",
+                      "codingSchemeDesignator": "RadLex"
+                    }
+                  ]
+                }
+              ]
+            },
             "AllowedTerm": [
               {
-                "codeValue": "RID28472",
-                "codeMeaning": "Present Lesion",
-                "codingSchemeDesignator": "RadLex"
-              },
-              {
-                "codeValue": "RID39162",
-                "codeMeaning": "Progressive Lesion",
-                "codingSchemeDesignator": "RadLex"
-              },
-              {
-                "codeValue": "S73",
-                "codeMeaning": "New Lesion",
+                "codeValue": "S86",
+                "codeMeaning": "Evaluable",
                 "codingSchemeDesignator": "99EPAD",
-                "codingSchemeVersion": "1.0"
+                "codingSchemeVersion": "1.0",
+                "defaultAnswer": true
               },
               {
-                "codeValue": "S74",
-                "codeMeaning": "Resolved Lesion",
-                "codingSchemeDesignator": "99EPAD",
-                "codingSchemeVersion": "1.0"
+                "codeValue": "RID39225",
+                "codeMeaning": "Nonevaluable",
+                "codingSchemeDesignator": "Radlex"
               }
             ]
           }

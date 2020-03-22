@@ -37,11 +37,12 @@ const useStyles = makeStyles(theme => ({
 
 export default function SearchResults(props) {
   const classes = useStyles();
-  const { handleClose, open, results, handleSelection, term } = props;
+  const { handleClose, results, handleSelection, term } = props;
   const [page, setPage] = useState(1);
   const [title, setTitle] = useState({ 1: [] });
   const [listItems, setListItems] = useState([]);
   const [showBackdrop, setShowBackdrop] = useState(true);
+  console.log(results);
   const resultList = results.collection || [];
   const pageSize = 25;
   const totalNoOfPage = resultList.length / pageSize;
@@ -65,7 +66,7 @@ export default function SearchResults(props) {
             onClick={() => {
               window.setTimeout(() => {
                 handleSelection(k);
-              }, 1000);
+              }, 250);
             }}
           />
           <div className={classes.listItemTextContainer}>
@@ -89,7 +90,7 @@ export default function SearchResults(props) {
               }
             />
           </div>
-        </ListItem>,
+        </ListItem>
       );
     }
     setListItems(nodeList);
@@ -98,8 +99,11 @@ export default function SearchResults(props) {
   const handleGetTitle = pageNo => {
     const promises = [];
     const index = (pageNo - 1) * pageSize;
-    const limit = index + pageSize;
+    let limit = index + pageSize;
+    limit = limit > resultList.length ? resultList.length : limit;
     for (let i = index; i < limit; i += 1) {
+      console.log(i);
+      console.log(resultList[i]);
       promises.push(getTitle(resultList[i].links.ui));
     }
     Promise.all(promises)
