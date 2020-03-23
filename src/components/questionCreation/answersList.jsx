@@ -18,6 +18,9 @@ const useStyles = makeStyles(theme => ({
     borderBottom: '1px solid #E3E0D8',
     paddingTop: theme.spacing(0),
     paddingBottom: theme.spacing(0),
+    [theme.breakpoints.down('sm')]: {
+      width: 300,
+    },
   },
   listItemText: { margin: theme.spacing(1), witdh: '-webkit-fill-available' },
 }));
