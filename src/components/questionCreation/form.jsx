@@ -42,14 +42,18 @@ const materialUseStyles = makeStyles(theme => ({
   },
   textField: {
     marginTop: theme.spacing(3),
-    minWidth: 400,
+    width: 400,
+    [theme.breakpoints.down('sm')]: {
+      width: 300,
+    },
   },
   searchInput: {
-    width: 400,
-    marginLeft: theme.spacing(3),
+    width: 250,
+    marginTop: theme.spacing(3),
   },
   searchButton: {
     background: '#E3E0D8',
+    padding: theme.spacing(1),
     '&:hover': {
       background: '#CCBC8E',
     },
@@ -79,6 +83,9 @@ const materialUseStyles = makeStyles(theme => ({
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
     color: '#fff',
+  },
+  answerTypeMenu: {
+    marginRight: theme.spacing(2),
   },
 }));
 
@@ -195,7 +202,7 @@ export default function Form(props) {
           >
             <MenuItem value={'anatomic'}>
               <Accessibility className={classes.icon} />
-              Anotomic Location
+              Anatomic Location
             </MenuItem>
             <MenuItem value={'observation'}>
               <Visibility className={classes.icon} />
@@ -224,6 +231,7 @@ export default function Form(props) {
             id="answerType-controlled-open-select"
             value={answerType}
             onChange={handleAnswerTypeSelection}
+            className={classes.answerTypeMenu}
           >
             <MenuItem value={'single'}>
               <RadioButtonChecked className={classes.icon} />
@@ -317,7 +325,7 @@ export default function Form(props) {
           value="showConfidence"
           control={<Checkbox color="primary" />}
           label="Show annotator confidence"
-          labelPlacement="start"
+          labelPlacement="end"
           onChange={e => {
             setshowConfidence(e.target.value);
           }}
