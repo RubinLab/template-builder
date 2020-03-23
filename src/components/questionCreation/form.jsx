@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Accessibility from '@material-ui/icons/Accessibility';
@@ -119,8 +119,9 @@ export default function Form(props) {
   };
 
   const handleSearch = async () => {
+    const cleanSearchTerm = searchTerm.trim();
     setShowBackdrop(true);
-    getResults(searchTerm)
+    getResults(cleanSearchTerm)
       .then(res => {
         setSearchResults(res.data);
         setShowSearchResults(true);
@@ -137,6 +138,21 @@ export default function Form(props) {
   const handleSearchInput = e => {
     setSearchTerm(e.target.value);
   };
+
+  const handleKeyboardEvent = e => {
+    const termNotEmpty = searchTerm.length > 0 && searchTerm.trim().length > 0;
+    if (e.key === 'Enter' && termNotEmpty) {
+      handleSearch();
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyboardEvent);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyboardEvent);
+    };
+  }, [handleKeyboardEvent]);
 
   const handleSelection = termIndex => {
     let newSelected;
@@ -188,6 +204,8 @@ export default function Form(props) {
     setQuestion(e.target.value);
     postQuestion({ ...formInput, question: e.target.value });
   };
+
+  const handleDeleteSelectedTerm = () => {};
 
   return (
     <div className={classes.root}>
@@ -267,7 +285,7 @@ export default function Form(props) {
           <AnswerList
             answerType={answerType}
             answers={Object.keys(selectedTerms)}
-            // handleDelete={handleDeleteSelectedTerm}
+            handleDelete={handleDeleteSelectedTerm}
           />
         </div>
       )}
