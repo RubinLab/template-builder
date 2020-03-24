@@ -205,7 +205,11 @@ export default function Form(props) {
     postQuestion({ ...formInput, question: e.target.value });
   };
 
-  const handleDeleteSelectedTerm = () => {};
+  const handleDeleteSelectedTerm = key => {
+    const currentSelectedTerms = { ...selectedTerms };
+    delete currentSelectedTerms[key];
+    setTermSelection(currentSelectedTerms);
+  };
 
   return (
     <div className={classes.root}>
