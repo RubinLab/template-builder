@@ -150,7 +150,7 @@ export var AimEditor = function(
   };
 
   this.loadTemplates = function(templateList) {
-    console.log('template list ::: --->', templateList);
+    // console.log('template list ::: --->', templateList);
     self.arrayTemplatesJsonObjects = templateList;
     if (self.arrayTemplatesJsonObjects.length > 0) {
       for (var i = 0; i < self.arrayTemplatesJsonObjects.length; i++) {
@@ -2274,7 +2274,7 @@ export var AimEditor = function(
     }
   };
   this.checkAnnotatorConfidence = function(prentDiv, objectToCheckAnnConf) {
-    console.log('checking annotator confidence for : ', objectToCheckAnnConf);
+    // console.log('checking annotator confidence for : ', objectToCheckAnnConf);
     let isMouseButtondown = false;
     if (typeof objectToCheckAnnConf.annotatorConfidence != 'undefined') {
       // Assign value to the property here

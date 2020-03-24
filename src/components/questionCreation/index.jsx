@@ -10,6 +10,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Form from './form.jsx';
 import DetailCreation from './detailsCreation.jsx';
 import QuestionList from '../common/questionList.jsx';
+import createID from '../../utils/helper';
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -35,23 +36,37 @@ const useStyles = makeStyles(theme => ({
 
 export default function QuestionCreation(props) {
   const classes = useStyles();
-  const { open, templateName, handleClose, handleSaveQuestion } = props;
+  const {
+    open,
+    templateName,
+    handleClose,
+    handleSaveQuestion,
+    questionID,
+  } = props;
   const [showDetailCreation, setShowDetailCreation] = useState(false);
-  const [details, setDetails] = useState([]);
+  const [details, setDetails] = useState({});
   const [question, setQuestion] = useState({});
 
   const handleSaveDetail = detail => {
-    const newDetails = [...details];
-    newDetails.push(detail);
-    setDetails(newDetails);
+    const id = createID();
+    const newDetail = { ...detail };
+    newDetail.id = id;
+    newDetail.questionID = questionID;
+    const mergedDetails = { ...details };
+    mergedDetails[id] = newDetail;
+    setDetails(mergedDetails);
     setShowDetailCreation(false);
   };
 
   const handleSave = () => {
-    handleSaveQuestion([question, ...details]);
+    const updatedQuestion = { ...question };
+    updatedQuestion.id = questionID;
+    setQuestion(updatedQuestion);
+    handleSaveQuestion({ [questionID]: updatedQuestion, ...details });
     handleClose(false);
   };
 
+  const detailsArr = Object.values(details);
   return (
     <React.Fragment>
       <Dialog
@@ -76,7 +91,7 @@ export default function QuestionCreation(props) {
             Add details
           </Button>
 
-          {details.length > 0 && <QuestionList questions={details} />}
+          {detailsArr.length > 0 && <QuestionList questions={detailsArr} />}
           {showDetailCreation && (
             <DetailCreation
               open={showDetailCreation}
@@ -104,4 +119,5 @@ QuestionCreation.propTypes = {
   templateName: PropTypes.string,
   handleClose: PropTypes.func,
   handleSaveQuestion: PropTypes.func,
+  questionID: PropTypes.string,
 };

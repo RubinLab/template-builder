@@ -154,7 +154,7 @@ export default function Form(props) {
     };
   }, [handleKeyboardEvent]);
 
-  const handleSelection = termIndex => {
+  const handleTermSelection = termIndex => {
     let newSelected;
     if (typeof termIndex === 'number') {
       newSelected = { ...selectedTerms };
@@ -359,7 +359,7 @@ export default function Form(props) {
       {showSearchResults > 0 && (
         <SearchResults
           results={searchResults}
-          handleSelection={handleSelection}
+          handleSelection={handleTermSelection}
           handleClose={() => setShowSearchResults(false)}
           term={searchTerm}
         />
