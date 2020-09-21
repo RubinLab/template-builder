@@ -44,15 +44,20 @@ export default function QuestionsList(props) {
     newOpen[index] = !open[index];
     setOpen(newOpen);
   };
+
   useEffect(() => {
     const newList = [...questions];
     const newLength = props.questions.length;
     const diff = newLength - questions.length;
-    if (diff > 0) {
-      for (let i = 1; i <= diff; i += 1) {
-        newList.push({ ...props.questions[newLength - i] });
+    if (diff !== 0) {
+      if (diff > 0) {
+        for (let i = 1; i <= diff; i += 1) {
+          newList.push({ ...props.questions[newLength - i] });
+        }
+        setQuestions(newList);
+      } else {
+        setQuestions([...props.questions]);
       }
-      setQuestions(newList);
     }
   }, [props.questions, questions]);
 

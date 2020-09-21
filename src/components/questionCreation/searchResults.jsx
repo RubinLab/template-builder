@@ -111,7 +111,8 @@ export default function SearchResults(props) {
         populateList(currentTitle, pageNo);
         setShowBackdrop(false);
       })
-      .catch(err => console.log(err));
+      // eslint-disable-next-line no-console
+      .catch(err => console.error(err));
   };
 
   const handleChange = (e, pageChanged) => {

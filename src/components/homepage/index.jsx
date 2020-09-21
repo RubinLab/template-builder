@@ -99,17 +99,29 @@ export default function HomePage(props) {
   };
 
   useEffect(() => {
-    console.log('use effect called');
     handleQuestionID();
   }, [props.showDialog]);
 
   const handleEdit = () => {};
-  const handleDelete = () => {};
+  const handleDelete = question => {
+    const updatedQuestions = { ...questions };
+    const details = [];
+    const arr = Object.values(updatedQuestions);
+    if (!question.questionID) {
+      arr.forEach(el => {
+        if (el.questionID === question.id) {
+          details.push(el.id);
+        }
+      });
+      details.forEach(el => delete updatedQuestions[el]);
+    }
+    delete updatedQuestions[question.id];
+    setQuestions(updatedQuestions);
+  };
   const handleLink = () => {};
 
   const questionsArr = Object.values(questions);
   const template = questionsArr.length === 1 ? template1 : template2;
-  console.log(questionsArr);
   return (
     <>
       <Grid
