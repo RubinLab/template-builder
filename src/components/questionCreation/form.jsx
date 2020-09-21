@@ -127,7 +127,7 @@ export default function Form(props) {
         setShowSearchResults(true);
         setShowBackdrop(false);
       })
-      .catch(err => console.log(err));
+      .catch(err => console.error(err));
   };
 
   const handleQuestionType = async e => {

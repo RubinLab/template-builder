@@ -143,7 +143,7 @@ export default function HomePage(props) {
                   onChange={handleChangeTemplateName}
                 />
                 <FormControl className={classes.formControl}>
-                  <InputLabel id="templateLevel">Template Level</InputLabel>
+                  <InputLabel id="templateLevel">Type of Template</InputLabel>
                   <Select
                     labelId="templateLevel"
                     id="demo-controlled-open-select"
