@@ -42,7 +42,6 @@ export default function SearchResults(props) {
   const [title, setTitle] = useState({ 1: [] });
   const [listItems, setListItems] = useState([]);
   const [showBackdrop, setShowBackdrop] = useState(true);
-  console.log(results);
   const resultList = results.collection || [];
   const pageSize = 25;
   const totalNoOfPage = resultList.length / pageSize;
@@ -102,8 +101,6 @@ export default function SearchResults(props) {
     let limit = index + pageSize;
     limit = limit > resultList.length ? resultList.length : limit;
     for (let i = index; i < limit; i += 1) {
-      console.log(i);
-      console.log(resultList[i]);
       promises.push(getTitle(resultList[i].links.ui));
     }
     Promise.all(promises)
@@ -114,7 +111,8 @@ export default function SearchResults(props) {
         populateList(currentTitle, pageNo);
         setShowBackdrop(false);
       })
-      .catch(err => console.log(err));
+      // eslint-disable-next-line no-console
+      .catch(err => console.error(err));
   };
 
   const handleChange = (e, pageChanged) => {

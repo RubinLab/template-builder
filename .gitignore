@@ -21,7 +21,8 @@
 .eslintrc.json
 
 #info
-/services/config
+/services/config.js
+/serrvices/keys.js
 
 npm-debug.log*
 yarn-debug.log*

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
@@ -15,6 +15,7 @@ import QuestionCreation from '../questionCreation/index.jsx';
 import TemplatePreview from './templatePreview.jsx';
 import template1 from '../../utils/recist.1.json';
 import template2 from '../../utils/recist.2.json';
+import createID from '../../utils/helper';
 
 const materialUseStyles = makeStyles(theme => ({
   root: {
@@ -75,13 +76,13 @@ export default function HomePage(props) {
   const classes = materialUseStyles();
   const [templateName, setTemplateName] = useState('');
   const [templateLevel, setTemplateLevel] = useState('');
-  const [questions, setQuestions] = useState(['jhgfgdgfdfgd']);
+  const [questions, setQuestions] = useState({});
+  const [questionID, setquestionID] = useState('');
 
   const { handleAddQuestion, showDialog } = props;
 
   const handleSaveQuestion = questionInput => {
-    // const newQuestions = [...questions];
-    const newQuestions = questions.concat(questionInput);
+    const newQuestions = { ...questions, ...questionInput };
     setQuestions(newQuestions);
   };
   const handleChangeTemplateName = e => {
@@ -92,12 +93,35 @@ export default function HomePage(props) {
     setTemplateLevel(e.target.value);
   };
 
+  const handleQuestionID = () => {
+    const id = createID();
+    setquestionID(id);
+  };
+
+  useEffect(() => {
+    handleQuestionID();
+  }, [props.showDialog]);
+
   const handleEdit = () => {};
-  const handleDelete = () => {};
+  const handleDelete = question => {
+    const updatedQuestions = { ...questions };
+    const details = [];
+    const arr = Object.values(updatedQuestions);
+    if (!question.questionID) {
+      arr.forEach(el => {
+        if (el.questionID === question.id) {
+          details.push(el.id);
+        }
+      });
+      details.forEach(el => delete updatedQuestions[el]);
+    }
+    delete updatedQuestions[question.id];
+    setQuestions(updatedQuestions);
+  };
   const handleLink = () => {};
 
-  const template = questions.length === 1 ? template1 : template2;
-
+  const questionsArr = Object.values(questions);
+  const template = questionsArr.length === 1 ? template1 : template2;
   return (
     <>
       <Grid
@@ -132,7 +156,7 @@ export default function HomePage(props) {
                   </Select>
                 </FormControl>
               </form>
-              {questions.length > 0 && (
+              {questionsArr.length > 0 && (
                 <>
                   <Typography variant="h6" className={classes.title}>
                     Questions
@@ -140,7 +164,7 @@ export default function HomePage(props) {
                   <QuestionList
                     handleEdit={handleEdit}
                     handleDelete={handleDelete}
-                    questions={questions}
+                    questions={questionsArr}
                     handleLink={handleLink}
                   />
                 </>
@@ -150,7 +174,7 @@ export default function HomePage(props) {
         </Grid>
         <Grid item={true} className={classes.templateGrid}>
           <Card>
-            {questions.length > 0 && (
+            {questionsArr.length > 0 && (
               <>
                 <CardContent>
                   <Typography variant="h5" className={classes.title}>
@@ -158,7 +182,7 @@ export default function HomePage(props) {
                   </Typography>
                   <TemplatePreview
                     template={template}
-                    noOfQuestions={questions.length}
+                    noOfQuestions={questionsArr.length}
                   />
                 </CardContent>
               </>
@@ -172,6 +196,7 @@ export default function HomePage(props) {
           templateName={templateName}
           handleClose={handleAddQuestion}
           handleSaveQuestion={handleSaveQuestion}
+          questionID={questionID}
         />
       )}
     </>

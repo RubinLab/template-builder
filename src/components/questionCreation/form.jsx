@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Accessibility from '@material-ui/icons/Accessibility';
@@ -119,8 +119,9 @@ export default function Form(props) {
   };
 
   const handleSearch = async () => {
+    const cleanSearchTerm = searchTerm.trim();
     setShowBackdrop(true);
-    getResults(searchTerm)
+    getResults(cleanSearchTerm)
       .then(res => {
         setSearchResults(res.data);
         setShowSearchResults(true);
@@ -138,7 +139,22 @@ export default function Form(props) {
     setSearchTerm(e.target.value);
   };
 
-  const handleSelection = termIndex => {
+  const handleKeyboardEvent = e => {
+    const termNotEmpty = searchTerm.length > 0 && searchTerm.trim().length > 0;
+    if (e.key === 'Enter' && termNotEmpty) {
+      handleSearch();
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyboardEvent);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyboardEvent);
+    };
+  }, [handleKeyboardEvent]);
+
+  const handleTermSelection = termIndex => {
     let newSelected;
     if (typeof termIndex === 'number') {
       newSelected = { ...selectedTerms };
@@ -187,6 +203,12 @@ export default function Form(props) {
   const handleQuestion = e => {
     setQuestion(e.target.value);
     postQuestion({ ...formInput, question: e.target.value });
+  };
+
+  const handleDeleteSelectedTerm = key => {
+    const currentSelectedTerms = { ...selectedTerms };
+    delete currentSelectedTerms[key];
+    setTermSelection(currentSelectedTerms);
   };
 
   return (
@@ -267,7 +289,7 @@ export default function Form(props) {
           <AnswerList
             answerType={answerType}
             answers={Object.keys(selectedTerms)}
-            // handleDelete={handleDeleteSelectedTerm}
+            handleDelete={handleDeleteSelectedTerm}
           />
         </div>
       )}
@@ -337,7 +359,7 @@ export default function Form(props) {
       {showSearchResults > 0 && (
         <SearchResults
           results={searchResults}
-          handleSelection={handleSelection}
+          handleSelection={handleTermSelection}
           handleClose={() => setShowSearchResults(false)}
           term={searchTerm}
         />
