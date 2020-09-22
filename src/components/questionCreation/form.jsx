@@ -18,6 +18,7 @@ import Select from '@material-ui/core/Select';
 import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import Backdrop from '@material-ui/core/Backdrop';
 import SearchResults from './searchResults.jsx';
 import AnswerList from './answersList.jsx';
@@ -119,9 +120,16 @@ export default function Form(props) {
   };
 
   const handleSearch = async () => {
-    const cleanSearchTerm = searchTerm.trim();
+    let searchedTerms = JSON.parse(sessionStorage.getItem('searchedTerms'));
+    const trimmedSearchTerm = searchTerm.trim();
+    if (searchedTerms && !searchedTerms.includes(trimmedSearchTerm)) {
+      searchedTerms = [...searchedTerms, trimmedSearchTerm];
+    } else if (!searchedTerms) {
+      searchedTerms = [trimmedSearchTerm];
+    }
+    sessionStorage.setItem('searchedTerms', JSON.stringify(searchedTerms));
     setShowBackdrop(true);
-    getResults(cleanSearchTerm)
+    getResults(trimmedSearchTerm)
       .then(res => {
         setSearchResults(res.data);
         setShowSearchResults(true);
@@ -135,12 +143,14 @@ export default function Form(props) {
     postQuestion({ ...formInput, questionType: e.target.value });
   };
 
-  const handleSearchInput = e => {
-    setSearchTerm(e.target.value);
+  const handleSearchInput = (e, option) => {
+    if (e) setSearchTerm(e.target.value);
+    else setSearchTerm(option);
   };
 
   const handleKeyboardEvent = e => {
-    const termNotEmpty = searchTerm.length > 0 && searchTerm.trim().length > 0;
+    const termNotEmpty =
+      searchTerm && searchTerm.length > 0 && searchTerm.trim().length > 0;
     if (e.key === 'Enter' && termNotEmpty) {
       handleSearch();
     }
@@ -274,11 +284,24 @@ export default function Form(props) {
           </Select>
         </FormControl>
         <div className={classes.answerGroup}>
-          <TextField
-            className={classes.searchInput}
-            placeholder="Search terms"
-            onChange={handleSearchInput}
+          <Autocomplete
+            id="combo-box-demo"
+            options={JSON.parse(sessionStorage.getItem('searchedTerms')) || []}
+            // getOptionLabel={option => option.title}
+            value={searchTerm}
+            onChange={(_, data) => handleSearchInput(null, data)}
+            onInputChange={handleSearchInput}
+            style={{ width: 300 }}
+            renderInput={params => (
+              <TextField
+                {...params}
+                className={classes.searchInput}
+                placeholder="Search terms"
+                // onChange={handleSearchInput}
+              />
+            )}
           />
+
           <IconButton className={classes.searchButton} onClick={handleSearch}>
             <Search />
           </IconButton>
