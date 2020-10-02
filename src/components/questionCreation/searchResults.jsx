@@ -6,8 +6,6 @@ import List from '@material-ui/core/List';
 import Link from '@material-ui/core/Link';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Dialog from '@material-ui/core/Dialog';
 import Typography from '@material-ui/core/Typography';
 import Checkbox from '@material-ui/core/Checkbox';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -15,6 +13,9 @@ import Backdrop from '@material-ui/core/Backdrop';
 import { getTitle } from '../../services/apiServices';
 
 const useStyles = makeStyles(theme => ({
+  listHeader: {
+    paddingLeft: theme.spacing(2),
+  },
   listItemTitle: {
     paddingLeft: theme.spacing(2),
     color: 'blue',
@@ -131,24 +132,19 @@ export default function SearchResults(props) {
       <Backdrop className={classes.backdrop} open={showBackdrop}>
         <CircularProgress color="inherit" />
       </Backdrop>
-
-      <Dialog
-        onClose={handleClose}
-        open={!showBackdrop}
-        onClick={handleSelection}
-      >
-        <DialogTitle id="simple-dialog-title">{`Results for "${term}"`}</DialogTitle>
-        <List>{listItems}</List>
-        {resultList.length > 0 && (
-          <>
-            <Pagination
-              count={totalNoOfPage}
-              page={page}
-              onChange={handleChange}
-            />
-          </>
-        )}
-      </Dialog>
+      <Typography className={classes.listHeader} variant="h5" align="justify">
+        {`Results for "${term}"`}
+      </Typography>
+      <List>{listItems}</List>
+      {resultList.length > 0 && (
+        <>
+          <Pagination
+            count={totalNoOfPage}
+            page={page}
+            onChange={handleChange}
+          />
+        </>
+      )}
     </>
   );
 }

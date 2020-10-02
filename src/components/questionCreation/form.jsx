@@ -20,9 +20,12 @@ import IconButton from '@material-ui/core/IconButton';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Backdrop from '@material-ui/core/Backdrop';
+import Drawer from '@material-ui/core/Drawer';
 import SearchResults from './searchResults.jsx';
 import AnswerList from './answersList.jsx';
 import { getResults } from '../../services/apiServices';
+
+const drawerWidth = 240;
 
 const materialUseStyles = makeStyles(theme => ({
   root: { direction: 'row', marginLeft: theme.spacing(1) },
@@ -88,6 +91,10 @@ const materialUseStyles = makeStyles(theme => ({
   answerTypeMenu: {
     marginRight: theme.spacing(2),
   },
+  drawer: {
+    width: drawerWidth,
+    flexShrink: 0,
+  },
 }));
 
 export default function Form(props) {
@@ -117,6 +124,17 @@ export default function Form(props) {
     nextId,
     noMore,
     showConfidence,
+  };
+
+  const toggleDrawer = event => {
+    if (
+      event.type === 'keydown' &&
+      (event.key === 'Tab' || event.key === 'Shift')
+    ) {
+      return;
+    }
+
+    setShowSearchResults(false);
   };
 
   const handleSearch = async () => {
@@ -222,7 +240,7 @@ export default function Form(props) {
   };
 
   return (
-    <div className={classes.root}>
+    <div className={classes.root} onClick={toggleDrawer}>
       <div>
         <FormControl className={classes.formControl}>
           <InputLabel id="questionType">Question type</InputLabel>
@@ -379,14 +397,22 @@ export default function Form(props) {
       <Backdrop className={classes.backdrop} open={showBackdrop}>
         <CircularProgress color="inherit" />
       </Backdrop>
-      {showSearchResults > 0 && (
+      <Drawer
+        className={classes.drawer}
+        variant="temporary"
+        anchor="right"
+        open={showSearchResults}
+        classes={{
+          paper: classes.drawerPaper,
+        }}
+      >
         <SearchResults
           results={searchResults}
           handleSelection={handleTermSelection}
           handleClose={() => setShowSearchResults(false)}
           term={searchTerm}
         />
-      )}
+      </Drawer>
     </div>
   );
 }
