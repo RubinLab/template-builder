@@ -16,17 +16,28 @@ const useStyles = makeStyles(theme => ({
   listHeader: {
     paddingLeft: theme.spacing(2),
   },
-  listItemTitle: {
-    paddingLeft: theme.spacing(2),
-    color: 'blue',
-    fontSize: '16px',
+  listItemCheckbox: {
+    padding: theme.spacing(0),
+    fontSize: '10px',
   },
-  listItemUrl: {
-    paddingLeft: theme.spacing(2),
+  listItemTitle: {
+    whiteSpace: 'normal',
+    wordWrap: 'break-word',
+    color: 'blue',
+    fontSize: '14px',
+    maxWidth: 380,
+    textAlign: 'left',
+  },
+  listItemExplanation: {
+    padding: theme.spacing(0),
     color: 'gray',
-    fontSize: '12px',
+    fontSize: '10px',
+    whiteSpace: 'normal',
+    wordWrap: 'break-word',
+    maxWidth: 380,
   },
   listItemTextContainer: {
+    paddingLeft: theme.spacing(1),
     flexDirection: 'row',
   },
   listItemContainer: {
@@ -47,6 +58,8 @@ export default function SearchResults(props) {
   const pageSize = 25;
   const totalNoOfPage = resultList.length / pageSize;
 
+  console.log('results', results);
+
   const populateList = (titlesObj, pageNo) => {
     const nodeList = [];
     for (let k = 0; k < titlesObj[pageNo].length; k += 1) {
@@ -55,14 +68,15 @@ export default function SearchResults(props) {
         const pipeIndex = titlesObj[pageNo][k].title.indexOf('|');
         linkTitle = titlesObj[pageNo][k].title.substring(0, pipeIndex).trim();
       }
-
       const idIndex = (page - 1) * pageSize + k;
+      const { definition } = results.collection[idIndex];
       nodeList.push(
         <ListItem
           key={`${titlesObj[pageNo][k].url}-${k}`}
           className={classes.listItemContainer}
         >
           <Checkbox
+            className={classes.listItemCheckbox}
             onClick={() => {
               window.setTimeout(() => {
                 handleSelection(k);
@@ -81,16 +95,17 @@ export default function SearchResults(props) {
               {linkTitle}
             </Link>
             <ListItemText
+              className={classes.listItemExplanation}
               secondary={
                 <>
-                  <Typography className={classes.listItemUrl} component="span">
-                    {results.collection[idIndex]['@id']}
+                  <Typography component="span">
+                    {definition ? `${definition[0].substring(0, 150)}...` : ''}
                   </Typography>
                 </>
               }
             />
           </div>
-        </ListItem>
+        </ListItem>,
       );
     }
     setListItems(nodeList);

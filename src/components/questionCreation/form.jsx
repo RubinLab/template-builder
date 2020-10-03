@@ -25,8 +25,6 @@ import SearchResults from './searchResults.jsx';
 import AnswerList from './answersList.jsx';
 import { getResults } from '../../services/apiServices';
 
-const drawerWidth = 240;
-
 const materialUseStyles = makeStyles(theme => ({
   root: { direction: 'row', marginLeft: theme.spacing(1) },
   formControl: {
@@ -92,7 +90,6 @@ const materialUseStyles = makeStyles(theme => ({
     marginRight: theme.spacing(2),
   },
   drawer: {
-    width: drawerWidth,
     flexShrink: 0,
   },
 }));
@@ -126,17 +123,6 @@ export default function Form(props) {
     showConfidence,
   };
 
-  const toggleDrawer = event => {
-    if (
-      event.type === 'keydown' &&
-      (event.key === 'Tab' || event.key === 'Shift')
-    ) {
-      return;
-    }
-
-    setShowSearchResults(false);
-  };
-
   const handleSearch = async () => {
     let searchedTerms = JSON.parse(sessionStorage.getItem('searchedTerms'));
     const trimmedSearchTerm = searchTerm.trim();
@@ -166,21 +152,19 @@ export default function Form(props) {
     else setSearchTerm(option);
   };
 
-  const handleKeyboardEvent = e => {
-    const termNotEmpty =
-      searchTerm && searchTerm.length > 0 && searchTerm.trim().length > 0;
-    if (e.key === 'Enter' && termNotEmpty) {
-      handleSearch();
-    }
-  };
-
   useEffect(() => {
+    const handleKeyboardEvent = e => {
+      const termNotEmpty =
+        searchTerm && searchTerm.length > 0 && searchTerm.trim().length > 0;
+      if (e.key === 'Enter' && termNotEmpty) {
+        handleSearch();
+      }
+    };
     window.addEventListener('keydown', handleKeyboardEvent);
-
     return () => {
       window.removeEventListener('keydown', handleKeyboardEvent);
     };
-  }, [handleKeyboardEvent]);
+  });
 
   const handleTermSelection = termIndex => {
     let newSelected;
@@ -240,7 +224,7 @@ export default function Form(props) {
   };
 
   return (
-    <div className={classes.root} onClick={toggleDrawer}>
+    <div className={classes.root}>
       <div>
         <FormControl className={classes.formControl}>
           <InputLabel id="questionType">Question type</InputLabel>
