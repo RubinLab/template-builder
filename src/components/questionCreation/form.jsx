@@ -41,6 +41,7 @@ const materialUseStyles = makeStyles(theme => ({
   },
   icon: {
     marginRight: theme.spacing(1),
+    verticalAlign: 'middle',
   },
   textField: {
     marginTop: theme.spacing(3),

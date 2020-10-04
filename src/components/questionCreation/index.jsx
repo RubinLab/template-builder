@@ -83,13 +83,16 @@ export default function QuestionCreation(props) {
             {`Fill the form and save to add a new question to the template ${templateName}`}
           </DialogContentText>
           <Form postQuestion={setQuestion} />
-          <Button
-            variant="outlined"
-            className={classes.button}
-            onClick={() => setShowDetailCreation(true)}
-          >
-            Add details
-          </Button>
+
+          {question.questionType === 'observation' && (
+            <Button
+              variant="outlined"
+              className={classes.button}
+              onClick={() => setShowDetailCreation(true)}
+            >
+              Add Observation Characteristics
+            </Button>
+          )}
 
           {detailsArr.length > 0 && <QuestionList questions={detailsArr} />}
           {showDetailCreation && (
