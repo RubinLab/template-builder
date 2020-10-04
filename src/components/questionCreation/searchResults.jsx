@@ -17,8 +17,7 @@ const useStyles = makeStyles(theme => ({
     paddingLeft: theme.spacing(2),
   },
   listItemCheckbox: {
-    padding: theme.spacing(0),
-    fontSize: '10px',
+    padding: theme.spacing(0.5),
   },
   listItemTitle: {
     whiteSpace: 'normal',
@@ -29,8 +28,8 @@ const useStyles = makeStyles(theme => ({
     textAlign: 'left',
   },
   listItemExplanation: {
-    padding: theme.spacing(0),
-    color: 'gray',
+    paddingLeft: theme.spacing(2),
+    color: '#575656',
     fontSize: '10px',
     whiteSpace: 'normal',
     wordWrap: 'break-word',
@@ -38,12 +37,15 @@ const useStyles = makeStyles(theme => ({
   },
   listItemTextContainer: {
     paddingLeft: theme.spacing(1),
-    flexDirection: 'row',
+    width: '100%',
   },
   listItemContainer: {
     '&:hover': {
       background: '#ededed',
     },
+    paddingLeft: theme.spacing(0),
+    display: 'flex',
+    flexDirection: 'column',
   },
 }));
 
@@ -75,15 +77,16 @@ export default function SearchResults(props) {
           key={`${titlesObj[pageNo][k].url}-${k}`}
           className={classes.listItemContainer}
         >
-          <Checkbox
-            className={classes.listItemCheckbox}
-            onClick={() => {
-              window.setTimeout(() => {
-                handleSelection(k);
-              }, 250);
-            }}
-          />
           <div className={classes.listItemTextContainer}>
+            <Checkbox
+              size="small"
+              className={classes.listItemCheckbox}
+              onClick={() => {
+                window.setTimeout(() => {
+                  handleSelection(k);
+                }, 250);
+              }}
+            />
             <Link
               component="button"
               variant="body2"
@@ -94,17 +97,17 @@ export default function SearchResults(props) {
             >
               {linkTitle}
             </Link>
-            <ListItemText
-              className={classes.listItemExplanation}
-              secondary={
-                <>
-                  <Typography component="span">
-                    {definition ? `${definition[0].substring(0, 150)}...` : ''}
-                  </Typography>
-                </>
-              }
-            />
           </div>
+          <ListItemText
+            className={classes.listItemExplanation}
+            secondary={
+              <>
+                <Typography component="span">
+                  {definition ? `${definition[0].substring(0, 150)}...` : ''}
+                </Typography>
+              </>
+            }
+          />
         </ListItem>,
       );
     }
