@@ -7,7 +7,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import Form from './form.jsx';
+import QuestionForm from './QuestionForm.jsx';
 import DetailCreation from './detailsCreation.jsx';
 import QuestionList from '../common/questionList.jsx';
 import createID from '../../utils/helper';
@@ -82,7 +82,7 @@ export default function QuestionCreation(props) {
           <DialogContentText>
             {`Fill the form and save to add a new question to the template ${templateName}`}
           </DialogContentText>
-          <Form postQuestion={setQuestion} />
+          <QuestionForm postQuestion={setQuestion} />
 
           {question.questionType === 'observation' && (
             <Button

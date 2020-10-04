@@ -95,9 +95,9 @@ const materialUseStyles = makeStyles(theme => ({
   },
 }));
 
-export default function Form(props) {
+const QuestionForm = props => {
   const classes = materialUseStyles();
-  const { postQuestion } = props;
+  const { postQuestion, characteristic } = props;
   const [searchResults, setSearchResults] = useState({});
   const [question, setQuestion] = useState('');
   const [questionType, setQuestionType] = useState('');
@@ -226,30 +226,32 @@ export default function Form(props) {
 
   return (
     <div className={classes.root}>
-      <div>
-        <FormControl className={classes.formControl}>
-          <InputLabel id="questionType">Question type</InputLabel>
-          <Select
-            labelId="questionType"
-            id="questionType-controlled-open-select"
-            value={questionType}
-            onChange={handleQuestionType}
-          >
-            <MenuItem value={'anatomic'}>
-              <Accessibility className={classes.icon} />
-              Anatomic Location
-            </MenuItem>
-            <MenuItem value={'observation'}>
-              <Visibility className={classes.icon} />
-              Imaging Observation
-            </MenuItem>
-            <MenuItem value={'history'}>
-              <LocalHospital className={classes.icon} />
-              {`Clinical hist. & diagnosis`}
-            </MenuItem>
-          </Select>
-        </FormControl>
-      </div>
+      {!characteristic && (
+        <div>
+          <FormControl className={classes.formControl}>
+            <InputLabel id="questionType">Question type</InputLabel>
+            <Select
+              labelId="questionType"
+              id="questionType-controlled-open-select"
+              value={questionType}
+              onChange={handleQuestionType}
+            >
+              <MenuItem value={'anatomic'}>
+                <Accessibility className={classes.icon} />
+                Anatomic Location
+              </MenuItem>
+              <MenuItem value={'observation'}>
+                <Visibility className={classes.icon} />
+                Imaging Observation
+              </MenuItem>
+              <MenuItem value={'history'}>
+                <LocalHospital className={classes.icon} />
+                {`Clinical hist. & diagnosis`}
+              </MenuItem>
+            </Select>
+          </FormControl>
+        </div>
+      )}
       <div>
         <TextField
           className={classes.textField}
@@ -400,8 +402,10 @@ export default function Form(props) {
       </Drawer>
     </div>
   );
-}
+};
 
-Form.propTypes = {
+export default QuestionForm;
+
+QuestionForm.propTypes = {
   postQuestion: PropTypes.func,
 };
