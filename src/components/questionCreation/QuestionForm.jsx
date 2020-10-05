@@ -175,21 +175,15 @@ const QuestionForm = props => {
     };
   });
 
-  const handleTermSelection = termIndex => {
-    let newSelected;
-    if (typeof termIndex === 'number') {
-      newSelected = { ...selectedTerms };
-      if (selectedTerms) {
-        newSelected[searchTerm] = searchResults[termIndex];
-        postQuestion({ ...formInput, selectedTerms: newSelected });
-      } else {
-        newSelected = { [searchTerm]: searchResults[termIndex] };
-        postQuestion({ ...formInput, selectedTerms: newSelected });
-      }
-      setTermSelection(newSelected);
-      setShowSearchResults(false);
-      // setSearchResults([]);
-    }
+  const handleTermSelection = (termIndex, title) => {
+    const newSelected = { ...selectedTerms };
+    newSelected[searchTerm] = {
+      obj: searchResults.collection[termIndex],
+      title,
+    };
+    postQuestion({ ...formInput, selectedTerms: newSelected });
+    setTermSelection(newSelected);
+    setShowSearchResults(false);
   };
 
   const assignDefaultVals = (min, max, disabledBool) => {
@@ -323,8 +317,7 @@ const QuestionForm = props => {
       {selectedTerms && (
         <div>
           <AnswerList
-            answerType={answerType}
-            answers={Object.keys(selectedTerms)}
+            answers={selectedTerms}
             handleDelete={handleDeleteSelectedTerm}
           />
         </div>

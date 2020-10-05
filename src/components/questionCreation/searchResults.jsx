@@ -70,7 +70,7 @@ const SearchResults = props => {
               className={classes.listItemCheckbox}
               onClick={() => {
                 window.setTimeout(() => {
-                  handleSelection(k);
+                  handleSelection(k, ontologyMap[acronym]);
                 }, 250);
               }}
             />
@@ -95,7 +95,7 @@ const SearchResults = props => {
               </>
             }
           />
-        </ListItem>,
+        </ListItem>
       );
     }
     setListItems(nodeList);

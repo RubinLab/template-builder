@@ -8,13 +8,12 @@ import ShortText from '@material-ui/icons/ShortText';
 import Delete from '@material-ui/icons/Delete';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
 import IconButton from '@material-ui/core/IconButton';
 
 const useStyles = makeStyles(theme => ({
   listItem: {
     direction: 'column',
-    width: 400,
+    width: 'fit-content',
     borderBottom: '1px solid #E3E0D8',
     paddingTop: theme.spacing(0),
     paddingBottom: theme.spacing(0),
@@ -22,35 +21,34 @@ const useStyles = makeStyles(theme => ({
       width: 300,
     },
   },
-  listItemText: { margin: theme.spacing(1), witdh: '-webkit-fill-available' },
+  listItemTerm: { witdh: '-webkit-fill-available', fontSize: '1.2rem' },
+  ontologyTitle: {
+    witdh: '-webkit-fill-available',
+    fontSize: '0.9rem',
+    margin: '0rem 1rem 0rem 1rem',
+    color: '#8c1717',
+  },
 }));
 
 export default function AnswersList(props) {
   const classes = useStyles();
-  const { handleDelete, answerType, answers } = props;
-  let answerTypeIcon;
-  switch (answerType) {
-    case 'single':
-      answerTypeIcon = <RadioButtonChecked />;
-      break;
-    case 'multi':
-      answerTypeIcon = <CheckBox />;
-      break;
-    case 'scale':
-      answerTypeIcon = <LinearScale />;
-      break;
-    case 'text':
-      answerTypeIcon = <ShortText />;
-      break;
-    default:
-      answerTypeIcon = null;
-  }
+  const { handleDelete, answers } = props;
+
+  const terms = Object.keys(answers);
+  const termValues = Object.values(answers);
+
   return (
     <List>
-      {answers.map((el, i) => (
+      {terms.map((el, i) => (
         <ListItem className={classes.listItem} key={`${el}-${i}`}>
-          {answerTypeIcon}
-          <ListItemText primary={el} className={classes.listItemText} />
+          <div className={classes.itemTextGrp}>
+            <p>
+              <span className={classes.listItemTerm}>{el}</span>
+              <span className={classes.ontologyTitle}>
+                {`(${termValues[i].title})`}
+              </span>
+            </p>
+          </div>
           <IconButton onClick={() => handleDelete(el)}>
             <Delete />
           </IconButton>
@@ -61,7 +59,6 @@ export default function AnswersList(props) {
 }
 
 AnswersList.propTypes = {
-  answerType: PropTypes.string,
   handleDelete: PropTypes.func,
-  answers: PropTypes.array,
+  answers: PropTypes.object,
 };
