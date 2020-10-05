@@ -10,7 +10,6 @@ import Typography from '@material-ui/core/Typography';
 import Checkbox from '@material-ui/core/Checkbox';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Backdrop from '@material-ui/core/Backdrop';
-import { getTitle } from '../../services/apiServices';
 
 const useStyles = makeStyles(theme => ({
   listHeader: {
@@ -49,34 +48,22 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export default function SearchResults(props) {
+const SearchResults = props => {
   const classes = useStyles();
-  const { handleClose, results, handleSelection, term } = props;
+  const { results, handleSelection, term, handleNewPage } = props;
   const [page, setPage] = useState(1);
-  const [title, setTitle] = useState({ 1: [] });
   const [listItems, setListItems] = useState([]);
-  const [showBackdrop, setShowBackdrop] = useState(true);
+  const [showBackdrop, setShowBackdrop] = useState(false);
   const resultList = results.collection || [];
-  const pageSize = 25;
-  const totalNoOfPage = resultList.length / pageSize;
+  const ontologyMap = JSON.parse(sessionStorage.getItem('ontologyMap'));
 
-  console.log('results', results);
-
-  const populateList = (titlesObj, pageNo) => {
+  const populateList = () => {
     const nodeList = [];
-    for (let k = 0; k < titlesObj[pageNo].length; k += 1) {
-      let linkTitle = `Result for ${term}`;
-      if (titlesObj[pageNo][k].title) {
-        const pipeIndex = titlesObj[pageNo][k].title.indexOf('|');
-        linkTitle = titlesObj[pageNo][k].title.substring(0, pipeIndex).trim();
-      }
-      const idIndex = (page - 1) * pageSize + k;
-      const { definition } = results.collection[idIndex];
+    for (let k = 0; k < results.collection.length; k += 1) {
+      const acronym = results.collection[k].links.ontology.split('/').pop();
+      const { definition } = results.collection[k];
       nodeList.push(
-        <ListItem
-          key={`${titlesObj[pageNo][k].url}-${k}`}
-          className={classes.listItemContainer}
-        >
+        <ListItem key={`result${k}`} className={classes.listItemContainer}>
           <div className={classes.listItemTextContainer}>
             <Checkbox
               size="small"
@@ -92,10 +79,10 @@ export default function SearchResults(props) {
               variant="body2"
               className={classes.listItemTitle}
               onClick={() => {
-                window.open(titlesObj[pageNo][k].url, '_blank', '');
+                window.open(results.collection[k].links.ui, '_blank', '');
               }}
             >
-              {linkTitle}
+              {`${ontologyMap[acronym]}`}
             </Link>
           </div>
           <ListItemText
@@ -112,52 +99,39 @@ export default function SearchResults(props) {
       );
     }
     setListItems(nodeList);
-  };
-
-  const handleGetTitle = pageNo => {
-    const promises = [];
-    const index = (pageNo - 1) * pageSize;
-    let limit = index + pageSize;
-    limit = limit > resultList.length ? resultList.length : limit;
-    for (let i = index; i < limit; i += 1) {
-      promises.push(getTitle(resultList[i].links.ui));
-    }
-    Promise.all(promises)
-      .then(res => {
-        const currentTitle = { ...title };
-        currentTitle[pageNo] = res;
-        setTitle(currentTitle);
-        populateList(currentTitle, pageNo);
-        setShowBackdrop(false);
-      })
-      // eslint-disable-next-line no-console
-      .catch(err => console.error(err));
+    setShowBackdrop(false);
+    const drawer = document.getElementById('drawer-header');
+    drawer.scrollIntoView();
   };
 
   const handleChange = (e, pageChanged) => {
+    setShowBackdrop(true);
     setPage(pageChanged);
-    if (!title[pageChanged]) {
-      handleGetTitle(pageChanged);
-    }
+    handleNewPage(pageChanged);
   };
 
   useEffect(() => {
-    handleGetTitle(page);
-  }, [page]);
+    populateList();
+  }, [results]);
 
   return (
     <>
       <Backdrop className={classes.backdrop} open={showBackdrop}>
         <CircularProgress color="inherit" />
       </Backdrop>
-      <Typography className={classes.listHeader} variant="h5" align="justify">
+      <Typography
+        className={classes.listHeader}
+        id="drawer-header"
+        variant="h5"
+        align="justify"
+      >
         {`Results for "${term}"`}
       </Typography>
       <List>{listItems}</List>
       {resultList.length > 0 && (
         <>
           <Pagination
-            count={totalNoOfPage}
+            count={results.pageCount}
             page={page}
             onChange={handleChange}
           />
@@ -165,11 +139,14 @@ export default function SearchResults(props) {
       )}
     </>
   );
-}
+};
+
+export default SearchResults;
 
 SearchResults.propTypes = {
   handleClose: PropTypes.func,
   handleSelection: PropTypes.func,
+  handleNewPage: PropTypes.func,
   results: PropTypes.object,
   term: PropTypes.string,
 };

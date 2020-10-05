@@ -16,6 +16,7 @@ import TemplatePreview from './templatePreview.jsx';
 import template1 from '../../utils/recist.1.json';
 import template2 from '../../utils/recist.2.json';
 import createID from '../../utils/helper';
+import { getOntologyData } from '../../services/apiServices';
 
 const materialUseStyles = makeStyles(theme => ({
   root: {
@@ -101,6 +102,23 @@ export default function HomePage(props) {
   useEffect(() => {
     handleQuestionID();
   }, [props.showDialog]);
+
+  const getOntologyMap = () => {
+    getOntologyData()
+      .then(res => {
+        const map = {};
+        const { data } = res;
+        data.forEach(el => {
+          map[el.acronym] = `${el.acronym} - ${el.name}`;
+        });
+        sessionStorage.setItem('ontologyMap', JSON.stringify(map));
+      })
+      .catch(err => console.error(err));
+  };
+
+  useEffect(() => {
+    getOntologyMap();
+  }, []);
 
   const handleEdit = () => {};
   const handleDelete = question => {

@@ -21,7 +21,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import Backdrop from '@material-ui/core/Backdrop';
 import Drawer from '@material-ui/core/Drawer';
-import SearchResults from './searchResults.jsx';
+import SearchResults from './SearchResults.jsx';
 import AnswerList from './answersList.jsx';
 import { getResults } from '../../services/apiServices';
 
@@ -90,7 +90,7 @@ const materialUseStyles = makeStyles(theme => ({
   answerTypeMenu: {
     marginRight: theme.spacing(2),
   },
-  drawer: {
+  resultsDrawer: {
     flexShrink: 0,
   },
 }));
@@ -151,6 +151,14 @@ const QuestionForm = props => {
   const handleSearchInput = (e, option) => {
     if (e) setSearchTerm(e.target.value);
     else setSearchTerm(option);
+  };
+
+  const getNewSearchResult = pageNo => {
+    getResults(searchTerm, pageNo)
+      .then(res => {
+        setSearchResults(res.data);
+      })
+      .catch(err => console.error(err));
   };
 
   useEffect(() => {
@@ -385,7 +393,7 @@ const QuestionForm = props => {
         <CircularProgress color="inherit" />
       </Backdrop>
       <Drawer
-        className={classes.drawer}
+        className={classes.resultsDrawer}
         variant="temporary"
         anchor="right"
         open={showSearchResults}
@@ -398,6 +406,7 @@ const QuestionForm = props => {
           handleSelection={handleTermSelection}
           handleClose={() => setShowSearchResults(false)}
           term={searchTerm}
+          handleNewPage={getNewSearchResult}
         />
       </Drawer>
     </div>
@@ -408,4 +417,5 @@ export default QuestionForm;
 
 QuestionForm.propTypes = {
   postQuestion: PropTypes.func,
+  characteristic: PropTypes.bool,
 };
