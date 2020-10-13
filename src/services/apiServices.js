@@ -3,14 +3,10 @@ import config from './keys';
 
 const REST_URL = 'http://data.bioontology.org';
 
-const getResults = (keyword, page, ontologiesList) => {
+const getResults = (keyword, ontologiesList, page) => {
   let params = `/search?q=${keyword}`;
-  if (ontologiesList) {
-    const ontologies =
-      ontologiesList && ontologiesList.length > 1
-        ? ontologiesList.join(',')
-        : ontologiesList[0];
-    params = `${params}&ontologies=${ontologies}`;
+  if (ontologiesList && ontologiesList.length > 0) {
+    params = `${params}&ontologies=${ontologiesList.join(',')}`;
   }
   if (page) params = `${params}&page=${page}`;
   return axios.get(`${REST_URL}${params}&pagesize=150`, {

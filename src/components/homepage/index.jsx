@@ -109,7 +109,8 @@ export default function HomePage(props) {
         const map = {};
         const { data } = res;
         data.forEach(el => {
-          map[el.acronym] = `${el.acronym} - ${el.name}`;
+          const { acronym, name } = el;
+          map[acronym] = { acronym, name };
         });
         sessionStorage.setItem('ontologyMap', JSON.stringify(map));
       })

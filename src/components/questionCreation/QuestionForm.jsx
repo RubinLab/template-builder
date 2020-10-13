@@ -112,6 +112,8 @@ const QuestionForm = props => {
   const [showConfidence, setshowConfidence] = useState(null);
   const [answerType, setAnswerType] = useState('');
   const [showBackdrop, setShowBackdrop] = useState(false);
+  const [ontologyLibs, setOntologyLibs] = useState(null);
+  const ontologyMap = JSON.parse(sessionStorage.getItem('ontologyMap'));
 
   const formInput = {
     questionType,
@@ -134,7 +136,7 @@ const QuestionForm = props => {
     }
     sessionStorage.setItem('searchedTerms', JSON.stringify(searchedTerms));
     setShowBackdrop(true);
-    getResults(trimmedSearchTerm)
+    getResults(trimmedSearchTerm, ontologyLibs)
       .then(res => {
         setSearchResults(res.data);
         setShowSearchResults(true);
@@ -154,7 +156,7 @@ const QuestionForm = props => {
   };
 
   const getNewSearchResult = pageNo => {
-    getResults(searchTerm, pageNo)
+    getResults(searchTerm, ontologyLibs, pageNo)
       .then(res => {
         setSearchResults(res.data);
       })
@@ -184,6 +186,7 @@ const QuestionForm = props => {
     postQuestion({ ...formInput, selectedTerms: newSelected });
     setTermSelection(newSelected);
     setShowSearchResults(false);
+    setOntologyLibs(null);
   };
 
   const assignDefaultVals = (min, max, disabledBool) => {
@@ -226,6 +229,14 @@ const QuestionForm = props => {
     setTermSelection(currentSelectedTerms);
   };
 
+  const handleOntologyInput = (e, options) => {
+    if (Array.isArray(options)) {
+      if (options.length === 0) setOntologyLibs(options);
+      else {
+        setOntologyLibs(options.map(el => el.acronym));
+      }
+    }
+  };
   return (
     <div className={classes.root}>
       {!characteristic && (
@@ -292,9 +303,7 @@ const QuestionForm = props => {
         </FormControl>
         <div className={classes.answerGroup}>
           <Autocomplete
-            id="combo-box-demo"
             options={JSON.parse(sessionStorage.getItem('searchedTerms')) || []}
-            // getOptionLabel={option => option.title}
             value={searchTerm}
             onChange={(_, data) => handleSearchInput(null, data)}
             onInputChange={handleSearchInput}
@@ -304,11 +313,34 @@ const QuestionForm = props => {
                 {...params}
                 className={classes.searchInput}
                 placeholder="Search terms"
-                // onChange={handleSearchInput}
               />
             )}
           />
-
+          <Autocomplete
+            multiple
+            size="small"
+            options={Object.values(ontologyMap) || []}
+            renderOption={option => (
+              <React.Fragment>
+                {option.name} ({option.acronym})
+              </React.Fragment>
+            )}
+            getOptionLabel={option => option.acronym || ''}
+            onChange={(_, data) => handleOntologyInput(null, data)}
+            onInputChange={handleOntologyInput}
+            style={{ width: 300 }}
+            renderInput={params => (
+              <TextField
+                {...params}
+                className={classes.searchInput}
+                placeholder={
+                  !ontologyLibs || ontologyLibs.length === 0
+                    ? 'Choose Ontology'
+                    : ''
+                }
+              />
+            )}
+          />
           <IconButton className={classes.searchButton} onClick={handleSearch}>
             <Search />
           </IconButton>
