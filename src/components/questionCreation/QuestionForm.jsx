@@ -135,14 +135,17 @@ const QuestionForm = props => {
       searchedTerms = [trimmedSearchTerm];
     }
     sessionStorage.setItem('searchedTerms', JSON.stringify(searchedTerms));
+    const filteredOntology = ontologyLibs.map(el => el.acronym);
     setShowBackdrop(true);
-    getResults(trimmedSearchTerm, ontologyLibs)
-      .then(res => {
-        setSearchResults(res.data);
-        setShowSearchResults(true);
-        setShowBackdrop(false);
-      })
-      .catch(err => console.error(err));
+    if (trimmedSearchTerm) {
+      getResults(trimmedSearchTerm, filteredOntology)
+        .then(res => {
+          setSearchResults(res.data);
+          setShowSearchResults(true);
+          setShowBackdrop(false);
+        })
+        .catch(err => console.error(err));
+    }
   };
 
   const handleQuestionType = async e => {
@@ -186,7 +189,8 @@ const QuestionForm = props => {
     postQuestion({ ...formInput, selectedTerms: newSelected });
     setTermSelection(newSelected);
     setShowSearchResults(false);
-    setOntologyLibs(null);
+    setOntologyLibs([]);
+    setSearchTerm('');
   };
 
   const assignDefaultVals = (min, max, disabledBool) => {
@@ -233,7 +237,8 @@ const QuestionForm = props => {
     if (Array.isArray(options)) {
       if (options.length === 0) setOntologyLibs(options);
       else {
-        setOntologyLibs(options.map(el => el.acronym));
+        // setOntologyLibs(options.map(el => el.acronym));
+        setOntologyLibs(options);
       }
     }
   };
@@ -329,6 +334,7 @@ const QuestionForm = props => {
             onChange={(_, data) => handleOntologyInput(null, data)}
             onInputChange={handleOntologyInput}
             style={{ width: 300 }}
+            value={ontologyLibs || []}
             renderInput={params => (
               <TextField
                 {...params}

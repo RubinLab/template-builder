@@ -1,10 +1,6 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
-import CheckBox from '@material-ui/icons/CheckBox';
-import RadioButtonChecked from '@material-ui/icons/RadioButtonChecked';
-import LinearScale from '@material-ui/icons/LinearScale';
-import ShortText from '@material-ui/icons/ShortText';
 import Delete from '@material-ui/icons/Delete';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -17,9 +13,9 @@ const useStyles = makeStyles(theme => ({
     borderBottom: '1px solid #E3E0D8',
     paddingTop: theme.spacing(0),
     paddingBottom: theme.spacing(0),
-    [theme.breakpoints.down('sm')]: {
-      width: 300,
-    },
+    // [theme.breakpoints.down('sm')]: {
+    //   width: 300,
+    // },
   },
   listItemTerm: { witdh: '-webkit-fill-available', fontSize: '1.2rem' },
   ontologyTitle: {
@@ -45,7 +41,7 @@ export default function AnswersList(props) {
             <p>
               <span className={classes.listItemTerm}>{el}</span>
               <span className={classes.ontologyTitle}>
-                {`(${termValues[i].title})`}
+                {`(${termValues[i].title.acronym} - ${termValues[i].title.name})`}
               </span>
             </p>
           </div>
