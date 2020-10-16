@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
+import { DragDropContext } from 'react-beautiful-dnd';
 import TextField from '@material-ui/core/TextField';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -10,7 +11,7 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import QuestionList from '../common/questionList.jsx';
+import QuestionList from '../common/QuestionList.jsx';
 import QuestionCreation from '../questionCreation/index.jsx';
 import TemplatePreview from './templatePreview.jsx';
 import template1 from '../../utils/recist.1.json';
@@ -77,14 +78,13 @@ export default function HomePage(props) {
   const classes = materialUseStyles();
   const [templateName, setTemplateName] = useState('');
   const [templateLevel, setTemplateLevel] = useState('');
-  const [questions, setQuestions] = useState({});
+  const [questions, setQuestions] = useState([]);
   const [questionID, setquestionID] = useState('');
 
   const { handleAddQuestion, showDialog } = props;
 
   const handleSaveQuestion = questionInput => {
-    const newQuestions = { ...questions, ...questionInput };
-    setQuestions(newQuestions);
+    setQuestions(questions.concat(questionInput));
   };
   const handleChangeTemplateName = e => {
     setTemplateName(e.target.value);
@@ -122,6 +122,7 @@ export default function HomePage(props) {
   }, []);
 
   const handleEdit = () => {};
+
   const handleDelete = question => {
     const updatedQuestions = { ...questions };
     const details = [];

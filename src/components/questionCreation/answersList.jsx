@@ -24,28 +24,31 @@ const useStyles = makeStyles(theme => ({
     margin: '0rem 1rem 0rem 1rem',
     color: '#8c1717',
   },
+  listItemIcon: {
+    padding: theme.spacing(0.5),
+  },
 }));
 
 export default function AnswersList(props) {
   const classes = useStyles();
   const { handleDelete, answers } = props;
 
-  const terms = Object.keys(answers);
-  const termValues = Object.values(answers);
-
   return (
     <List>
-      {terms.map((el, i) => (
+      {answers.map((el, i) => (
         <ListItem className={classes.listItem} key={`${el}-${i}`}>
           <div className={classes.itemTextGrp}>
             <p>
-              <span className={classes.listItemTerm}>{el}</span>
+              <span className={classes.listItemTerm}>{el.obj.prefLabel}</span>
               <span className={classes.ontologyTitle}>
-                {`(${termValues[i].title.acronym} - ${termValues[i].title.name})`}
+                {`(${el.title.acronym} - ${el.title.name})`}
               </span>
             </p>
           </div>
-          <IconButton onClick={() => handleDelete(el)}>
+          <IconButton
+            onClick={() => handleDelete(el)}
+            className={classes.listItemIcon}
+          >
             <Delete />
           </IconButton>
         </ListItem>
@@ -56,5 +59,5 @@ export default function AnswersList(props) {
 
 AnswersList.propTypes = {
   handleDelete: PropTypes.func,
-  answers: PropTypes.object,
+  answers: PropTypes.array,
 };

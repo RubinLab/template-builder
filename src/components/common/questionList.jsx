@@ -1,49 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
-import Delete from '@material-ui/icons/Delete';
-import EditIcon from '@material-ui/icons/Edit';
-import InsertLinkIcon from '@material-ui/icons/InsertLink';
-import ExpandLess from '@material-ui/icons/ExpandLess';
-import ExpandMore from '@material-ui/icons/ExpandMore';
-import Remove from '@material-ui/icons/Remove';
-import Typography from '@material-ui/core/Typography';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import IconButton from '@material-ui/core/IconButton';
-import Collapse from '@material-ui/core/Collapse';
-
-import { SortableContainer, SortableElement } from 'react-sortable-hoc';
-import arrayMove from 'array-move';
-
-const useStyles = makeStyles(theme => ({
-  listItem: {
-    direction: 'column',
-    width: 400,
-    borderBottom: '1px solid #E3E0D8',
-    paddingTop: theme.spacing(0),
-    paddingBottom: theme.spacing(0),
-  },
-  listItemText: { witdh: '-webkit-fill-available' },
-  nestedListItemText: {
-    paddingLeft: theme.spacing(8),
-  },
-  listItemHeader: {
-    fontSize: '1.2rem',
-  },
-}));
+import { DragDropContext, Droppable } from 'react-beautiful-dnd';
+import Question from './Question.jsx';
 
 export default function QuestionsList(props) {
-  const classes = useStyles();
-  const { handleDelete, handleEdit, handleLink } = props;
   const [questions, setQuestions] = useState([...props.questions]);
-  const [open, setOpen] = useState([]);
-  const handleQuestionClick = index => {
-    const newOpen = [...open];
-    newOpen[index] = !open[index];
-    setOpen(newOpen);
-  };
+  const { handleDelete, handleEdit, handleLink } = props;
 
   useEffect(() => {
     const newList = [...questions];
@@ -61,83 +23,37 @@ export default function QuestionsList(props) {
     }
   }, [props.questions, questions]);
 
-  const handleReorder = ({ oldIndex, newIndex }) => {
-    const newQuestions = arrayMove(questions, oldIndex, newIndex);
-    setQuestions(newQuestions);
-  };
-
-  const SortableItem = SortableElement(({ el, sortIndex }) => {
-    const selectedTerms = el.selectedTerms ? Object.keys(el.selectedTerms) : [];
-    return (
-      <>
-        <ListItem className={classes.listItem}>
-          <IconButton onClick={() => handleQuestionClick(sortIndex)}>
-            {open[sortIndex] ? <ExpandLess /> : <ExpandMore />}
-          </IconButton>
-          <ListItemText
-            primary={
-              <>
-                <Typography className={classes.listItemHeader}>
-                  {el.question}
-                </Typography>
-              </>
-            }
-            className={classes.listItemText}
-          />
-          <IconButton onClick={() => handleEdit(el)}>
-            <EditIcon />
-          </IconButton>
-          <IconButton onClick={() => handleDelete(el)}>
-            <Delete />
-          </IconButton>
-          <IconButton onClick={() => handleLink(el)}>
-            <InsertLinkIcon />
-          </IconButton>
-        </ListItem>
-        <Collapse in={open[sortIndex]} timeout="auto" unmountOnExit>
-          <List component="div">
-            {selectedTerms.map((term, i) => {
-              return (
-                <ListItem className={classes.listItem} key={`${term}-${i}`}>
-                  <Remove className={classes.nestedListItemText} />
-                  <ListItemText primary={term} />
-                  <IconButton onClick={() => handleLink(term)}>
-                    <InsertLinkIcon />
-                  </IconButton>
-                </ListItem>
-              );
-            })}
-          </List>
-        </Collapse>
-        {/* <Divider /> */}
-      </>
-    );
-  });
-
-  const SortableList = SortableContainer(({ questionsArr }) => {
-    return (
-      <List>
-        {questionsArr.map((el, i) => {
-          return (
-            <SortableItem
-              key={`question-${i}`}
-              index={i}
-              sortIndex={i}
-              el={el}
-            />
-          );
-        })}
-      </List>
-    );
-  });
+  // const handleReorder = ({ oldIndex, newIndex }) => {};
+  // const getListStyle = isDraggingOver => ({
+  //   background: isDraggingOver ? 'lightblue' : 'lightgrey',
+  //   padding: 8,
+  //   width: 250,
+  // });
 
   return (
-    <SortableList
-      questionsArr={questions}
-      onSortEnd={handleReorder}
-      //   pressDelay={100}
-      distance={2}
-    />
+    <DragDropContext>
+      <Droppable key={1} droppableId={`${1}`}>
+        {provided => (
+          <div
+            ref={provided.innerRef}
+            // style={getListStyle(snapshot.isDraggingOver)}
+            {...provided.droppableProps}
+          >
+            {questions.map((item, index) => (
+              <Question
+                key={`${item.id}-${index}`}
+                handleDelete={handleDelete}
+                handleEdit={handleEdit}
+                handleLink={handleLink}
+                question={item}
+                index={index}
+              />
+            ))}
+            {provided.placeholder}
+          </div>
+        )}
+      </Droppable>
+    </DragDropContext>
   );
 }
 

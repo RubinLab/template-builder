@@ -9,7 +9,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import QuestionForm from './QuestionForm.jsx';
 import DetailCreation from './detailsCreation.jsx';
-import QuestionList from '../common/questionList.jsx';
+import QuestionList from '../common/QuestionList.jsx';
 import createID from '../../utils/helper';
 
 const useStyles = makeStyles(theme => ({
@@ -44,7 +44,7 @@ export default function QuestionCreation(props) {
     questionID,
   } = props;
   const [showDetailCreation, setShowDetailCreation] = useState(false);
-  const [details, setDetails] = useState({});
+  const [details, setDetails] = useState([]);
   const [question, setQuestion] = useState({});
 
   const handleSaveDetail = detail => {
@@ -52,9 +52,7 @@ export default function QuestionCreation(props) {
     const newDetail = { ...detail };
     newDetail.id = id;
     newDetail.questionID = questionID;
-    const mergedDetails = { ...details };
-    mergedDetails[id] = newDetail;
-    setDetails(mergedDetails);
+    setDetails(details.concat(newDetail));
     setShowDetailCreation(false);
   };
 
@@ -62,7 +60,7 @@ export default function QuestionCreation(props) {
     const updatedQuestion = { ...question };
     updatedQuestion.id = questionID;
     setQuestion(updatedQuestion);
-    handleSaveQuestion({ [questionID]: updatedQuestion, ...details });
+    handleSaveQuestion({ ...updatedQuestion, chracteristics: details });
     handleClose(false);
   };
 

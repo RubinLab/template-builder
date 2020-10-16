@@ -135,7 +135,10 @@ const QuestionForm = props => {
       searchedTerms = [trimmedSearchTerm];
     }
     sessionStorage.setItem('searchedTerms', JSON.stringify(searchedTerms));
-    const filteredOntology = ontologyLibs.map(el => el.acronym);
+    const filteredOntology =
+      ontologyLibs && Array.isArray(ontologyLibs)
+        ? ontologyLibs.map(el => el.acronym)
+        : [];
     setShowBackdrop(true);
     if (trimmedSearchTerm) {
       getResults(trimmedSearchTerm, filteredOntology)
@@ -181,11 +184,13 @@ const QuestionForm = props => {
   });
 
   const handleTermSelection = (termIndex, title) => {
-    const newSelected = { ...selectedTerms };
-    newSelected[searchTerm] = {
+    const newTerm = {
       obj: searchResults.collection[termIndex],
       title,
     };
+    const newSelected = selectedTerms
+      ? selectedTerms.concat([newTerm])
+      : [newTerm];
     postQuestion({ ...formInput, selectedTerms: newSelected });
     setTermSelection(newSelected);
     setShowSearchResults(false);
@@ -324,7 +329,7 @@ const QuestionForm = props => {
           <Autocomplete
             multiple
             size="small"
-            options={Object.values(ontologyMap) || []}
+            options={ontologyMap ? Object.values(ontologyMap) : []}
             renderOption={option => (
               <React.Fragment>
                 {option.name} ({option.acronym})
