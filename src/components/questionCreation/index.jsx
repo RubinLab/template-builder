@@ -60,7 +60,7 @@ export default function QuestionCreation(props) {
     const updatedQuestion = { ...question };
     updatedQuestion.id = questionID;
     setQuestion(updatedQuestion);
-    handleSaveQuestion({ ...updatedQuestion, chracteristics: details });
+    handleSaveQuestion({ ...updatedQuestion, characteristics: details });
     handleClose(false);
   };
 

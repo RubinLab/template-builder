@@ -30,8 +30,27 @@ export default function QuestionsList(props) {
   //   width: 250,
   // });
 
+  const reorder = (list, startIndex, endIndex) => {
+    const result = Array.from(list);
+    const [removed] = result.splice(startIndex, 1);
+    result.splice(endIndex, 0, removed);
+    return result;
+  };
+
+  const handleReorder = result => {
+    if (!result.destination) {
+      return;
+    }
+    const items = reorder(
+      questions,
+      result.source.index,
+      result.destination.index
+    );
+    setQuestions(items);
+  };
+
   return (
-    <DragDropContext>
+    <DragDropContext onDragEnd={handleReorder}>
       <Droppable key={1} droppableId={`${1}`}>
         {provided => (
           <div

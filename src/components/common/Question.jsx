@@ -1,11 +1,39 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import QuestionItem from './QuestionItem.jsx';
 
 export default function Question(props) {
   const { handleDelete, handleEdit, handleLink, question, index } = props;
-  const { chracteristics } = question;
+  const [characteristics, setCharacteristics] = useState([]);
+
+  useEffect(() => {
+    const char = props.question.characteristics
+      ? [...props.question.characteristics]
+      : [];
+    setCharacteristics(char);
+  }, [props.question]);
+
+  const reorder = (list, startIndex, endIndex) => {
+    const result = Array.from(list);
+    const [removed] = result.splice(startIndex, 1);
+    result.splice(endIndex, 0, removed);
+    return result;
+  };
+
+  const handleReorder = result => {
+    console.log(' -----> result', result);
+    if (!result.destination) {
+      return;
+    }
+    const items = reorder(
+      characteristics,
+      result.source.index,
+      result.destination.index
+    );
+    setCharacteristics(items);
+  };
+
   return (
     <Draggable key={question.id} draggableId={question.id} index={index}>
       {provided => (
@@ -23,19 +51,16 @@ export default function Question(props) {
             index={index}
             level={0}
           />
-          {chracteristics && chracteristics.length > 0 && (
-            <DragDropContext>
-              <Droppable
-                key={chracteristics.id}
-                droppableId={chracteristics.id}
-              >
+          {characteristics && characteristics.length > 0 && (
+            <DragDropContext onDragEnd={handleReorder}>
+              <Droppable key={characteristics.id} droppableId={question.id}>
                 {provided1 => (
                   <div
                     ref={provided1.innerRef}
                     // style={getListStyle(snapshot.isDraggingOver)}
                     {...provided1.droppableProps}
                   >
-                    {chracteristics.map((el, i) => (
+                    {characteristics.map((el, i) => (
                       <Draggable key={el.id} draggableId={el.id} index={i}>
                         {provided2 => (
                           <div
