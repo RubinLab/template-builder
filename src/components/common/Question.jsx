@@ -22,7 +22,6 @@ export default function Question(props) {
   };
 
   const handleReorder = result => {
-    console.log(' -----> result', result);
     if (!result.destination) {
       return;
     }
