@@ -10,12 +10,13 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import QuestionList from '../common/questionList.jsx';
+import QuestionList from '../common/QuestionList.jsx';
 import QuestionCreation from '../questionCreation/index.jsx';
 import TemplatePreview from './templatePreview.jsx';
 import template1 from '../../utils/recist.1.json';
 import template2 from '../../utils/recist.2.json';
 import createID from '../../utils/helper';
+import { getOntologyData } from '../../services/apiServices';
 
 const materialUseStyles = makeStyles(theme => ({
   root: {
@@ -76,14 +77,13 @@ export default function HomePage(props) {
   const classes = materialUseStyles();
   const [templateName, setTemplateName] = useState('');
   const [templateLevel, setTemplateLevel] = useState('');
-  const [questions, setQuestions] = useState({});
+  const [questions, setQuestions] = useState([]);
   const [questionID, setquestionID] = useState('');
 
   const { handleAddQuestion, showDialog } = props;
 
   const handleSaveQuestion = questionInput => {
-    const newQuestions = { ...questions, ...questionInput };
-    setQuestions(newQuestions);
+    setQuestions(questions.concat(questionInput));
   };
   const handleChangeTemplateName = e => {
     setTemplateName(e.target.value);
@@ -102,7 +102,26 @@ export default function HomePage(props) {
     handleQuestionID();
   }, [props.showDialog]);
 
+  const getOntologyMap = () => {
+    getOntologyData()
+      .then(res => {
+        const map = {};
+        const { data } = res;
+        data.forEach(el => {
+          const { acronym, name } = el;
+          map[acronym] = { acronym, name };
+        });
+        sessionStorage.setItem('ontologyMap', JSON.stringify(map));
+      })
+      .catch(err => console.error(err));
+  };
+
+  useEffect(() => {
+    getOntologyMap();
+  }, []);
+
   const handleEdit = () => {};
+
   const handleDelete = question => {
     const updatedQuestions = { ...questions };
     const details = [];
@@ -143,7 +162,7 @@ export default function HomePage(props) {
                   onChange={handleChangeTemplateName}
                 />
                 <FormControl className={classes.formControl}>
-                  <InputLabel id="templateLevel">Template Level</InputLabel>
+                  <InputLabel id="templateLevel">Type of Template</InputLabel>
                   <Select
                     labelId="templateLevel"
                     id="demo-controlled-open-select"

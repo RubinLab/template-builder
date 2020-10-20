@@ -59,6 +59,7 @@ export default function Navbar(props) {
       <div className={classes.buttonGroup}>
         <Button
           className={classes.button}
+          id="addQuestionBtn"
           variant="outlined"
           startIcon={<AddCircle />}
           onClick={() => handleAddQuestion(true)}

@@ -18,8 +18,10 @@ import Select from '@material-ui/core/Select';
 import Checkbox from '@material-ui/core/Checkbox';
 import IconButton from '@material-ui/core/IconButton';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import Backdrop from '@material-ui/core/Backdrop';
-import SearchResults from './searchResults.jsx';
+import Drawer from '@material-ui/core/Drawer';
+import SearchResults from './SearchResults.jsx';
 import AnswerList from './answersList.jsx';
 import { getResults } from '../../services/apiServices';
 
@@ -39,6 +41,7 @@ const materialUseStyles = makeStyles(theme => ({
   },
   icon: {
     marginRight: theme.spacing(1),
+    verticalAlign: 'middle',
   },
   textField: {
     marginTop: theme.spacing(3),
@@ -87,11 +90,14 @@ const materialUseStyles = makeStyles(theme => ({
   answerTypeMenu: {
     marginRight: theme.spacing(2),
   },
+  resultsDrawer: {
+    flexShrink: 0,
+  },
 }));
 
-export default function Form(props) {
+const QuestionForm = props => {
   const classes = materialUseStyles();
-  const { postQuestion } = props;
+  const { postQuestion, characteristic } = props;
   const [searchResults, setSearchResults] = useState({});
   const [question, setQuestion] = useState('');
   const [questionType, setQuestionType] = useState('');
@@ -106,6 +112,8 @@ export default function Form(props) {
   const [showConfidence, setshowConfidence] = useState(null);
   const [answerType, setAnswerType] = useState('');
   const [showBackdrop, setShowBackdrop] = useState(false);
+  const [ontologyLibs, setOntologyLibs] = useState(null);
+  const ontologyMap = JSON.parse(sessionStorage.getItem('ontologyMap'));
 
   const formInput = {
     questionType,
@@ -119,15 +127,28 @@ export default function Form(props) {
   };
 
   const handleSearch = async () => {
-    const cleanSearchTerm = searchTerm.trim();
+    let searchedTerms = JSON.parse(sessionStorage.getItem('searchedTerms'));
+    const trimmedSearchTerm = searchTerm.trim();
+    if (searchedTerms && !searchedTerms.includes(trimmedSearchTerm)) {
+      searchedTerms = [...searchedTerms, trimmedSearchTerm];
+    } else if (!searchedTerms) {
+      searchedTerms = [trimmedSearchTerm];
+    }
+    sessionStorage.setItem('searchedTerms', JSON.stringify(searchedTerms));
+    const filteredOntology =
+      ontologyLibs && Array.isArray(ontologyLibs)
+        ? ontologyLibs.map(el => el.acronym)
+        : [];
     setShowBackdrop(true);
-    getResults(cleanSearchTerm)
-      .then(res => {
-        setSearchResults(res.data);
-        setShowSearchResults(true);
-        setShowBackdrop(false);
-      })
-      .catch(err => console.log(err));
+    if (trimmedSearchTerm) {
+      getResults(trimmedSearchTerm, filteredOntology)
+        .then(res => {
+          setSearchResults(res.data);
+          setShowSearchResults(true);
+          setShowBackdrop(false);
+        })
+        .catch(err => console.error(err));
+    }
   };
 
   const handleQuestionType = async e => {
@@ -135,40 +156,46 @@ export default function Form(props) {
     postQuestion({ ...formInput, questionType: e.target.value });
   };
 
-  const handleSearchInput = e => {
-    setSearchTerm(e.target.value);
+  const handleSearchInput = (e, option) => {
+    if (e) setSearchTerm(e.target.value);
+    else setSearchTerm(option);
   };
 
-  const handleKeyboardEvent = e => {
-    const termNotEmpty = searchTerm.length > 0 && searchTerm.trim().length > 0;
-    if (e.key === 'Enter' && termNotEmpty) {
-      handleSearch();
-    }
+  const getNewSearchResult = pageNo => {
+    getResults(searchTerm, ontologyLibs, pageNo)
+      .then(res => {
+        setSearchResults(res.data);
+      })
+      .catch(err => console.error(err));
   };
 
   useEffect(() => {
+    const handleKeyboardEvent = e => {
+      const termNotEmpty =
+        searchTerm && searchTerm.length > 0 && searchTerm.trim().length > 0;
+      if (e.key === 'Enter' && termNotEmpty) {
+        handleSearch();
+      }
+    };
     window.addEventListener('keydown', handleKeyboardEvent);
-
     return () => {
       window.removeEventListener('keydown', handleKeyboardEvent);
     };
-  }, [handleKeyboardEvent]);
+  });
 
-  const handleTermSelection = termIndex => {
-    let newSelected;
-    if (typeof termIndex === 'number') {
-      newSelected = { ...selectedTerms };
-      if (selectedTerms) {
-        newSelected[searchTerm] = searchResults[termIndex];
-        postQuestion({ ...formInput, selectedTerms: newSelected });
-      } else {
-        newSelected = { [searchTerm]: searchResults[termIndex] };
-        postQuestion({ ...formInput, selectedTerms: newSelected });
-      }
-      setTermSelection(newSelected);
-      setShowSearchResults(false);
-      // setSearchResults([]);
-    }
+  const handleTermSelection = (termIndex, title) => {
+    const newTerm = {
+      obj: searchResults.collection[termIndex],
+      title,
+    };
+    const newSelected = selectedTerms
+      ? selectedTerms.concat([newTerm])
+      : [newTerm];
+    postQuestion({ ...formInput, selectedTerms: newSelected });
+    setTermSelection(newSelected);
+    setShowSearchResults(false);
+    setOntologyLibs([]);
+    setSearchTerm('');
   };
 
   const assignDefaultVals = (min, max, disabledBool) => {
@@ -211,32 +238,43 @@ export default function Form(props) {
     setTermSelection(currentSelectedTerms);
   };
 
+  const handleOntologyInput = (e, options) => {
+    if (Array.isArray(options)) {
+      if (options.length === 0) setOntologyLibs(options);
+      else {
+        // setOntologyLibs(options.map(el => el.acronym));
+        setOntologyLibs(options);
+      }
+    }
+  };
   return (
     <div className={classes.root}>
-      <div>
-        <FormControl className={classes.formControl}>
-          <InputLabel id="questionType">Question type</InputLabel>
-          <Select
-            labelId="questionType"
-            id="questionType-controlled-open-select"
-            value={questionType}
-            onChange={handleQuestionType}
-          >
-            <MenuItem value={'anatomic'}>
-              <Accessibility className={classes.icon} />
-              Anatomic Location
-            </MenuItem>
-            <MenuItem value={'observation'}>
-              <Visibility className={classes.icon} />
-              Imaging Observation
-            </MenuItem>
-            <MenuItem value={'history'}>
-              <LocalHospital className={classes.icon} />
-              {`Clinical hist. & diagnosis`}
-            </MenuItem>
-          </Select>
-        </FormControl>
-      </div>
+      {!characteristic && (
+        <div>
+          <FormControl className={classes.formControl}>
+            <InputLabel id="questionType">Question type</InputLabel>
+            <Select
+              labelId="questionType"
+              id="questionType-controlled-open-select"
+              value={questionType}
+              onChange={handleQuestionType}
+            >
+              <MenuItem value={'anatomic'}>
+                <Accessibility className={classes.icon} />
+                Anatomic Location
+              </MenuItem>
+              <MenuItem value={'observation'}>
+                <Visibility className={classes.icon} />
+                Imaging Observation
+              </MenuItem>
+              <MenuItem value={'history'}>
+                <LocalHospital className={classes.icon} />
+                {`Clinical hist. & diagnosis`}
+              </MenuItem>
+            </Select>
+          </FormControl>
+        </div>
+      )}
       <div>
         <TextField
           className={classes.textField}
@@ -274,10 +312,45 @@ export default function Form(props) {
           </Select>
         </FormControl>
         <div className={classes.answerGroup}>
-          <TextField
-            className={classes.searchInput}
-            placeholder="Search terms"
-            onChange={handleSearchInput}
+          <Autocomplete
+            options={JSON.parse(sessionStorage.getItem('searchedTerms')) || []}
+            value={searchTerm}
+            onChange={(_, data) => handleSearchInput(null, data)}
+            onInputChange={handleSearchInput}
+            style={{ width: 300 }}
+            renderInput={params => (
+              <TextField
+                {...params}
+                className={classes.searchInput}
+                placeholder="Search terms"
+              />
+            )}
+          />
+          <Autocomplete
+            multiple
+            size="small"
+            options={ontologyMap ? Object.values(ontologyMap) : []}
+            renderOption={option => (
+              <React.Fragment>
+                {option.name} ({option.acronym})
+              </React.Fragment>
+            )}
+            getOptionLabel={option => option.acronym || ''}
+            onChange={(_, data) => handleOntologyInput(null, data)}
+            onInputChange={handleOntologyInput}
+            style={{ width: 300 }}
+            value={ontologyLibs || []}
+            renderInput={params => (
+              <TextField
+                {...params}
+                className={classes.searchInput}
+                placeholder={
+                  !ontologyLibs || ontologyLibs.length === 0
+                    ? 'Choose Ontology'
+                    : ''
+                }
+              />
+            )}
           />
           <IconButton className={classes.searchButton} onClick={handleSearch}>
             <Search />
@@ -287,8 +360,7 @@ export default function Form(props) {
       {selectedTerms && (
         <div>
           <AnswerList
-            answerType={answerType}
-            answers={Object.keys(selectedTerms)}
+            answers={selectedTerms}
             handleDelete={handleDeleteSelectedTerm}
           />
         </div>
@@ -356,18 +428,30 @@ export default function Form(props) {
       <Backdrop className={classes.backdrop} open={showBackdrop}>
         <CircularProgress color="inherit" />
       </Backdrop>
-      {showSearchResults > 0 && (
+      <Drawer
+        className={classes.resultsDrawer}
+        variant="temporary"
+        anchor="right"
+        open={showSearchResults}
+        classes={{
+          paper: classes.drawerPaper,
+        }}
+      >
         <SearchResults
           results={searchResults}
           handleSelection={handleTermSelection}
           handleClose={() => setShowSearchResults(false)}
           term={searchTerm}
+          handleNewPage={getNewSearchResult}
         />
-      )}
+      </Drawer>
     </div>
   );
-}
+};
 
-Form.propTypes = {
+export default QuestionForm;
+
+QuestionForm.propTypes = {
   postQuestion: PropTypes.func,
+  characteristic: PropTypes.bool,
 };

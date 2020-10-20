@@ -6,156 +6,147 @@ import List from '@material-ui/core/List';
 import Link from '@material-ui/core/Link';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Dialog from '@material-ui/core/Dialog';
 import Typography from '@material-ui/core/Typography';
 import Checkbox from '@material-ui/core/Checkbox';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Backdrop from '@material-ui/core/Backdrop';
-import { getTitle } from '../../services/apiServices';
 
 const useStyles = makeStyles(theme => ({
-  listItemTitle: {
+  listHeader: {
     paddingLeft: theme.spacing(2),
-    color: 'blue',
-    fontSize: '16px',
   },
-  listItemUrl: {
+  listItemCheckbox: {
+    padding: theme.spacing(0.5),
+  },
+  listItemTitle: {
+    whiteSpace: 'normal',
+    wordWrap: 'break-word',
+    color: 'blue',
+    fontSize: '14px',
+    maxWidth: 380,
+    textAlign: 'left',
+  },
+  listItemExplanation: {
     paddingLeft: theme.spacing(2),
-    color: 'gray',
-    fontSize: '12px',
+    color: '#575656',
+    fontSize: '10px',
+    whiteSpace: 'normal',
+    wordWrap: 'break-word',
+    maxWidth: 380,
   },
   listItemTextContainer: {
-    flexDirection: 'row',
+    paddingLeft: theme.spacing(1),
+    width: '100%',
   },
   listItemContainer: {
     '&:hover': {
       background: '#ededed',
     },
+    paddingLeft: theme.spacing(0),
+    display: 'flex',
+    flexDirection: 'column',
   },
 }));
 
-export default function SearchResults(props) {
+const SearchResults = props => {
   const classes = useStyles();
-  const { handleClose, results, handleSelection, term } = props;
+  const { results, handleSelection, term, handleNewPage } = props;
   const [page, setPage] = useState(1);
-  const [title, setTitle] = useState({ 1: [] });
   const [listItems, setListItems] = useState([]);
-  const [showBackdrop, setShowBackdrop] = useState(true);
+  const [showBackdrop, setShowBackdrop] = useState(false);
   const resultList = results.collection || [];
-  const pageSize = 25;
-  const totalNoOfPage = resultList.length / pageSize;
+  const ontologyMap = JSON.parse(sessionStorage.getItem('ontologyMap'));
 
-  const populateList = (titlesObj, pageNo) => {
+  const populateList = () => {
     const nodeList = [];
-    for (let k = 0; k < titlesObj[pageNo].length; k += 1) {
-      let linkTitle = `Result for ${term}`;
-      if (titlesObj[pageNo][k].title) {
-        const pipeIndex = titlesObj[pageNo][k].title.indexOf('|');
-        linkTitle = titlesObj[pageNo][k].title.substring(0, pipeIndex).trim();
-      }
-
-      const idIndex = (page - 1) * pageSize + k;
+    for (let k = 0; k < results.collection.length; k += 1) {
+      const acronym = results.collection[k].links.ontology.split('/').pop();
+      const { definition } = results.collection[k];
       nodeList.push(
-        <ListItem
-          key={`${titlesObj[pageNo][k].url}-${k}`}
-          className={classes.listItemContainer}
-        >
-          <Checkbox
-            onClick={() => {
-              window.setTimeout(() => {
-                handleSelection(k);
-              }, 250);
-            }}
-          />
+        <ListItem key={`result${k}`} className={classes.listItemContainer}>
           <div className={classes.listItemTextContainer}>
+            <Checkbox
+              size="small"
+              className={classes.listItemCheckbox}
+              onClick={() => {
+                window.setTimeout(() => {
+                  handleSelection(k, ontologyMap[acronym]);
+                }, 250);
+              }}
+            />
             <Link
               component="button"
               variant="body2"
               className={classes.listItemTitle}
               onClick={() => {
-                window.open(titlesObj[pageNo][k].url, '_blank', '');
+                window.open(results.collection[k].links.ui, '_blank', '');
               }}
             >
-              {linkTitle}
+              {`${ontologyMap[acronym].name} (${ontologyMap[acronym].acronym})`}
             </Link>
-            <ListItemText
-              secondary={
-                <>
-                  <Typography className={classes.listItemUrl} component="span">
-                    {results.collection[idIndex]['@id']}
-                  </Typography>
-                </>
-              }
-            />
           </div>
+          <ListItemText
+            className={classes.listItemExplanation}
+            secondary={
+              <>
+                <Typography component="span">
+                  {definition ? `${definition[0].substring(0, 150)}...` : ''}
+                </Typography>
+              </>
+            }
+          />
         </ListItem>
       );
     }
     setListItems(nodeList);
-  };
-
-  const handleGetTitle = pageNo => {
-    const promises = [];
-    const index = (pageNo - 1) * pageSize;
-    let limit = index + pageSize;
-    limit = limit > resultList.length ? resultList.length : limit;
-    for (let i = index; i < limit; i += 1) {
-      promises.push(getTitle(resultList[i].links.ui));
-    }
-    Promise.all(promises)
-      .then(res => {
-        const currentTitle = { ...title };
-        currentTitle[pageNo] = res;
-        setTitle(currentTitle);
-        populateList(currentTitle, pageNo);
-        setShowBackdrop(false);
-      })
-      // eslint-disable-next-line no-console
-      .catch(err => console.error(err));
+    setShowBackdrop(false);
+    const drawer = document.getElementById('drawer-header');
+    drawer.scrollIntoView();
   };
 
   const handleChange = (e, pageChanged) => {
+    setShowBackdrop(true);
     setPage(pageChanged);
-    if (!title[pageChanged]) {
-      handleGetTitle(pageChanged);
-    }
+    handleNewPage(pageChanged);
   };
 
   useEffect(() => {
-    handleGetTitle(page);
-  }, [page]);
+    populateList();
+  }, [results]);
 
   return (
     <>
       <Backdrop className={classes.backdrop} open={showBackdrop}>
         <CircularProgress color="inherit" />
       </Backdrop>
-
-      <Dialog
-        onClose={handleClose}
-        open={!showBackdrop}
-        onClick={handleSelection}
+      <Typography
+        className={classes.listHeader}
+        id="drawer-header"
+        variant="h5"
+        align="justify"
       >
-        <DialogTitle id="simple-dialog-title">{`Results for "${term}"`}</DialogTitle>
-        <List>{listItems}</List>
-        {resultList.length > 0 && (
-          <>
-            <Pagination
-              count={totalNoOfPage}
-              page={page}
-              onChange={handleChange}
-            />
-          </>
-        )}
-      </Dialog>
+        {`Results for "${term}"`}
+      </Typography>
+      <List>{listItems}</List>
+      {resultList.length > 0 && (
+        <>
+          <Pagination
+            count={results.pageCount}
+            page={page}
+            onChange={handleChange}
+          />
+        </>
+      )}
     </>
   );
-}
+};
+
+export default SearchResults;
 
 SearchResults.propTypes = {
   handleClose: PropTypes.func,
   handleSelection: PropTypes.func,
+  handleNewPage: PropTypes.func,
   results: PropTypes.object,
   term: PropTypes.string,
 };

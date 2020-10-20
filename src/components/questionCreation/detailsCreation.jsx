@@ -7,7 +7,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import Form from './form.jsx';
+import QuestionForm from './QuestionForm.jsx';
 
 const materialUseStyles = makeStyles(theme => ({
   root: { direction: 'row', marginLeft: theme.spacing(1) },
@@ -32,19 +32,21 @@ export default function DetailsCreation(props) {
         onClose={() => handleClose(false)}
         scroll="body"
       >
-        <DialogTitle id="createQuestion-title">Create Details</DialogTitle>
+        <DialogTitle id="createQuestion-title">
+          Create Observation Characteristics
+        </DialogTitle>
         <DialogContent>
           <DialogContentText>
-            {`Fill the form and save to add a details to the question`}
+            {`Fill the form and save to add an observation characteristic question`}
           </DialogContentText>
-          <Form postQuestion={setQuestion} />
+          <QuestionForm postQuestion={setQuestion} characteristic={true} />
         </DialogContent>
         <DialogActions>
           <Button onClick={() => handleClose(false)} color="secondary">
-            Close
+            Cancel
           </Button>
           <Button onClick={() => handleSave(question)} color="primary">
-            Save Details
+            Done
           </Button>
         </DialogActions>
       </Dialog>

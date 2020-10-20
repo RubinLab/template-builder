@@ -7,9 +7,9 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import Form from './form.jsx';
+import QuestionForm from './QuestionForm.jsx';
 import DetailCreation from './detailsCreation.jsx';
-import QuestionList from '../common/questionList.jsx';
+import QuestionList from '../common/QuestionList.jsx';
 import createID from '../../utils/helper';
 
 const useStyles = makeStyles(theme => ({
@@ -44,7 +44,7 @@ export default function QuestionCreation(props) {
     questionID,
   } = props;
   const [showDetailCreation, setShowDetailCreation] = useState(false);
-  const [details, setDetails] = useState({});
+  const [details, setDetails] = useState([]);
   const [question, setQuestion] = useState({});
 
   const handleSaveDetail = detail => {
@@ -52,9 +52,7 @@ export default function QuestionCreation(props) {
     const newDetail = { ...detail };
     newDetail.id = id;
     newDetail.questionID = questionID;
-    const mergedDetails = { ...details };
-    mergedDetails[id] = newDetail;
-    setDetails(mergedDetails);
+    setDetails(details.concat(newDetail));
     setShowDetailCreation(false);
   };
 
@@ -62,7 +60,7 @@ export default function QuestionCreation(props) {
     const updatedQuestion = { ...question };
     updatedQuestion.id = questionID;
     setQuestion(updatedQuestion);
-    handleSaveQuestion({ [questionID]: updatedQuestion, ...details });
+    handleSaveQuestion({ ...updatedQuestion, characteristics: details });
     handleClose(false);
   };
 
@@ -82,14 +80,17 @@ export default function QuestionCreation(props) {
           <DialogContentText>
             {`Fill the form and save to add a new question to the template ${templateName}`}
           </DialogContentText>
-          <Form postQuestion={setQuestion} />
-          <Button
-            variant="outlined"
-            className={classes.button}
-            onClick={() => setShowDetailCreation(true)}
-          >
-            Add details
-          </Button>
+          <QuestionForm postQuestion={setQuestion} />
+
+          {question.questionType === 'observation' && (
+            <Button
+              variant="outlined"
+              className={classes.button}
+              onClick={() => setShowDetailCreation(true)}
+            >
+              Add Observation Characteristics
+            </Button>
+          )}
 
           {detailsArr.length > 0 && <QuestionList questions={detailsArr} />}
           {showDetailCreation && (
@@ -103,10 +104,10 @@ export default function QuestionCreation(props) {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => handleClose(false)} color="primary">
-            Close
+            Cancel
           </Button>
           <Button onClick={handleSave} color="primary">
-            Save question
+            Done
           </Button>
         </DialogActions>
       </Dialog>
