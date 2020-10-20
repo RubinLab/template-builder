@@ -63,7 +63,7 @@ const materialUseStyles = makeStyles(theme => ({
   },
   inputFieldGroup: {
     display: 'flex',
-    justifyContent: 'space-between',
+    justifyContent: 'start',
     flexDirection: 'row',
     alignItems: 'center',
     flexWrap: 'wrap',
@@ -82,6 +82,10 @@ const materialUseStyles = makeStyles(theme => ({
   },
   filledText: {
     paddingTop: theme.spacing(0.5),
+    marginRight: theme.spacing(2),
+  },
+  inputField: {
+    marginRight: theme.spacing(2),
   },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
@@ -113,6 +117,7 @@ const QuestionForm = props => {
   const [answerType, setAnswerType] = useState('');
   const [showBackdrop, setShowBackdrop] = useState(false);
   const [ontologyLibs, setOntologyLibs] = useState(null);
+
   const ontologyMap = JSON.parse(sessionStorage.getItem('ontologyMap'));
 
   const formInput = {
@@ -394,7 +399,7 @@ const QuestionForm = props => {
           size="small"
           disabled={disabled}
         />
-        <TextField
+        {/* <TextField
           className={classes.inputField}
           label="Next ID"
           size="small"
@@ -411,7 +416,7 @@ const QuestionForm = props => {
           onChange={e => {
             setNoMore(e.target.value);
           }}
-        />
+        /> */}
       </div>
       <div>
         <FormControlLabel
