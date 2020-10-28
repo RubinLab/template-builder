@@ -10,6 +10,8 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
+import Snackbar from '@material-ui/core/Snackbar';
+import Button from '@material-ui/core/Button';
 import QuestionList from '../common/QuestionList.jsx';
 import QuestionCreation from '../questionCreation/index.jsx';
 import TemplatePreview from './templatePreview.jsx';
@@ -143,7 +145,8 @@ export default function HomePage(props) {
       if (newLinkedIdMap.linkedQuestion) {
         delete newLinkTextMap[newLinkedIdMap.linkedQuestion.id];
       }
-      if (newLinkTextMap[answer.id]) delete newLinkTextMap[answer.id];
+      if (newLinkTextMap[linkedIdMap.linkedAnswer.id])
+        delete newLinkTextMap[linkedIdMap.linkedAnswer.id];
       setlinkTextMap(newLinkTextMap);
       setLinkedIdMap({
         linkedAnswer: null,
@@ -159,7 +162,6 @@ export default function HomePage(props) {
     };
     setLinkedIdMap(newLinkedIdMap);
   };
-
   const handleQuestionLink = (undo, question) => {
     const newLinkTextMap = { ...linkTextMap };
     const newLinkedIdMap = { ...linkedIdMap };
@@ -284,6 +286,25 @@ export default function HomePage(props) {
           questionID={questionID}
         />
       )}
+      <Snackbar
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+        open={linkedIdMap.linkedAnswer && !linkedIdMap.linkedQuestion}
+        message={`Click on the link icon next to the question you want to jump`}
+        action={
+          <React.Fragment>
+            <Button
+              color="secondary"
+              // size="small"
+              onClick={() => handleAnswerLink(true)}
+            >
+              UNDO
+            </Button>
+          </React.Fragment>
+        }
+      />
     </>
   );
 }
