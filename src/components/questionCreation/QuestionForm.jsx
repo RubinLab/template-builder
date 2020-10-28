@@ -24,6 +24,7 @@ import Drawer from '@material-ui/core/Drawer';
 import SearchResults from './SearchResults.jsx';
 import AnswerList from './answersList.jsx';
 import { getResults } from '../../services/apiServices';
+import createID from '../../utils/helper';
 
 const materialUseStyles = makeStyles(theme => ({
   root: { direction: 'row', marginLeft: theme.spacing(1) },
@@ -189,13 +190,22 @@ const QuestionForm = props => {
   });
 
   const handleTermSelection = (termIndex, title) => {
+    const term = searchResults.collection[termIndex];
+    const codeValue = term['@id'].split('/').pop();
+    const codeMeaning = term.prefLabel;
+    const codingSchemeDesignator = title.acronym;
+    const id = createID();
+    console.log('--->term', term);
     const newTerm = {
-      obj: searchResults.collection[termIndex],
-      title,
+      [id]: {
+        allowedTerm: { codeValue, codeMeaning, codingSchemeDesignator },
+        title,
+        id,
+      },
     };
     const newSelected = selectedTerms
-      ? selectedTerms.concat([newTerm])
-      : [newTerm];
+      ? { ...selectedTerms, ...newTerm }
+      : newTerm;
     postQuestion({ ...formInput, selectedTerms: newSelected });
     setTermSelection(newSelected);
     setShowSearchResults(false);
@@ -365,7 +375,7 @@ const QuestionForm = props => {
       {selectedTerms && (
         <div>
           <AnswerList
-            answers={selectedTerms}
+            answers={Object.values(selectedTerms)}
             handleDelete={handleDeleteSelectedTerm}
           />
         </div>

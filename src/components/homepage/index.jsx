@@ -79,8 +79,11 @@ export default function HomePage(props) {
   const [templateLevel, setTemplateLevel] = useState('');
   const [questions, setQuestions] = useState([]);
   const [questionID, setquestionID] = useState('');
-
-  const { handleAddQuestion, showDialog } = props;
+  const [linkTextMap, setlinkTextMap] = useState({});
+  const [linkedIdMap, setLinkedIdMap] = useState({
+    linkedAnswer: '',
+    linkedQuestion: '',
+  });
 
   const handleSaveQuestion = questionInput => {
     setQuestions(questions.concat(questionInput));
@@ -120,6 +123,67 @@ export default function HomePage(props) {
     getOntologyMap();
   }, []);
 
+  const createLink = () => {
+    const { linkedAnswerID, linkedQuestionID } = linkedIdMap;
+    if (linkedAnswerID && linkedQuestionID) {
+      // do it
+    }
+  };
+
+  const handleAnswerLink = (
+    undo,
+    answer,
+    questionId,
+    questionIndex,
+    questionText
+  ) => {
+    const newLinkTextMap = { ...linkTextMap };
+    const newLinkedIdMap = { ...linkedIdMap };
+    if (undo || linkedIdMap.linkedAnswer) {
+      if (newLinkedIdMap.linkedQuestion) {
+        delete newLinkTextMap[newLinkedIdMap.linkedQuestion.id];
+      }
+      if (newLinkTextMap[answer.id]) delete newLinkTextMap[answer.id];
+      setlinkTextMap(newLinkTextMap);
+      setLinkedIdMap({
+        linkedAnswer: null,
+        linkedQuestion: null,
+      });
+      return;
+    }
+    newLinkedIdMap.linkedAnswer = {
+      id: answer.id,
+      questionId,
+      questionText,
+      answerText: answer.allowedTerm.codeMeaning,
+    };
+    setLinkedIdMap(newLinkedIdMap);
+  };
+
+  const handleQuestionLink = (undo, question) => {
+    const newLinkTextMap = { ...linkTextMap };
+    const newLinkedIdMap = { ...linkedIdMap };
+    if (undo || linkedIdMap[question.id]) {
+      if (newLinkedIdMap.linkedQuestion) {
+        delete newLinkTextMap[newLinkedIdMap.linkedQuestion.id];
+      }
+      if (newLinkTextMap[question.id]) delete newLinkTextMap[question.id];
+      setlinkTextMap(newLinkTextMap);
+      newLinkedIdMap.linkedQuestion = null;
+      setLinkedIdMap(newLinkedIdMap);
+      return;
+    }
+    newLinkedIdMap.linkedQuestion = {
+      id: question.id,
+      questionText: question.question,
+    };
+    setLinkedIdMap(newLinkedIdMap);
+    const { answerText, questionText, id } = linkedIdMap.linkedAnswer;
+    newLinkTextMap[question.id] = `${answerText} of ${questionText}`;
+    newLinkTextMap[id] = question.question;
+    setlinkTextMap(newLinkTextMap);
+  };
+
   const handleEdit = () => {};
 
   const handleDelete = question => {
@@ -137,7 +201,6 @@ export default function HomePage(props) {
     delete updatedQuestions[question.id];
     setQuestions(updatedQuestions);
   };
-  const handleLink = () => {};
 
   const questionsArr = Object.values(questions);
   const template = questionsArr.length === 1 ? template1 : template2;
@@ -184,7 +247,10 @@ export default function HomePage(props) {
                     handleEdit={handleEdit}
                     handleDelete={handleDelete}
                     questions={questionsArr}
-                    handleLink={handleLink}
+                    handleAnswerLink={handleAnswerLink}
+                    handleQuestionLink={handleQuestionLink}
+                    linkTextMap={linkTextMap}
+                    linkedIdMap={linkedIdMap}
                   />
                 </>
               )}
@@ -209,11 +275,11 @@ export default function HomePage(props) {
           </Card>
         </Grid>
       </Grid>
-      {showDialog && (
+      {props.showDialog && (
         <QuestionCreation
-          open={showDialog}
+          open={props.showDialog}
           templateName={templateName}
-          handleClose={handleAddQuestion}
+          handleClose={props.handleAddQuestion}
           handleSaveQuestion={handleSaveQuestion}
           questionID={questionID}
         />
