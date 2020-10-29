@@ -12,6 +12,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import IconButton from '@material-ui/core/IconButton';
 import Collapse from '@material-ui/core/Collapse';
+import AnswerLinkButton from './AnswerLinkButton.jsx';
 
 const useStyles = makeStyles(theme => ({
   listItem0: {
@@ -66,6 +67,7 @@ export default function QuestionItem(props) {
     linkedIdMap,
   } = props;
   const [open, setOpen] = useState(false);
+
   return (
     <>
       <ListItem className={classes[`listItem${level}`]}>
@@ -116,21 +118,15 @@ export default function QuestionItem(props) {
                   key={`${term.allowedTerm.codeMeaning}-${i}`}
                 >
                   <ListItemText primary={term.allowedTerm.codeMeaning} />
-                  {!linkedIdMap.linkedAnswer && (
-                    <IconButton
-                      onClick={() =>
-                        handleAnswerLink(
-                          false,
-                          term,
-                          question.id,
-                          index,
-                          question.question
-                        )
-                      }
-                    >
-                      <InsertLinkIcon />
-                    </IconButton>
-                  )}
+                  <AnswerLinkButton
+                    handleAnswerLink={handleAnswerLink}
+                    linkTextMap={linkTextMap}
+                    linkedIdMap={linkedIdMap}
+                    index={index}
+                    i={i}
+                    question={question}
+                    term={term}
+                  />
                 </ListItem>
               );
             })}

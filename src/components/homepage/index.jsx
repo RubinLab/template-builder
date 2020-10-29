@@ -83,8 +83,8 @@ export default function HomePage(props) {
   const [questionID, setquestionID] = useState('');
   const [linkTextMap, setlinkTextMap] = useState({});
   const [linkedIdMap, setLinkedIdMap] = useState({
-    linkedAnswer: '',
-    linkedQuestion: '',
+    linkedAnswer: null,
+    linkedQuestion: null,
   });
 
   const handleSaveQuestion = questionInput => {
@@ -125,10 +125,13 @@ export default function HomePage(props) {
     getOntologyMap();
   }, []);
 
-  const createLink = () => {
-    const { linkedAnswerID, linkedQuestionID } = linkedIdMap;
-    if (linkedAnswerID && linkedQuestionID) {
-      // do it
+  const createLink = newLinkedIdMap => {
+    const { linkedAnswer, linkedQuestion } = newLinkedIdMap;
+    if (linkedAnswer && linkedQuestion) {
+      // TODO
+      // find the answer and add nextID
+      // after that clear linkedIdMap
+      setLinkedIdMap({ linkedAnswer: null, linkedQuestion: null });
     }
   };
 
@@ -184,6 +187,7 @@ export default function HomePage(props) {
     newLinkTextMap[question.id] = `${answerText} of ${questionText}`;
     newLinkTextMap[id] = question.question;
     setlinkTextMap(newLinkTextMap);
+    createLink(newLinkedIdMap);
   };
 
   const handleEdit = () => {};
