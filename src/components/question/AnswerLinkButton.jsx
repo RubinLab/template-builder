@@ -2,18 +2,14 @@ import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import LinkOff from '@material-ui/icons/LinkOff';
-import Fade from '@material-ui/core/Fade';
-import Popper from '@material-ui/core/Popper';
 import IconButton from '@material-ui/core/IconButton';
 import InsertLinkIcon from '@material-ui/icons/InsertLink';
 import DeleteForever from '@material-ui/icons/DeleteForever';
+import Menu from '@material-ui/core/Menu';
 
 const useStyles = makeStyles(theme => ({
-  popup: {
-    background: '#E3E0D8',
-    padding: theme.spacing(0.5),
-  },
   popupContent: {
+    padding: theme.spacing(1),
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -22,23 +18,27 @@ const useStyles = makeStyles(theme => ({
   contentText: {
     paddingRight: theme.spacing(3),
   },
+  listItemIcon: {
+    padding: theme.spacing(0.5),
+  },
 }));
 
 export default function AnswerLinkButton({
   linkTextMap,
   linkedIdMap,
-  index,
+  questionIndex,
   handleAnswerLink,
-  i,
+  answerIndex,
   term,
   question,
+  handleDeleteLink,
 }) {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
-  const handlePopoverOpen = event => {
+  const handleOpen = event => {
     setAnchorEl(event.currentTarget);
   };
-  const handlePopoverClose = () => {
+  const handleClose = () => {
     setAnchorEl(null);
   };
   const showInfo = Boolean(anchorEl);
@@ -46,29 +46,25 @@ export default function AnswerLinkButton({
   if (linkTextMap[term.id]) {
     answerLink = (
       <>
-        <LinkOff
-          id={`disableLink-${i}`}
-          onMouseEnter={handlePopoverOpen}
-          onMouseLeave={handlePopoverClose}
-        />
-        <Popper
-          id={`disableLink-${i}`}
+        <LinkOff id={`disableLink-${answerIndex}`} onMouseEnter={handleOpen} />
+        <Menu
+          id={`disableLink-${answerIndex}`}
           open={showInfo}
           anchorEl={anchorEl}
-          transition
-          className={classes.popup}
+          onClose={handleClose}
         >
-          {({ TransitionProps }) => (
-            <Fade {...TransitionProps}>
-              <div className={classes.popupContent}>
-                <div className={classes.contentText}>
-                  {linkTextMap[term.id]}
-                </div>
-                <DeleteForever />
-              </div>
-            </Fade>
-          )}
-        </Popper>
+          <div className={classes.popupContent}>
+            <div className={classes.contentText}>{`Next: ${
+              linkTextMap[term.id]
+            }`}</div>
+            <IconButton
+              className={classes.listItemIcon}
+              onClick={handleDeleteLink}
+            >
+              <DeleteForever />
+            </IconButton>
+          </div>
+        </Menu>
       </>
     );
   }
@@ -77,7 +73,13 @@ export default function AnswerLinkButton({
     answerLink = (
       <IconButton
         onClick={() =>
-          handleAnswerLink(false, term, question.id, index, question.question)
+          handleAnswerLink(
+            false,
+            term,
+            question.id,
+            questionIndex,
+            question.question
+          )
         }
       >
         <InsertLinkIcon />
@@ -91,8 +93,9 @@ AnswerLinkButton.propTypes = {
   handleAnswerLink: PropTypes.func,
   linkTextMap: PropTypes.object,
   linkedIdMap: PropTypes.object,
-  index: PropTypes.number,
-  i: PropTypes.number,
+  questionIndex: PropTypes.number,
+  answerIndex: PropTypes.number,
   question: PropTypes.object,
   term: PropTypes.object,
+  handleDeleteLink: PropTypes.func,
 };

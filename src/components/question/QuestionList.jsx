@@ -23,13 +23,6 @@ export default function QuestionsList(props) {
     }
   }, [props.questions, questions]);
 
-  // const handleReorder = ({ oldIndex, newIndex }) => {};
-  // const getListStyle = isDraggingOver => ({
-  //   background: isDraggingOver ? 'lightblue' : 'lightgrey',
-  //   padding: 8,
-  //   width: 250,
-  // });
-
   const reorder = (list, startIndex, endIndex) => {
     const result = Array.from(list);
     const [removed] = result.splice(startIndex, 1);
@@ -65,6 +58,7 @@ export default function QuestionsList(props) {
                 handleQuestionLink={props.handleQuestionLink}
                 linkTextMap={props.linkTextMap}
                 linkedIdMap={props.linkedIdMap}
+                handleDeleteLink={props.handleDeleteLink}
               />
             ))}
             {provided.placeholder}
@@ -83,4 +77,5 @@ QuestionsList.propTypes = {
   handleQuestionLink: PropTypes.func,
   linkTextMap: PropTypes.object,
   linkedIdMap: PropTypes.object,
+  handleDeleteLink: PropTypes.func,
 };

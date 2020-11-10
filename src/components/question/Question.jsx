@@ -52,6 +52,7 @@ export default function Question(props) {
             handleQuestionLink={props.handleQuestionLink}
             linkTextMap={props.linkTextMap}
             linkedIdMap={props.linkedIdMap}
+            handleDeleteLink={props.handleDeleteLink}
           />
           {characteristics && characteristics.length > 0 && (
             <DragDropContext onDragEnd={handleReorder}>
@@ -77,6 +78,7 @@ export default function Question(props) {
                               handleQuestionLink={props.handleQuestionLink}
                               linkTextMap={props.linkTextMap}
                               linkedIdMap={props.linkedIdMap}
+                              handleDeleteLink={props.handleDeleteLink}
                             />
                           </div>
                         )}
@@ -103,4 +105,5 @@ Question.propTypes = {
   handleQuestionLink: PropTypes.func,
   linkTextMap: PropTypes.object,
   linkedIdMap: PropTypes.object,
+  handleDeleteLink: PropTypes.func,
 };

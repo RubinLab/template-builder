@@ -65,6 +65,7 @@ export default function QuestionItem(props) {
     handleQuestionLink,
     linkTextMap,
     linkedIdMap,
+    handleDeleteLink,
   } = props;
   const [open, setOpen] = useState(false);
 
@@ -122,10 +123,11 @@ export default function QuestionItem(props) {
                     handleAnswerLink={handleAnswerLink}
                     linkTextMap={linkTextMap}
                     linkedIdMap={linkedIdMap}
-                    index={index}
-                    i={i}
+                    questionIndex={index}
+                    answerIndex={i}
                     question={question}
                     term={term}
+                    handleDeleteLink={handleDeleteLink}
                   />
                 </ListItem>
               );
@@ -147,4 +149,5 @@ QuestionItem.propTypes = {
   handleQuestionLink: PropTypes.func,
   linkTextMap: PropTypes.object,
   linkedIdMap: PropTypes.object,
+  handleDeleteLink: PropTypes.func,
 };

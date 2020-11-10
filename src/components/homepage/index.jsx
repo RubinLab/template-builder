@@ -12,7 +12,8 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Snackbar from '@material-ui/core/Snackbar';
 import Button from '@material-ui/core/Button';
-import QuestionList from '../common/QuestionList.jsx';
+import AlertDialog from '../common/AlertDialog.jsx';
+import QuestionList from '../question/QuestionList.jsx';
 import QuestionCreation from '../questionCreation/index.jsx';
 import TemplatePreview from './templatePreview.jsx';
 import template1 from '../../utils/recist.1.json';
@@ -75,6 +76,8 @@ const materialUseStyles = makeStyles(theme => ({
   },
 }));
 
+const messages = { deleteLink: 'Are you sure you want to delete the link?' };
+
 export default function HomePage(props) {
   const classes = materialUseStyles();
   const [templateName, setTemplateName] = useState('');
@@ -86,6 +89,58 @@ export default function HomePage(props) {
     linkedAnswer: null,
     linkedQuestion: null,
   });
+  const [deletingAnswerLink, setDeletingAnswerLink] = useState(null);
+  const [open, setOpen] = useState(false);
+
+  const handleDeleteLinkModal = (
+    answerLinkID,
+    quesID,
+    answerIndex,
+    questionIndex
+  ) => {
+    setDeletingAnswerLink({
+      answerLinkID,
+      quesID,
+      answerIndex,
+      questionIndex,
+    });
+    setOpen(!open);
+  };
+
+  const deleteLinkFromJson = () => {
+    // TODO find the answer and delete the nextId
+    try {
+      console.log(' --> delete implemented');
+      const {
+        answerLinkID,
+        quesID,
+        answerIndex,
+        questionIndex,
+      } = deletingAnswerLink;
+
+      console.log('typeof questions');
+      console.log(typeof questions);
+
+      const newQuestions = [...questions];
+      if (
+        newQuestions[questionIndex] &&
+        newQuestions[questionIndex].id === quesID
+      ) {
+        delete newQuestions[questionIndex].selectedTerms[answerLinkID].nextId;
+      } else {
+        // eslint-disable-next-line no-restricted-syntax
+        for (const ques of newQuestions) {
+          if (ques.id === quesID) {
+            delete ques.selectedTerms[answerLinkID];
+          }
+        }
+      }
+
+      handleDeleteLinkModal();
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const handleSaveQuestion = questionInput => {
     setQuestions(questions.concat(questionInput));
@@ -257,6 +312,7 @@ export default function HomePage(props) {
                     handleQuestionLink={handleQuestionLink}
                     linkTextMap={linkTextMap}
                     linkedIdMap={linkedIdMap}
+                    handleDeleteLink={handleDeleteLinkModal}
                   />
                 </>
               )}
@@ -308,6 +364,12 @@ export default function HomePage(props) {
             </Button>
           </React.Fragment>
         }
+      />
+      <AlertDialog
+        message={messages.deleteLink}
+        onOK={deleteLinkFromJson}
+        onCancel={deleteLinkFromJson}
+        open={open}
       />
     </>
   );

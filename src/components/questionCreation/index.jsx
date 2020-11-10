@@ -9,7 +9,7 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import QuestionForm from './QuestionForm.jsx';
 import DetailCreation from './detailsCreation.jsx';
-import QuestionList from '../common/QuestionList.jsx';
+import QuestionList from '../question/QuestionList.jsx';
 import createID from '../../utils/helper';
 
 const useStyles = makeStyles(theme => ({
