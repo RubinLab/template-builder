@@ -4,7 +4,7 @@ import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import QuestionItem from './QuestionItem.jsx';
 
 export default function Question(props) {
-  const { handleDelete, handleEdit, handleLink, question, index } = props;
+  const { handleDelete, handleEdit, question, index } = props;
   const [characteristics, setCharacteristics] = useState([]);
 
   useEffect(() => {
@@ -45,20 +45,20 @@ export default function Question(props) {
             key={`${question.id}-${index}`}
             handleDelete={handleDelete}
             handleEdit={handleEdit}
-            handleLink={handleLink}
             question={question}
             index={index}
             level={0}
+            handleAnswerLink={props.handleAnswerLink}
+            handleQuestionLink={props.handleQuestionLink}
+            linkTextMap={props.linkTextMap}
+            linkedIdMap={props.linkedIdMap}
+            handleDeleteLink={props.handleDeleteLink}
           />
           {characteristics && characteristics.length > 0 && (
             <DragDropContext onDragEnd={handleReorder}>
               <Droppable key={characteristics.id} droppableId={question.id}>
                 {provided1 => (
-                  <div
-                    ref={provided1.innerRef}
-                    // style={getListStyle(snapshot.isDraggingOver)}
-                    {...provided1.droppableProps}
-                  >
+                  <div ref={provided1.innerRef} {...provided1.droppableProps}>
                     {characteristics.map((el, i) => (
                       <Draggable key={el.id} draggableId={el.id} index={i}>
                         {provided2 => (
@@ -71,10 +71,14 @@ export default function Question(props) {
                               key={`${el.id}-${i}`}
                               handleDelete={handleDelete}
                               handleEdit={handleEdit}
-                              handleLink={handleLink}
                               question={el}
                               index={i}
                               level={1}
+                              handleAnswerLink={props.handleAnswerLink}
+                              handleQuestionLink={props.handleQuestionLink}
+                              linkTextMap={props.linkTextMap}
+                              linkedIdMap={props.linkedIdMap}
+                              handleDeleteLink={props.handleDeleteLink}
                             />
                           </div>
                         )}
@@ -93,9 +97,13 @@ export default function Question(props) {
 }
 
 Question.propTypes = {
-  handleEdit: PropTypes.func,
   handleDelete: PropTypes.func,
+  handleEdit: PropTypes.func,
   question: PropTypes.object,
-  handleLink: PropTypes.func,
   index: PropTypes.number,
+  handleAnswerLink: PropTypes.func,
+  handleQuestionLink: PropTypes.func,
+  linkTextMap: PropTypes.object,
+  linkedIdMap: PropTypes.object,
+  handleDeleteLink: PropTypes.func,
 };

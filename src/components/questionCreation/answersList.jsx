@@ -36,10 +36,15 @@ export default function AnswersList(props) {
   return (
     <List>
       {answers.map((el, i) => (
-        <ListItem className={classes.listItem} key={`${el}-${i}`}>
+        <ListItem
+          className={classes.listItem}
+          key={`${el.allowedTerm.codeMeaning}-${i}`}
+        >
           <div className={classes.itemTextGrp}>
             <p>
-              <span className={classes.listItemTerm}>{el.obj.prefLabel}</span>
+              <span className={classes.listItemTerm}>
+                {el.allowedTerm.codeMeaning}
+              </span>
               <span className={classes.ontologyTitle}>
                 {`(${el.title.acronym} - ${el.title.name})`}
               </span>

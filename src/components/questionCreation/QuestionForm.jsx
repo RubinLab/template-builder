@@ -24,6 +24,7 @@ import Drawer from '@material-ui/core/Drawer';
 import SearchResults from './SearchResults.jsx';
 import AnswerList from './answersList.jsx';
 import { getResults } from '../../services/apiServices';
+import createID from '../../utils/helper';
 
 const materialUseStyles = makeStyles(theme => ({
   root: { direction: 'row', marginLeft: theme.spacing(1) },
@@ -63,7 +64,7 @@ const materialUseStyles = makeStyles(theme => ({
   },
   inputFieldGroup: {
     display: 'flex',
-    justifyContent: 'space-between',
+    justifyContent: 'start',
     flexDirection: 'row',
     alignItems: 'center',
     flexWrap: 'wrap',
@@ -82,6 +83,10 @@ const materialUseStyles = makeStyles(theme => ({
   },
   filledText: {
     paddingTop: theme.spacing(0.5),
+    marginRight: theme.spacing(2),
+  },
+  inputField: {
+    marginRight: theme.spacing(2),
   },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
@@ -113,6 +118,7 @@ const QuestionForm = props => {
   const [answerType, setAnswerType] = useState('');
   const [showBackdrop, setShowBackdrop] = useState(false);
   const [ontologyLibs, setOntologyLibs] = useState(null);
+
   const ontologyMap = JSON.parse(sessionStorage.getItem('ontologyMap'));
 
   const formInput = {
@@ -184,13 +190,22 @@ const QuestionForm = props => {
   });
 
   const handleTermSelection = (termIndex, title) => {
+    const term = searchResults.collection[termIndex];
+    const codeValue = term['@id'].split('/').pop();
+    const codeMeaning = term.prefLabel;
+    const codingSchemeDesignator = title.acronym;
+    const id = createID();
+    console.log('--->term', term);
     const newTerm = {
-      obj: searchResults.collection[termIndex],
-      title,
+      [id]: {
+        allowedTerm: { codeValue, codeMeaning, codingSchemeDesignator },
+        title,
+        id,
+      },
     };
     const newSelected = selectedTerms
-      ? selectedTerms.concat([newTerm])
-      : [newTerm];
+      ? { ...selectedTerms, ...newTerm }
+      : newTerm;
     postQuestion({ ...formInput, selectedTerms: newSelected });
     setTermSelection(newSelected);
     setShowSearchResults(false);
@@ -360,7 +375,7 @@ const QuestionForm = props => {
       {selectedTerms && (
         <div>
           <AnswerList
-            answers={selectedTerms}
+            answers={Object.values(selectedTerms)}
             handleDelete={handleDeleteSelectedTerm}
           />
         </div>
@@ -394,7 +409,7 @@ const QuestionForm = props => {
           size="small"
           disabled={disabled}
         />
-        <TextField
+        {/* <TextField
           className={classes.inputField}
           label="Next ID"
           size="small"
@@ -411,7 +426,7 @@ const QuestionForm = props => {
           onChange={e => {
             setNoMore(e.target.value);
           }}
-        />
+        /> */}
       </div>
       <div>
         <FormControlLabel

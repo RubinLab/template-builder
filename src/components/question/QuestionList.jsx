@@ -5,7 +5,7 @@ import Question from './Question.jsx';
 
 export default function QuestionsList(props) {
   const [questions, setQuestions] = useState([...props.questions]);
-  const { handleDelete, handleEdit, handleLink } = props;
+  const { handleDelete, handleEdit } = props;
 
   useEffect(() => {
     const newList = [...questions];
@@ -22,13 +22,6 @@ export default function QuestionsList(props) {
       }
     }
   }, [props.questions, questions]);
-
-  // const handleReorder = ({ oldIndex, newIndex }) => {};
-  // const getListStyle = isDraggingOver => ({
-  //   background: isDraggingOver ? 'lightblue' : 'lightgrey',
-  //   padding: 8,
-  //   width: 250,
-  // });
 
   const reorder = (list, startIndex, endIndex) => {
     const result = Array.from(list);
@@ -53,19 +46,19 @@ export default function QuestionsList(props) {
     <DragDropContext onDragEnd={handleReorder}>
       <Droppable key={1} droppableId={`${1}`}>
         {provided => (
-          <div
-            ref={provided.innerRef}
-            // style={getListStyle(snapshot.isDraggingOver)}
-            {...provided.droppableProps}
-          >
+          <div ref={provided.innerRef} {...provided.droppableProps}>
             {questions.map((item, index) => (
               <Question
                 key={`${item.id}-${index}`}
                 handleDelete={handleDelete}
                 handleEdit={handleEdit}
-                handleLink={handleLink}
                 question={item}
                 index={index}
+                handleAnswerLink={props.handleAnswerLink}
+                handleQuestionLink={props.handleQuestionLink}
+                linkTextMap={props.linkTextMap}
+                linkedIdMap={props.linkedIdMap}
+                handleDeleteLink={props.handleDeleteLink}
               />
             ))}
             {provided.placeholder}
@@ -80,5 +73,9 @@ QuestionsList.propTypes = {
   handleEdit: PropTypes.func,
   handleDelete: PropTypes.func,
   questions: PropTypes.array,
-  handleLink: PropTypes.func,
+  handleAnswerLink: PropTypes.func,
+  handleQuestionLink: PropTypes.func,
+  linkTextMap: PropTypes.object,
+  linkedIdMap: PropTypes.object,
+  handleDeleteLink: PropTypes.func,
 };

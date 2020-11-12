@@ -10,7 +10,10 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import QuestionList from '../common/QuestionList.jsx';
+import Snackbar from '@material-ui/core/Snackbar';
+import Button from '@material-ui/core/Button';
+import AlertDialog from '../common/AlertDialog.jsx';
+import QuestionList from '../question/QuestionList.jsx';
 import QuestionCreation from '../questionCreation/index.jsx';
 import TemplatePreview from './templatePreview.jsx';
 import template1 from '../../utils/recist.1.json';
@@ -73,14 +76,71 @@ const materialUseStyles = makeStyles(theme => ({
   },
 }));
 
+const messages = { deleteLink: 'Are you sure you want to delete the link?' };
+
 export default function HomePage(props) {
   const classes = materialUseStyles();
   const [templateName, setTemplateName] = useState('');
   const [templateLevel, setTemplateLevel] = useState('');
   const [questions, setQuestions] = useState([]);
   const [questionID, setquestionID] = useState('');
+  const [linkTextMap, setlinkTextMap] = useState({});
+  const [linkedIdMap, setLinkedIdMap] = useState({
+    linkedAnswer: null,
+    linkedQuestion: null,
+  });
+  const [deletingAnswerLink, setDeletingAnswerLink] = useState(null);
+  const [open, setOpen] = useState(false);
 
-  const { handleAddQuestion, showDialog } = props;
+  const handleDeleteLinkModal = (
+    answerLinkID,
+    quesID,
+    answerIndex,
+    questionIndex
+  ) => {
+    setDeletingAnswerLink({
+      answerLinkID,
+      quesID,
+      answerIndex,
+      questionIndex,
+    });
+    setOpen(!open);
+  };
+
+  const deleteLinkFromJson = () => {
+    // TODO find the answer and delete the nextId
+    try {
+      console.log(' --> delete implemented');
+      const {
+        answerLinkID,
+        quesID,
+        answerIndex,
+        questionIndex,
+      } = deletingAnswerLink;
+
+      console.log('typeof questions');
+      console.log(typeof questions);
+
+      const newQuestions = [...questions];
+      if (
+        newQuestions[questionIndex] &&
+        newQuestions[questionIndex].id === quesID
+      ) {
+        delete newQuestions[questionIndex].selectedTerms[answerLinkID].nextId;
+      } else {
+        // eslint-disable-next-line no-restricted-syntax
+        for (const ques of newQuestions) {
+          if (ques.id === quesID) {
+            delete ques.selectedTerms[answerLinkID];
+          }
+        }
+      }
+
+      handleDeleteLinkModal();
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const handleSaveQuestion = questionInput => {
     setQuestions(questions.concat(questionInput));
@@ -120,6 +180,71 @@ export default function HomePage(props) {
     getOntologyMap();
   }, []);
 
+  const createLink = newLinkedIdMap => {
+    const { linkedAnswer, linkedQuestion } = newLinkedIdMap;
+    if (linkedAnswer && linkedQuestion) {
+      // TODO
+      // find the answer and add nextID
+      // after that clear linkedIdMap
+      setLinkedIdMap({ linkedAnswer: null, linkedQuestion: null });
+    }
+  };
+
+  const handleAnswerLink = (
+    undo,
+    answer,
+    questionId,
+    questionIndex,
+    questionText
+  ) => {
+    const newLinkTextMap = { ...linkTextMap };
+    const newLinkedIdMap = { ...linkedIdMap };
+    if (undo || linkedIdMap.linkedAnswer) {
+      if (newLinkedIdMap.linkedQuestion) {
+        delete newLinkTextMap[newLinkedIdMap.linkedQuestion.id];
+      }
+      if (newLinkTextMap[linkedIdMap.linkedAnswer.id])
+        delete newLinkTextMap[linkedIdMap.linkedAnswer.id];
+      setlinkTextMap(newLinkTextMap);
+      setLinkedIdMap({
+        linkedAnswer: null,
+        linkedQuestion: null,
+      });
+      return;
+    }
+    newLinkedIdMap.linkedAnswer = {
+      id: answer.id,
+      questionId,
+      questionText,
+      answerText: answer.allowedTerm.codeMeaning,
+    };
+    setLinkedIdMap(newLinkedIdMap);
+  };
+  const handleQuestionLink = (undo, question) => {
+    const newLinkTextMap = { ...linkTextMap };
+    const newLinkedIdMap = { ...linkedIdMap };
+    if (undo || linkedIdMap[question.id]) {
+      if (newLinkedIdMap.linkedQuestion) {
+        delete newLinkTextMap[newLinkedIdMap.linkedQuestion.id];
+      }
+      if (newLinkTextMap[question.id]) delete newLinkTextMap[question.id];
+      setlinkTextMap(newLinkTextMap);
+      newLinkedIdMap.linkedQuestion = null;
+      setLinkedIdMap(newLinkedIdMap);
+      return;
+    }
+    newLinkedIdMap.linkedQuestion = {
+      id: question.id,
+      questionText: question.question,
+    };
+    setLinkedIdMap(newLinkedIdMap);
+    const { answerText, questionText, id } = linkedIdMap.linkedAnswer;
+    newLinkTextMap[question.id] = `${answerText} of ${questionText}`;
+    newLinkTextMap[id] = question.question;
+    setlinkTextMap(newLinkTextMap);
+    createLink(newLinkedIdMap);
+  };
+
   const handleEdit = () => {};
 
   const handleDelete = question => {
@@ -137,7 +262,6 @@ export default function HomePage(props) {
     delete updatedQuestions[question.id];
     setQuestions(updatedQuestions);
   };
-  const handleLink = () => {};
 
   const questionsArr = Object.values(questions);
   const template = questionsArr.length === 1 ? template1 : template2;
@@ -184,7 +308,11 @@ export default function HomePage(props) {
                     handleEdit={handleEdit}
                     handleDelete={handleDelete}
                     questions={questionsArr}
-                    handleLink={handleLink}
+                    handleAnswerLink={handleAnswerLink}
+                    handleQuestionLink={handleQuestionLink}
+                    linkTextMap={linkTextMap}
+                    linkedIdMap={linkedIdMap}
+                    handleDeleteLink={handleDeleteLinkModal}
                   />
                 </>
               )}
@@ -209,15 +337,40 @@ export default function HomePage(props) {
           </Card>
         </Grid>
       </Grid>
-      {showDialog && (
+      {props.showDialog && (
         <QuestionCreation
-          open={showDialog}
+          open={props.showDialog}
           templateName={templateName}
-          handleClose={handleAddQuestion}
+          handleClose={props.handleAddQuestion}
           handleSaveQuestion={handleSaveQuestion}
           questionID={questionID}
         />
       )}
+      <Snackbar
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+        open={linkedIdMap.linkedAnswer && !linkedIdMap.linkedQuestion}
+        message={`Click on the link icon next to the question you want to jump`}
+        action={
+          <React.Fragment>
+            <Button
+              color="secondary"
+              // size="small"
+              onClick={() => handleAnswerLink(true)}
+            >
+              UNDO
+            </Button>
+          </React.Fragment>
+        }
+      />
+      <AlertDialog
+        message={messages.deleteLink}
+        onOK={deleteLinkFromJson}
+        onCancel={deleteLinkFromJson}
+        open={open}
+      />
     </>
   );
 }

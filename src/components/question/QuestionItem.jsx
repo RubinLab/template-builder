@@ -12,6 +12,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import IconButton from '@material-ui/core/IconButton';
 import Collapse from '@material-ui/core/Collapse';
+import AnswerLinkButton from './AnswerLinkButton.jsx';
 
 const useStyles = makeStyles(theme => ({
   listItem0: {
@@ -54,8 +55,20 @@ const useStyles = makeStyles(theme => ({
 
 export default function QuestionItem(props) {
   const classes = useStyles();
-  const { handleDelete, handleEdit, handleLink, question, level } = props;
+  const {
+    handleEdit,
+    handleDelete,
+    question,
+    index,
+    level,
+    handleAnswerLink,
+    handleQuestionLink,
+    linkTextMap,
+    linkedIdMap,
+    handleDeleteLink,
+  } = props;
   const [open, setOpen] = useState(false);
+
   return (
     <>
       <ListItem className={classes[`listItem${level}`]}>
@@ -87,23 +100,35 @@ export default function QuestionItem(props) {
         >
           <Delete />
         </IconButton>
-        <IconButton
-          onClick={() => handleLink()}
-          className={classes.listItemIcon}
-        >
-          <InsertLinkIcon />
-        </IconButton>
+        {linkedIdMap.linkedAnswer && (
+          <IconButton
+            onClick={() => handleQuestionLink(false, question)}
+            className={classes.listItemIcon}
+          >
+            <InsertLinkIcon />
+          </IconButton>
+        )}
       </ListItem>
-      {question.selectedTerms && Array.isArray(question.selectedTerms) && (
+      {question.selectedTerms && (
         <Collapse in={open} timeout="auto" unmountOnExit>
           <List component="div">
-            {question.selectedTerms.map((term, i) => {
+            {Object.values(question.selectedTerms).map((term, i) => {
               return (
-                <ListItem className={classes.listItem} key={`${term}-${i}`}>
-                  <ListItemText primary={term.obj.prefLabel} />
-                  <IconButton onClick={() => handleLink(term)}>
-                    <InsertLinkIcon />
-                  </IconButton>
+                <ListItem
+                  className={classes.listItem}
+                  key={`${term.allowedTerm.codeMeaning}-${i}`}
+                >
+                  <ListItemText primary={term.allowedTerm.codeMeaning} />
+                  <AnswerLinkButton
+                    handleAnswerLink={handleAnswerLink}
+                    linkTextMap={linkTextMap}
+                    linkedIdMap={linkedIdMap}
+                    questionIndex={index}
+                    answerIndex={i}
+                    question={question}
+                    term={term}
+                    handleDeleteLink={handleDeleteLink}
+                  />
                 </ListItem>
               );
             })}
@@ -118,7 +143,11 @@ QuestionItem.propTypes = {
   handleEdit: PropTypes.func,
   handleDelete: PropTypes.func,
   question: PropTypes.object,
-  handleLink: PropTypes.func,
   index: PropTypes.number,
   level: PropTypes.number,
+  handleAnswerLink: PropTypes.func,
+  handleQuestionLink: PropTypes.func,
+  linkTextMap: PropTypes.object,
+  linkedIdMap: PropTypes.object,
+  handleDeleteLink: PropTypes.func,
 };
