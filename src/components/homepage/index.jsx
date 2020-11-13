@@ -82,6 +82,7 @@ export default function HomePage(props) {
   const classes = materialUseStyles();
   const [templateName, setTemplateName] = useState('');
   const [templateLevel, setTemplateLevel] = useState('');
+  const [author, setAuthor] = useState('');
   const [questions, setQuestions] = useState([]);
   const [questionID, setquestionID] = useState('');
   const [linkTextMap, setlinkTextMap] = useState({});
@@ -144,13 +145,6 @@ export default function HomePage(props) {
 
   const handleSaveQuestion = questionInput => {
     setQuestions(questions.concat(questionInput));
-  };
-  const handleChangeTemplateName = e => {
-    setTemplateName(e.target.value);
-  };
-
-  const handleChangeTemplateLevel = e => {
-    setTemplateLevel(e.target.value);
   };
 
   const handleQuestionID = () => {
@@ -283,7 +277,7 @@ export default function HomePage(props) {
                   className={classes.textField}
                   id="standard-basic"
                   label="Template Name"
-                  onChange={handleChangeTemplateName}
+                  onChange={e => setTemplateName(e.target.value)}
                 />
                 <FormControl className={classes.formControl}>
                   <InputLabel id="templateLevel">Type of Template</InputLabel>
@@ -291,12 +285,18 @@ export default function HomePage(props) {
                     labelId="templateLevel"
                     id="demo-controlled-open-select"
                     value={templateLevel}
-                    onChange={handleChangeTemplateLevel}
+                    onChange={e => setTemplateLevel(e.target.value)}
                   >
                     <MenuItem value={'study'}>Study</MenuItem>
                     <MenuItem value={'series'}>Series</MenuItem>
                     <MenuItem value={'image'}>Image</MenuItem>
                   </Select>
+                  <TextField
+                    className={classes.textField}
+                    id="standard-basic"
+                    label="Author"
+                    onChange={e => setAuthor(e.target.value)}
+                  />
                 </FormControl>
               </form>
               {questionsArr.length > 0 && (
@@ -344,6 +344,7 @@ export default function HomePage(props) {
           handleClose={props.handleAddQuestion}
           handleSaveQuestion={handleSaveQuestion}
           questionID={questionID}
+          authors={author}
         />
       )}
       <Snackbar

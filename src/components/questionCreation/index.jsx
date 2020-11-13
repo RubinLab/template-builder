@@ -42,6 +42,7 @@ export default function QuestionCreation(props) {
     handleClose,
     handleSaveQuestion,
     questionID,
+    authors,
   } = props;
   const [showDetailCreation, setShowDetailCreation] = useState(false);
   const [details, setDetails] = useState([]);
@@ -56,11 +57,50 @@ export default function QuestionCreation(props) {
     setShowDetailCreation(false);
   };
 
+  const createTemplateQuestion = ques => {
+    const { questionType, explanatoryText, id, showConfidence } = ques;
+    const allowedTerm = ques.selectedTerms
+      ? Object.values(ques.selectedTerms).map(el => el.allowedTerm)
+      : [];
+    const component = {
+      label: ques.question,
+      // TODO what is itemnumber ??
+      // itemNumber: 0,
+      authors,
+      explanatoryText,
+      minCardinality: ques.minCard,
+      maxCardinality: ques.maxCard,
+      shouldDisplay: true,
+      id,
+    };
+
+    component.AllowedTerm = allowedTerm;
+
+    if (questionType === 'anatomic') {
+      component.AnatomicEntity = {
+        annotatorConfidence: showConfidence,
+      };
+    } else if (questionType === 'observation') {
+      component.ImagingObservation = {
+        annotatorConfidence: showConfidence,
+      };
+    } else {
+      component.annotatorConfidence = showConfidence;
+    }
+    return component;
+  };
+
   const handleSave = () => {
-    const updatedQuestion = { ...question };
+    let updatedQuestion = { ...question };
     updatedQuestion.id = questionID;
+    updatedQuestion = createTemplateQuestion(updatedQuestion);
+    if (question.questionType === 'observation' && details.length > 0) {
+      updatedQuestion.ImagingObservation.ImagingObservationCharacteristic = details.map(
+        el => createTemplateQuestion(el)
+      );
+    }
     setQuestion(updatedQuestion);
-    handleSaveQuestion({ ...updatedQuestion, characteristics: details });
+    handleSaveQuestion(updatedQuestion);
     handleClose(false);
   };
 
@@ -99,6 +139,7 @@ export default function QuestionCreation(props) {
               handleClose={setShowDetailCreation}
               handleSave={handleSaveDetail}
               setQuestion={setQuestion}
+              authors={authors}
             />
           )}
         </DialogContent>
@@ -121,4 +162,5 @@ QuestionCreation.propTypes = {
   handleClose: PropTypes.func,
   handleSaveQuestion: PropTypes.func,
   questionID: PropTypes.string,
+  authors: PropTypes.string,
 };

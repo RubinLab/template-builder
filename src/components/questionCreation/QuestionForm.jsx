@@ -105,6 +105,7 @@ const QuestionForm = props => {
   const { postQuestion, characteristic } = props;
   const [searchResults, setSearchResults] = useState({});
   const [question, setQuestion] = useState('');
+  const [explanatoryText, setExplanatoryText] = useState();
   const [questionType, setQuestionType] = useState('');
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
@@ -112,9 +113,7 @@ const QuestionForm = props => {
   const [minCard, setMinCard] = useState('');
   const [maxCard, setMaxCard] = useState('');
   const [disabled, setDisabled] = useState(false);
-  const [nextId, setNextID] = useState(null);
-  const [noMore, setNoMore] = useState(null);
-  const [showConfidence, setshowConfidence] = useState(null);
+  const [showConfidence, setshowConfidence] = useState(false);
   const [answerType, setAnswerType] = useState('');
   const [showBackdrop, setShowBackdrop] = useState(false);
   const [ontologyLibs, setOntologyLibs] = useState(null);
@@ -124,11 +123,10 @@ const QuestionForm = props => {
   const formInput = {
     questionType,
     question,
+    explanatoryText,
     selectedTerms,
     minCard,
     maxCard,
-    nextId,
-    noMore,
     showConfidence,
   };
 
@@ -296,6 +294,16 @@ const QuestionForm = props => {
           label="Question"
           multiline={true}
           onChange={handleQuestion}
+        />
+      </div>
+      <div>
+        <TextField
+          className={classes.textField}
+          label="Explanation (optional)"
+          multiline={true}
+          onChange={e => {
+            setExplanatoryText(e.target.value);
+          }}
         />
       </div>
       <div className={classes.answerGroup}>

@@ -100,7 +100,7 @@ export default function QuestionItem(props) {
         >
           <Delete />
         </IconButton>
-        {linkedIdMap.linkedAnswer && (
+        {linkedIdMap && linkedIdMap.linkedAnswer && (
           <IconButton
             onClick={() => handleQuestionLink(false, question)}
             className={classes.listItemIcon}
