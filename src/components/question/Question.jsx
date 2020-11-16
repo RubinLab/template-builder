@@ -8,9 +8,14 @@ export default function Question(props) {
   const [characteristics, setCharacteristics] = useState([]);
 
   useEffect(() => {
-    const char = props.question.characteristics
-      ? [...props.question.characteristics]
-      : [];
+    const char =
+      props.question.ImagingObservation &&
+      props.question.ImagingObservation.ImagingObservationCharacteristic
+        ? [
+            ...props.question.ImagingObservation
+              .ImagingObservationCharacteristic,
+          ]
+        : [];
     setCharacteristics(char);
   }, [props.question]);
 
@@ -32,6 +37,9 @@ export default function Question(props) {
     );
     setCharacteristics(items);
   };
+
+  // TODO if reorder happens, sent the new characteristics
+  // to the parent component so it can be updated
 
   return (
     <Draggable key={question.id} draggableId={question.id} index={index}>
@@ -79,6 +87,7 @@ export default function Question(props) {
                               linkTextMap={props.linkTextMap}
                               linkedIdMap={props.linkedIdMap}
                               handleDeleteLink={props.handleDeleteLink}
+                              creation={props.creation}
                             />
                           </div>
                         )}
@@ -106,4 +115,5 @@ Question.propTypes = {
   linkTextMap: PropTypes.object,
   linkedIdMap: PropTypes.object,
   handleDeleteLink: PropTypes.func,
+  creation: PropTypes.bool,
 };

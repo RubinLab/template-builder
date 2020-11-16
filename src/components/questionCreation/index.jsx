@@ -10,7 +10,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import QuestionForm from './QuestionForm.jsx';
 import DetailCreation from './detailsCreation.jsx';
 import QuestionList from '../question/QuestionList.jsx';
-import createID from '../../utils/helper';
+import { createID, createTemplateQuestion } from '../../utils/helper';
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -50,61 +50,26 @@ export default function QuestionCreation(props) {
 
   const handleSaveDetail = detail => {
     const id = createID();
-    const newDetail = { ...detail };
+    let newDetail = { ...detail };
     newDetail.id = id;
     newDetail.questionID = questionID;
+    newDetail = createTemplateQuestion(newDetail, authors);
     setDetails(details.concat(newDetail));
     setShowDetailCreation(false);
-  };
-
-  const createTemplateQuestion = ques => {
-    const { questionType, explanatoryText, id, showConfidence } = ques;
-    const allowedTerm = ques.selectedTerms
-      ? Object.values(ques.selectedTerms).map(el => el.allowedTerm)
-      : [];
-    const component = {
-      label: ques.question,
-      // TODO what is itemnumber ??
-      // itemNumber: 0,
-      authors,
-      explanatoryText,
-      minCardinality: ques.minCard,
-      maxCardinality: ques.maxCard,
-      shouldDisplay: true,
-      id,
-    };
-
-    component.AllowedTerm = allowedTerm;
-
-    if (questionType === 'anatomic') {
-      component.AnatomicEntity = {
-        annotatorConfidence: showConfidence,
-      };
-    } else if (questionType === 'observation') {
-      component.ImagingObservation = {
-        annotatorConfidence: showConfidence,
-      };
-    } else {
-      component.annotatorConfidence = showConfidence;
-    }
-    return component;
   };
 
   const handleSave = () => {
     let updatedQuestion = { ...question };
     updatedQuestion.id = questionID;
-    updatedQuestion = createTemplateQuestion(updatedQuestion);
+    updatedQuestion = createTemplateQuestion(updatedQuestion, authors);
     if (question.questionType === 'observation' && details.length > 0) {
-      updatedQuestion.ImagingObservation.ImagingObservationCharacteristic = details.map(
-        el => createTemplateQuestion(el)
-      );
+      updatedQuestion.ImagingObservation.ImagingObservationCharacteristic = details;
     }
     setQuestion(updatedQuestion);
     handleSaveQuestion(updatedQuestion);
     handleClose(false);
   };
 
-  const detailsArr = Object.values(details);
   return (
     <React.Fragment>
       <Dialog
@@ -132,7 +97,9 @@ export default function QuestionCreation(props) {
             </Button>
           )}
 
-          {detailsArr.length > 0 && <QuestionList questions={detailsArr} />}
+          {details.length > 0 && (
+            <QuestionList questions={details} creation={true} />
+          )}
           {showDetailCreation && (
             <DetailCreation
               open={showDetailCreation}

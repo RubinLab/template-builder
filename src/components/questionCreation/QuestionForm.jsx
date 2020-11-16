@@ -24,7 +24,7 @@ import Drawer from '@material-ui/core/Drawer';
 import SearchResults from './SearchResults.jsx';
 import AnswerList from './answersList.jsx';
 import { getResults } from '../../services/apiServices';
-import createID from '../../utils/helper';
+import { createID } from '../../utils/helper';
 
 const materialUseStyles = makeStyles(theme => ({
   root: { direction: 'row', marginLeft: theme.spacing(1) },
@@ -193,7 +193,6 @@ const QuestionForm = props => {
     const codeMeaning = term.prefLabel;
     const codingSchemeDesignator = title.acronym;
     const id = createID();
-    console.log('--->term', term);
     const newTerm = {
       [id]: {
         allowedTerm: { codeValue, codeMeaning, codingSchemeDesignator },

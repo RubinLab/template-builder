@@ -18,7 +18,7 @@ import QuestionCreation from '../questionCreation/index.jsx';
 import TemplatePreview from './templatePreview.jsx';
 import template1 from '../../utils/recist.1.json';
 import template2 from '../../utils/recist.2.json';
-import createID from '../../utils/helper';
+import { createID } from '../../utils/helper';
 import { getOntologyData } from '../../services/apiServices';
 
 const materialUseStyles = makeStyles(theme => ({
@@ -313,6 +313,7 @@ export default function HomePage(props) {
                     linkTextMap={linkTextMap}
                     linkedIdMap={linkedIdMap}
                     handleDeleteLink={handleDeleteLinkModal}
+                    creation={false}
                   />
                 </>
               )}
