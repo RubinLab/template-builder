@@ -16,8 +16,6 @@ import AlertDialog from '../common/AlertDialog.jsx';
 import QuestionList from '../question/QuestionList.jsx';
 import QuestionCreation from '../questionCreation/index.jsx';
 import TemplatePreview from './templatePreview.jsx';
-import template1 from '../../utils/recist.1.json';
-import template2 from '../../utils/recist.2.json';
 import { createID } from '../../utils/helper';
 import { getOntologyData } from '../../services/apiServices';
 
@@ -83,6 +81,8 @@ export default function HomePage(props) {
   const [templateName, setTemplateName] = useState('');
   const [templateLevel, setTemplateLevel] = useState('');
   const [author, setAuthor] = useState('');
+  const [description, setDescription] = useState('');
+  const [version, setVersion] = useState('');
   const [questions, setQuestions] = useState([]);
   const [questionID, setquestionID] = useState('');
   const [linkTextMap, setlinkTextMap] = useState({});
@@ -92,6 +92,60 @@ export default function HomePage(props) {
   });
   const [deletingAnswerLink, setDeletingAnswerLink] = useState(null);
   const [open, setOpen] = useState(false);
+  const [completeTemplate, setCompTemplate] = useState({});
+  // const [containerData, setContainer] = useState({});
+  // const [templateData, setTemplate] = useState({});
+
+  // TODO
+  // CLARIFY how and whre to get data like version codemeaning, codevalue etc.
+  // clarify the difference between template and the container
+
+  const getDate = () => {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const day = date.getDay();
+    return `${year}-${month}-${day}`;
+  };
+
+  // const validateRequiredTemplateMetadata = () => {};
+
+  const formContainerData = () => {
+    const newcontainer = {};
+    newcontainer.uid = createID();
+    newcontainer.name = templateName; // ??
+    newcontainer.authors = author; // ??
+    newcontainer.version = version;
+    newcontainer.creationDate = getDate();
+    newcontainer.description = description; // ??
+    return newcontainer;
+  };
+
+  const formTemplateData = () => {
+    const newTemplate = {};
+    newTemplate.uid = createID();
+    newTemplate.name = templateName;
+    newTemplate.authors = author;
+    newTemplate.version = version;
+    newTemplate.creationDate = getDate();
+    newTemplate.description = description;
+    newTemplate.codeMeaning = ''; // ???
+    newTemplate.codeValue = ''; // ??
+    newTemplate.codingSchemeDesignator = ''; // ??
+    newTemplate.codingSchemeVersion = ''; // ??
+    return newTemplate;
+  };
+
+  // TODO
+  // refactor: at the end formCompleteTemplate with download click
+  // remove questionslist parameter and take all data from the state
+  // for now it's passed as parameter to speed up the development to see the template in aimEditor
+  const formCompleteTemplate = questionsList => {
+    const temp = { ...formTemplateData(), Component: questionsList };
+    setCompTemplate({
+      TemplateContainer: { ...formContainerData(), Template: [temp] },
+    });
+  };
 
   const handleDeleteLinkModal = (
     answerLinkID,
@@ -111,17 +165,7 @@ export default function HomePage(props) {
   const deleteLinkFromJson = () => {
     // TODO find the answer and delete the nextId
     try {
-      console.log(' --> delete implemented');
-      const {
-        answerLinkID,
-        quesID,
-        answerIndex,
-        questionIndex,
-      } = deletingAnswerLink;
-
-      console.log('typeof questions');
-      console.log(typeof questions);
-
+      const { answerLinkID, quesID, questionIndex } = deletingAnswerLink;
       const newQuestions = [...questions];
       if (
         newQuestions[questionIndex] &&
@@ -144,7 +188,9 @@ export default function HomePage(props) {
   };
 
   const handleSaveQuestion = questionInput => {
-    setQuestions(questions.concat(questionInput));
+    const newQuestionList = questions.concat(questionInput);
+    setQuestions(newQuestionList);
+    formCompleteTemplate(newQuestionList);
   };
 
   const handleQuestionID = () => {
@@ -258,7 +304,7 @@ export default function HomePage(props) {
   };
 
   const questionsArr = Object.values(questions);
-  const template = questionsArr.length === 1 ? template1 : template2;
+  // const template = questionsArr.length === 1 ? template1 : template2;
   return (
     <>
       <Grid
@@ -297,6 +343,18 @@ export default function HomePage(props) {
                     label="Author"
                     onChange={e => setAuthor(e.target.value)}
                   />
+                  <TextField
+                    className={classes.textField}
+                    id="standard-basic"
+                    label="Description"
+                    onChange={e => setDescription(e.target.value)}
+                  />
+                  <TextField
+                    className={classes.textField}
+                    id="standard-basic"
+                    label="Version"
+                    onChange={e => setDescription(e.target.value)}
+                  />
                 </FormControl>
               </form>
               {questionsArr.length > 0 && (
@@ -329,7 +387,7 @@ export default function HomePage(props) {
                     Template Preview
                   </Typography>
                   <TemplatePreview
-                    template={template}
+                    template={completeTemplate}
                     noOfQuestions={questionsArr.length}
                   />
                 </CardContent>
