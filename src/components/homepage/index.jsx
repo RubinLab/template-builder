@@ -365,7 +365,7 @@ export default function HomePage(props) {
                     className={classes.textField}
                     id="standard-basic"
                     label="Version"
-                    onChange={e => setDescription(e.target.value)}
+                    onChange={e => setVersion(e.target.value)}
                   />
                 </FormControl>
               </form>
