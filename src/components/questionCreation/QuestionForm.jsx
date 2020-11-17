@@ -110,8 +110,8 @@ const QuestionForm = props => {
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTerms, setTermSelection] = useState(null);
-  const [minCard, setMinCard] = useState('');
-  const [maxCard, setMaxCard] = useState('');
+  const [minCard, setMinCard] = useState(null);
+  const [maxCard, setMaxCard] = useState(null);
   const [disabled, setDisabled] = useState(false);
   const [showConfidence, setshowConfidence] = useState(false);
   const [answerType, setAnswerType] = useState('');

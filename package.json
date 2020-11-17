@@ -9,6 +9,7 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.4.1",
     "@testing-library/user-event": "^7.2.1",
+    "ajv": "^6.12.6",
     "array-move": "^2.2.1",
     "axios": "^0.19.2",
     "jquery": "^3.5.1",
@@ -18,7 +19,7 @@
     "react-beautiful-dnd": "^13.0.0",
     "react-dom": "^16.13.0",
     "react-hook-form": "^6.8.4",
-    "react-scripts": "^3.4.3",
+    "react-scripts": "^4.0.0",
     "react-spring": "^8.0.27",
     "selenium-webdriver": "^4.0.0-alpha.7"
   },

@@ -43,6 +43,7 @@ export default function QuestionCreation(props) {
     handleSaveQuestion,
     questionID,
     authors,
+    index,
   } = props;
   const [showDetailCreation, setShowDetailCreation] = useState(false);
   const [details, setDetails] = useState([]);
@@ -53,7 +54,7 @@ export default function QuestionCreation(props) {
     let newDetail = { ...detail };
     newDetail.id = id;
     newDetail.questionID = questionID;
-    newDetail = createTemplateQuestion(newDetail, authors);
+    newDetail = createTemplateQuestion(newDetail, authors, details.length);
     setDetails(details.concat(newDetail));
     setShowDetailCreation(false);
   };
@@ -61,7 +62,7 @@ export default function QuestionCreation(props) {
   const handleSave = () => {
     let updatedQuestion = { ...question };
     updatedQuestion.id = questionID;
-    updatedQuestion = createTemplateQuestion(updatedQuestion, authors);
+    updatedQuestion = createTemplateQuestion(updatedQuestion, authors, index);
     if (question.questionType === 'observation' && details.length > 0) {
       updatedQuestion.ImagingObservation.ImagingObservationCharacteristic = details;
     }
@@ -130,4 +131,5 @@ QuestionCreation.propTypes = {
   handleSaveQuestion: PropTypes.func,
   questionID: PropTypes.string,
   authors: PropTypes.string,
+  index: PropTypes.number,
 };

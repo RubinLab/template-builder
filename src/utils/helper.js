@@ -1,23 +1,27 @@
 function createID() {
-  const id = Math.random()
-    .toString(16)
-    .substr(2, 8);
-  return id;
+  let uid = `2.25.${Math.floor(1 + Math.random() * 9)}`;
+  for (let index = 0; index < 38; index += 1) {
+    uid += Math.floor(Math.random() * 10);
+  }
+  return uid;
 }
 
-function createTemplateQuestion(ques, authors) {
+function createTemplateQuestion(ques, authors, index) {
   const { questionType, explanatoryText, id, showConfidence } = ques;
+  // eslint-disable-next-line radix
+  const minCardinality = parseInt(ques.minCard);
+  // eslint-disable-next-line radix
+  const maxCardinality = parseInt(ques.maxCard);
   const allowedTerm = ques.selectedTerms
     ? Object.values(ques.selectedTerms).map(el => el.allowedTerm)
     : [];
   const component = {
     label: ques.question,
-    // TODO what is itemnumber ??
-    // itemNumber: 0,
+    itemNumber: index,
     authors,
     explanatoryText,
-    minCardinality: ques.minCard,
-    maxCardinality: ques.maxCard,
+    minCardinality,
+    maxCardinality,
     shouldDisplay: true,
     id,
   };

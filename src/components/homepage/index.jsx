@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import Ajv from 'ajv';
+import ajvDraft from 'ajv/lib/refs/json-schema-draft-04.json';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -18,6 +20,9 @@ import QuestionCreation from '../questionCreation/index.jsx';
 import TemplatePreview from './templatePreview.jsx';
 import { createID } from '../../utils/helper';
 import { getOntologyData } from '../../services/apiServices';
+import schema from '../../utils/AIMTemplate_v2rvStanford_schema.json';
+import recist from '../../utils/recist.1.json';
+import invalid from '../../utils/invalidRecist.json';
 
 const materialUseStyles = makeStyles(theme => ({
   root: {
@@ -93,12 +98,18 @@ export default function HomePage(props) {
   const [deletingAnswerLink, setDeletingAnswerLink] = useState(null);
   const [open, setOpen] = useState(false);
   const [completeTemplate, setCompTemplate] = useState({});
-  // const [containerData, setContainer] = useState({});
-  // const [templateData, setTemplate] = useState({});
+  const [validationErrors, setValErrors] = useState([]);
 
   // TODO
   // CLARIFY how and whre to get data like version codemeaning, codevalue etc.
   // clarify the difference between template and the container
+
+  const validateTemplate = cont => {
+    const ajv = new Ajv({ schemaId: 'id' });
+    ajv.addMetaSchema(ajvDraft);
+    const valid = ajv.validate(schema, cont);
+    if (!valid) setValErrors(validationErrors.concat(ajv.errors));
+  };
 
   const getDate = () => {
     const date = new Date();
@@ -142,9 +153,11 @@ export default function HomePage(props) {
   // for now it's passed as parameter to speed up the development to see the template in aimEditor
   const formCompleteTemplate = questionsList => {
     const temp = { ...formTemplateData(), Component: questionsList };
-    setCompTemplate({
+    const cont = {
       TemplateContainer: { ...formContainerData(), Template: [temp] },
-    });
+    };
+    setCompTemplate({ ...cont });
+    validateTemplate(cont);
   };
 
   const handleDeleteLinkModal = (
@@ -304,7 +317,6 @@ export default function HomePage(props) {
   };
 
   const questionsArr = Object.values(questions);
-  // const template = questionsArr.length === 1 ? template1 : template2;
   return (
     <>
       <Grid
@@ -404,6 +416,7 @@ export default function HomePage(props) {
           handleSaveQuestion={handleSaveQuestion}
           questionID={questionID}
           authors={author}
+          index={questions.length}
         />
       )}
       <Snackbar
