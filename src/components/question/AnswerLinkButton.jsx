@@ -43,7 +43,7 @@ export default function AnswerLinkButton({
   };
   const showInfo = Boolean(anchorEl);
   let answerLink = null;
-  if (linkTextMap[term.id]) {
+  if (linkTextMap && linkTextMap[term.id]) {
     answerLink = (
       <>
         <LinkOff id={`disableLink-${answerIndex}`} onMouseEnter={handleOpen} />

@@ -66,6 +66,7 @@ export default function QuestionItem(props) {
     linkTextMap,
     linkedIdMap,
     handleDeleteLink,
+    creation,
   } = props;
   const [open, setOpen] = useState(false);
 
@@ -82,7 +83,7 @@ export default function QuestionItem(props) {
           primary={
             <>
               <Typography className={classes.listItemHeader}>
-                {question.question}
+                {question.label}
               </Typography>
             </>
           }
@@ -100,7 +101,7 @@ export default function QuestionItem(props) {
         >
           <Delete />
         </IconButton>
-        {linkedIdMap.linkedAnswer && (
+        {linkedIdMap && linkedIdMap.linkedAnswer && (
           <IconButton
             onClick={() => handleQuestionLink(false, question)}
             className={classes.listItemIcon}
@@ -109,26 +110,28 @@ export default function QuestionItem(props) {
           </IconButton>
         )}
       </ListItem>
-      {question.selectedTerms && (
+      {question.AllowedTerm && (
         <Collapse in={open} timeout="auto" unmountOnExit>
           <List component="div">
-            {Object.values(question.selectedTerms).map((term, i) => {
+            {Object.values(question.AllowedTerm).map((term, i) => {
               return (
                 <ListItem
                   className={classes.listItem}
-                  key={`${term.allowedTerm.codeMeaning}-${i}`}
+                  key={`${term.codeMeaning}-${i}`}
                 >
-                  <ListItemText primary={term.allowedTerm.codeMeaning} />
-                  <AnswerLinkButton
-                    handleAnswerLink={handleAnswerLink}
-                    linkTextMap={linkTextMap}
-                    linkedIdMap={linkedIdMap}
-                    questionIndex={index}
-                    answerIndex={i}
-                    question={question}
-                    term={term}
-                    handleDeleteLink={handleDeleteLink}
-                  />
+                  <ListItemText primary={term.codeMeaning} />
+                  {creation && (
+                    <AnswerLinkButton
+                      handleAnswerLink={handleAnswerLink}
+                      linkTextMap={linkTextMap}
+                      linkedIdMap={linkedIdMap}
+                      questionIndex={index}
+                      answerIndex={i}
+                      question={question}
+                      term={term}
+                      handleDeleteLink={handleDeleteLink}
+                    />
+                  )}
                 </ListItem>
               );
             })}
@@ -150,4 +153,5 @@ QuestionItem.propTypes = {
   linkTextMap: PropTypes.object,
   linkedIdMap: PropTypes.object,
   handleDeleteLink: PropTypes.func,
+  creation: PropTypes.bool,
 };

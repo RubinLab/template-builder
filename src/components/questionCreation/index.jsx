@@ -10,7 +10,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import QuestionForm from './QuestionForm.jsx';
 import DetailCreation from './detailsCreation.jsx';
 import QuestionList from '../question/QuestionList.jsx';
-import createID from '../../utils/helper';
+import { createID, createTemplateQuestion } from '../../utils/helper';
 
 const useStyles = makeStyles(theme => ({
   root: {},
@@ -42,6 +42,8 @@ export default function QuestionCreation(props) {
     handleClose,
     handleSaveQuestion,
     questionID,
+    authors,
+    index,
   } = props;
   const [showDetailCreation, setShowDetailCreation] = useState(false);
   const [details, setDetails] = useState([]);
@@ -49,22 +51,26 @@ export default function QuestionCreation(props) {
 
   const handleSaveDetail = detail => {
     const id = createID();
-    const newDetail = { ...detail };
+    let newDetail = { ...detail };
     newDetail.id = id;
     newDetail.questionID = questionID;
+    newDetail = createTemplateQuestion(newDetail, authors, details.length);
     setDetails(details.concat(newDetail));
     setShowDetailCreation(false);
   };
 
   const handleSave = () => {
-    const updatedQuestion = { ...question };
+    let updatedQuestion = { ...question };
     updatedQuestion.id = questionID;
+    updatedQuestion = createTemplateQuestion(updatedQuestion, authors, index);
+    if (question.questionType === 'observation' && details.length > 0) {
+      updatedQuestion.ImagingObservation.ImagingObservationCharacteristic = details;
+    }
     setQuestion(updatedQuestion);
-    handleSaveQuestion({ ...updatedQuestion, characteristics: details });
+    handleSaveQuestion(updatedQuestion);
     handleClose(false);
   };
 
-  const detailsArr = Object.values(details);
   return (
     <React.Fragment>
       <Dialog
@@ -92,13 +98,16 @@ export default function QuestionCreation(props) {
             </Button>
           )}
 
-          {detailsArr.length > 0 && <QuestionList questions={detailsArr} />}
+          {details.length > 0 && (
+            <QuestionList questions={details} creation={true} />
+          )}
           {showDetailCreation && (
             <DetailCreation
               open={showDetailCreation}
               handleClose={setShowDetailCreation}
               handleSave={handleSaveDetail}
               setQuestion={setQuestion}
+              authors={authors}
             />
           )}
         </DialogContent>
@@ -121,4 +130,6 @@ QuestionCreation.propTypes = {
   handleClose: PropTypes.func,
   handleSaveQuestion: PropTypes.func,
   questionID: PropTypes.string,
+  authors: PropTypes.string,
+  index: PropTypes.number,
 };

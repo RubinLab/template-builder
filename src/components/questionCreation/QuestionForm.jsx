@@ -24,7 +24,7 @@ import Drawer from '@material-ui/core/Drawer';
 import SearchResults from './SearchResults.jsx';
 import AnswerList from './answersList.jsx';
 import { getResults } from '../../services/apiServices';
-import createID from '../../utils/helper';
+import { createID } from '../../utils/helper';
 
 const materialUseStyles = makeStyles(theme => ({
   root: { direction: 'row', marginLeft: theme.spacing(1) },
@@ -105,16 +105,15 @@ const QuestionForm = props => {
   const { postQuestion, characteristic } = props;
   const [searchResults, setSearchResults] = useState({});
   const [question, setQuestion] = useState('');
+  const [explanatoryText, setExplanatoryText] = useState();
   const [questionType, setQuestionType] = useState('');
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTerms, setTermSelection] = useState(null);
-  const [minCard, setMinCard] = useState('');
-  const [maxCard, setMaxCard] = useState('');
+  const [minCard, setMinCard] = useState(null);
+  const [maxCard, setMaxCard] = useState(null);
   const [disabled, setDisabled] = useState(false);
-  const [nextId, setNextID] = useState(null);
-  const [noMore, setNoMore] = useState(null);
-  const [showConfidence, setshowConfidence] = useState(null);
+  const [showConfidence, setshowConfidence] = useState(false);
   const [answerType, setAnswerType] = useState('');
   const [showBackdrop, setShowBackdrop] = useState(false);
   const [ontologyLibs, setOntologyLibs] = useState(null);
@@ -124,11 +123,10 @@ const QuestionForm = props => {
   const formInput = {
     questionType,
     question,
+    explanatoryText,
     selectedTerms,
     minCard,
     maxCard,
-    nextId,
-    noMore,
     showConfidence,
   };
 
@@ -195,7 +193,6 @@ const QuestionForm = props => {
     const codeMeaning = term.prefLabel;
     const codingSchemeDesignator = title.acronym;
     const id = createID();
-    console.log('--->term', term);
     const newTerm = {
       [id]: {
         allowedTerm: { codeValue, codeMeaning, codingSchemeDesignator },
@@ -296,6 +293,16 @@ const QuestionForm = props => {
           label="Question"
           multiline={true}
           onChange={handleQuestion}
+        />
+      </div>
+      <div>
+        <TextField
+          className={classes.textField}
+          label="Explanation (optional)"
+          multiline={true}
+          onChange={e => {
+            setExplanatoryText(e.target.value);
+          }}
         />
       </div>
       <div className={classes.answerGroup}>

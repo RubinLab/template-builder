@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import Ajv from 'ajv';
+import ajvDraft from 'ajv/lib/refs/json-schema-draft-04.json';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -16,10 +18,11 @@ import AlertDialog from '../common/AlertDialog.jsx';
 import QuestionList from '../question/QuestionList.jsx';
 import QuestionCreation from '../questionCreation/index.jsx';
 import TemplatePreview from './templatePreview.jsx';
-import template1 from '../../utils/recist.1.json';
-import template2 from '../../utils/recist.2.json';
-import createID from '../../utils/helper';
+import { createID } from '../../utils/helper';
 import { getOntologyData } from '../../services/apiServices';
+import schema from '../../utils/AIMTemplate_v2rvStanford_schema.json';
+import recist from '../../utils/recist.1.json';
+import invalid from '../../utils/invalidRecist.json';
 
 const materialUseStyles = makeStyles(theme => ({
   root: {
@@ -82,6 +85,9 @@ export default function HomePage(props) {
   const classes = materialUseStyles();
   const [templateName, setTemplateName] = useState('');
   const [templateLevel, setTemplateLevel] = useState('');
+  const [author, setAuthor] = useState('');
+  const [description, setDescription] = useState('');
+  const [version, setVersion] = useState('');
   const [questions, setQuestions] = useState([]);
   const [questionID, setquestionID] = useState('');
   const [linkTextMap, setlinkTextMap] = useState({});
@@ -91,6 +97,68 @@ export default function HomePage(props) {
   });
   const [deletingAnswerLink, setDeletingAnswerLink] = useState(null);
   const [open, setOpen] = useState(false);
+  const [completeTemplate, setCompTemplate] = useState({});
+  const [validationErrors, setValErrors] = useState([]);
+
+  // TODO
+  // CLARIFY how and whre to get data like version codemeaning, codevalue etc.
+  // clarify the difference between template and the container
+
+  const validateTemplate = cont => {
+    const ajv = new Ajv({ schemaId: 'id' });
+    ajv.addMetaSchema(ajvDraft);
+    const valid = ajv.validate(schema, cont);
+    if (!valid) setValErrors(validationErrors.concat(ajv.errors));
+  };
+
+  const getDate = () => {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const day = date.getDay();
+    return `${year}-${month}-${day}`;
+  };
+
+  // const validateRequiredTemplateMetadata = () => {};
+
+  const formContainerData = () => {
+    const newcontainer = {};
+    newcontainer.uid = createID();
+    newcontainer.name = templateName; // ??
+    newcontainer.authors = author; // ??
+    newcontainer.version = version;
+    newcontainer.creationDate = getDate();
+    newcontainer.description = description; // ??
+    return newcontainer;
+  };
+
+  const formTemplateData = () => {
+    const newTemplate = {};
+    newTemplate.uid = createID();
+    newTemplate.name = templateName;
+    newTemplate.authors = author;
+    newTemplate.version = version;
+    newTemplate.creationDate = getDate();
+    newTemplate.description = description;
+    newTemplate.codeMeaning = ''; // ???
+    newTemplate.codeValue = ''; // ??
+    newTemplate.codingSchemeDesignator = ''; // ??
+    newTemplate.codingSchemeVersion = ''; // ??
+    return newTemplate;
+  };
+
+  // TODO
+  // refactor: at the end formCompleteTemplate with download click
+  // remove questionslist parameter and take all data from the state
+  // for now it's passed as parameter to speed up the development to see the template in aimEditor
+  const formCompleteTemplate = questionsList => {
+    const temp = { ...formTemplateData(), Component: questionsList };
+    const cont = {
+      TemplateContainer: { ...formContainerData(), Template: [temp] },
+    };
+    setCompTemplate({ ...cont });
+    validateTemplate(cont);
+  };
 
   const handleDeleteLinkModal = (
     answerLinkID,
@@ -110,17 +178,7 @@ export default function HomePage(props) {
   const deleteLinkFromJson = () => {
     // TODO find the answer and delete the nextId
     try {
-      console.log(' --> delete implemented');
-      const {
-        answerLinkID,
-        quesID,
-        answerIndex,
-        questionIndex,
-      } = deletingAnswerLink;
-
-      console.log('typeof questions');
-      console.log(typeof questions);
-
+      const { answerLinkID, quesID, questionIndex } = deletingAnswerLink;
       const newQuestions = [...questions];
       if (
         newQuestions[questionIndex] &&
@@ -143,14 +201,9 @@ export default function HomePage(props) {
   };
 
   const handleSaveQuestion = questionInput => {
-    setQuestions(questions.concat(questionInput));
-  };
-  const handleChangeTemplateName = e => {
-    setTemplateName(e.target.value);
-  };
-
-  const handleChangeTemplateLevel = e => {
-    setTemplateLevel(e.target.value);
+    const newQuestionList = questions.concat(questionInput);
+    setQuestions(newQuestionList);
+    formCompleteTemplate(newQuestionList);
   };
 
   const handleQuestionID = () => {
@@ -264,7 +317,6 @@ export default function HomePage(props) {
   };
 
   const questionsArr = Object.values(questions);
-  const template = questionsArr.length === 1 ? template1 : template2;
   return (
     <>
       <Grid
@@ -283,7 +335,7 @@ export default function HomePage(props) {
                   className={classes.textField}
                   id="standard-basic"
                   label="Template Name"
-                  onChange={handleChangeTemplateName}
+                  onChange={e => setTemplateName(e.target.value)}
                 />
                 <FormControl className={classes.formControl}>
                   <InputLabel id="templateLevel">Type of Template</InputLabel>
@@ -291,12 +343,30 @@ export default function HomePage(props) {
                     labelId="templateLevel"
                     id="demo-controlled-open-select"
                     value={templateLevel}
-                    onChange={handleChangeTemplateLevel}
+                    onChange={e => setTemplateLevel(e.target.value)}
                   >
                     <MenuItem value={'study'}>Study</MenuItem>
                     <MenuItem value={'series'}>Series</MenuItem>
                     <MenuItem value={'image'}>Image</MenuItem>
                   </Select>
+                  <TextField
+                    className={classes.textField}
+                    id="standard-basic"
+                    label="Author"
+                    onChange={e => setAuthor(e.target.value)}
+                  />
+                  <TextField
+                    className={classes.textField}
+                    id="standard-basic"
+                    label="Description"
+                    onChange={e => setDescription(e.target.value)}
+                  />
+                  <TextField
+                    className={classes.textField}
+                    id="standard-basic"
+                    label="Version"
+                    onChange={e => setVersion(e.target.value)}
+                  />
                 </FormControl>
               </form>
               {questionsArr.length > 0 && (
@@ -313,6 +383,7 @@ export default function HomePage(props) {
                     linkTextMap={linkTextMap}
                     linkedIdMap={linkedIdMap}
                     handleDeleteLink={handleDeleteLinkModal}
+                    creation={false}
                   />
                 </>
               )}
@@ -328,7 +399,7 @@ export default function HomePage(props) {
                     Template Preview
                   </Typography>
                   <TemplatePreview
-                    template={template}
+                    template={completeTemplate}
                     noOfQuestions={questionsArr.length}
                   />
                 </CardContent>
@@ -344,6 +415,8 @@ export default function HomePage(props) {
           handleClose={props.handleAddQuestion}
           handleSaveQuestion={handleSaveQuestion}
           questionID={questionID}
+          authors={author}
+          index={questions.length}
         />
       )}
       <Snackbar

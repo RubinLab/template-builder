@@ -59,6 +59,7 @@ export default function QuestionsList(props) {
                 linkTextMap={props.linkTextMap}
                 linkedIdMap={props.linkedIdMap}
                 handleDeleteLink={props.handleDeleteLink}
+                creation={props.creation}
               />
             ))}
             {provided.placeholder}
@@ -78,4 +79,5 @@ QuestionsList.propTypes = {
   linkTextMap: PropTypes.object,
   linkedIdMap: PropTypes.object,
   handleDeleteLink: PropTypes.func,
+  creation: PropTypes.bool,
 };
