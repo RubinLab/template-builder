@@ -28,7 +28,6 @@ function App() {
   return (
     <div className={classes.app}>
       <CssBaseline />
-
       <Navbar handleAddQuestion={handleAddQuestion} />
       <Homepage showDialog={showDialog} handleAddQuestion={handleAddQuestion} />
     </div>
