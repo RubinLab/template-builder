@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { SnackbarProvider } from 'notistack';
 import { makeStyles } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Navbar from './components/navbar/index.jsx';
@@ -26,11 +27,16 @@ function App() {
   };
 
   return (
-    <div className={classes.app}>
-      <CssBaseline />
-      <Navbar handleAddQuestion={handleAddQuestion} />
-      <Homepage showDialog={showDialog} handleAddQuestion={handleAddQuestion} />
-    </div>
+    <SnackbarProvider maxSnack={5}>
+      <div className={classes.app}>
+        <CssBaseline />
+        <Navbar handleAddQuestion={handleAddQuestion} />
+        <Homepage
+          showDialog={showDialog}
+          handleAddQuestion={handleAddQuestion}
+        />
+      </div>
+    </SnackbarProvider>
   );
 }
 

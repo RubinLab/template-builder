@@ -394,6 +394,7 @@ const QuestionForm = props => {
           value={maxCard}
           onChange={e => {
             setMaxCard(e.target.value);
+            postQuestion({ ...formInput, maxCard: e.target.value });
           }}
           InputLabelProps={{
             shrink: maxCard >= 0 || disabled,
@@ -408,6 +409,7 @@ const QuestionForm = props => {
           value={minCard}
           onChange={e => {
             setMinCard(e.target.value);
+            postQuestion({ ...formInput, minCard: e.target.value });
           }}
           InputLabelProps={{
             shrink: minCard >= 0 || minCard === 0 || disabled,

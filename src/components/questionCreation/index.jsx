@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useSnackbar } from 'notistack';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -49,14 +50,52 @@ export default function QuestionCreation(props) {
   const [details, setDetails] = useState([]);
   const [question, setQuestion] = useState({});
 
+  const { enqueueSnackbar } = useSnackbar();
+
+  const validateQuestionAttributes = (ques, questionType, char) => {
+    const errors = [];
+    const invalidMin =
+      typeof ques.minCardinality !== 'number' ||
+      Number.isNaN(ques.minCardinality);
+    const invalidMax =
+      typeof ques.maxCardinality !== 'number' ||
+      Number.isNaN(ques.maxCardinality);
+
+    if (ques.minCardinality > ques.maxCardinality) {
+      errors.push(
+        'Minimum cardinaltiy can not be bigger than maximum Cardinality!'
+      );
+    }
+    if (invalidMin || invalidMax) {
+      errors.push('Minimum and maximum cardinality fields are both required!');
+    }
+
+    if (ques.maxCardinality === 0) {
+      errors.push('Maximum Cardinality should be bigger than 0!');
+    }
+    if (!ques.label) {
+      errors.push('Question text is required!');
+    }
+    if (!char) {
+      if (!questionType) {
+        errors.push('Question type is required!');
+      }
+    }
+    errors.map(msg => enqueueSnackbar(msg, { variant: 'error' }));
+    return errors.length === 0;
+  };
+
   const handleSaveDetail = detail => {
     const id = createID();
     let newDetail = { ...detail };
     newDetail.id = id;
     newDetail.questionID = questionID;
     newDetail = createTemplateQuestion(newDetail, authors, details.length);
-    setDetails(details.concat(newDetail));
-    setShowDetailCreation(false);
+    const valid = validateQuestionAttributes(newDetail, true, true);
+    if (valid) {
+      setDetails(details.concat(newDetail));
+      setShowDetailCreation(false);
+    }
   };
 
   const handleSave = () => {
@@ -66,9 +105,15 @@ export default function QuestionCreation(props) {
     if (question.questionType === 'observation' && details.length > 0) {
       updatedQuestion.ImagingObservation.ImagingObservationCharacteristic = details;
     }
-    setQuestion(updatedQuestion);
-    handleSaveQuestion(updatedQuestion);
-    handleClose(false);
+    const valid = validateQuestionAttributes(
+      updatedQuestion,
+      question.questionType
+    );
+    if (valid) {
+      setQuestion(updatedQuestion);
+      handleSaveQuestion(updatedQuestion);
+      handleClose(false);
+    }
   };
 
   return (
