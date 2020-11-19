@@ -9,9 +9,12 @@ const getResults = (keyword, ontologiesList, page) => {
     params = `${params}&ontologies=${ontologiesList.join(',')}`;
   }
   if (page) params = `${params}&page=${page}`;
-  return axios.get(`${REST_URL}${params}&pagesize=150`, {
-    headers: { Authorization: `apikey token=${config.API_KEY}` },
-  });
+  return axios.get(
+    `${REST_URL}${params}&pagesize=150&include=prefLabel,synonym,definition,notation,cui,semanticType,properties`,
+    {
+      headers: { Authorization: `apikey token=${config.API_KEY}` },
+    }
+  );
 };
 
 const getOntologyData = () => {

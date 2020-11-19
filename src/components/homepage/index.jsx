@@ -21,8 +21,6 @@ import TemplatePreview from './templatePreview.jsx';
 import { createID } from '../../utils/helper';
 import { getOntologyData } from '../../services/apiServices';
 import schema from '../../utils/AIMTemplate_v2rvStanford_schema.json';
-import recist from '../../utils/recist.1.json';
-import invalid from '../../utils/invalidRecist.json';
 
 const materialUseStyles = makeStyles(theme => ({
   root: {
@@ -44,7 +42,7 @@ const materialUseStyles = makeStyles(theme => ({
     // width: 300,
   },
   textField: {
-    marginTop: theme.spacing(3),
+    marginTop: theme.spacing(1),
     minWidth: 300,
   },
   button: {
@@ -52,7 +50,7 @@ const materialUseStyles = makeStyles(theme => ({
     marginTop: theme.spacing(2),
   },
   formControl: {
-    marginTop: theme.spacing(3),
+    marginTop: theme.spacing(1),
     minWidth: 150,
   },
   templateContent: {
@@ -99,6 +97,7 @@ export default function HomePage(props) {
   const [open, setOpen] = useState(false);
   const [completeTemplate, setCompTemplate] = useState({});
   const [validationErrors, setValErrors] = useState([]);
+  const [templateUID, setTemplateUID] = useState('');
 
   // TODO
   // CLARIFY how and whre to get data like version codemeaning, codevalue etc.
@@ -114,12 +113,11 @@ export default function HomePage(props) {
   const getDate = () => {
     const date = new Date();
     const year = date.getFullYear();
-    const month = date.getMonth();
-    const day = date.getDay();
+    const month =
+      date.getMonth() < 9 ? `0${date.getMonth() + 1} ` : date.getMonth() + 1;
+    const day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
     return `${year}-${month}-${day}`;
   };
-
-  // const validateRequiredTemplateMetadata = () => {};
 
   const formContainerData = () => {
     const newcontainer = {};
@@ -231,6 +229,7 @@ export default function HomePage(props) {
 
   useEffect(() => {
     getOntologyMap();
+    setTemplateUID(createID());
   }, []);
 
   const createLink = newLinkedIdMap => {
@@ -340,6 +339,7 @@ export default function HomePage(props) {
                 <FormControl className={classes.formControl}>
                   <InputLabel id="templateLevel">Type of Template</InputLabel>
                   <Select
+                    className={classes.textField}
                     labelId="templateLevel"
                     id="demo-controlled-open-select"
                     value={templateLevel}
@@ -366,6 +366,20 @@ export default function HomePage(props) {
                     id="standard-basic"
                     label="Version"
                     onChange={e => setVersion(e.target.value)}
+                  />
+                  <TextField
+                    disabled
+                    id="standard-read-only-input"
+                    className={classes.textField}
+                    label="UID"
+                    value={templateUID}
+                  />
+                  <TextField
+                    disabled
+                    id="standard-read-only-input"
+                    className={classes.textField}
+                    label="Date"
+                    value={getDate()}
                   />
                 </FormControl>
               </form>
