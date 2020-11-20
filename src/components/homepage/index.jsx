@@ -44,6 +44,12 @@ const materialUseStyles = makeStyles(theme => ({
   textField: {
     marginTop: theme.spacing(1),
     minWidth: 300,
+    width: 400,
+  },
+  textFieldUID: {
+    marginTop: theme.spacing(1),
+    // minWidth: 300,
+    // width:
   },
   button: {
     display: 'block',
@@ -52,6 +58,7 @@ const materialUseStyles = makeStyles(theme => ({
   formControl: {
     marginTop: theme.spacing(1),
     minWidth: 150,
+    width: 400,
   },
   templateContent: {
     width: '45%',
@@ -60,6 +67,7 @@ const materialUseStyles = makeStyles(theme => ({
   contentCard: {
     boxShadow: 'none',
     background: '#fafafa',
+    width: 'min-content',
   },
   title: {
     marginTop: theme.spacing(3),
@@ -97,7 +105,7 @@ export default function HomePage(props) {
   const [open, setOpen] = useState(false);
   const [completeTemplate, setCompTemplate] = useState({});
   const [validationErrors, setValErrors] = useState([]);
-  const [templateUID, setTemplateUID] = useState('');
+  const [tempContUID, setTempContUID] = useState('');
 
   // TODO
   // CLARIFY how and whre to get data like version codemeaning, codevalue etc.
@@ -121,7 +129,7 @@ export default function HomePage(props) {
 
   const formContainerData = () => {
     const newcontainer = {};
-    newcontainer.uid = createID();
+    newcontainer.uid = tempContUID;
     newcontainer.name = templateName; // ??
     newcontainer.authors = author; // ??
     newcontainer.version = version;
@@ -229,7 +237,7 @@ export default function HomePage(props) {
 
   useEffect(() => {
     getOntologyMap();
-    setTemplateUID(createID());
+    setTempContUID(createID());
   }, []);
 
   const createLink = newLinkedIdMap => {
@@ -357,6 +365,7 @@ export default function HomePage(props) {
                   />
                   <TextField
                     className={classes.textField}
+                    multiline
                     id="standard-basic"
                     label="Description"
                     onChange={e => setDescription(e.target.value)}
@@ -369,10 +378,11 @@ export default function HomePage(props) {
                   />
                   <TextField
                     disabled
+                    fullWidth={true}
                     id="standard-read-only-input"
-                    className={classes.textField}
-                    label="UID"
-                    value={templateUID}
+                    className={classes.textFieldUID}
+                    label="Tmplate Container UID"
+                    value={tempContUID}
                   />
                   <TextField
                     disabled
