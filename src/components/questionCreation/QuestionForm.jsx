@@ -30,37 +30,37 @@ const materialUseStyles = makeStyles(theme => ({
   root: { direction: 'row', marginLeft: theme.spacing(1) },
   formControl: {
     marginTop: theme.spacing(3),
-    minWidth: 150,
+    minWidth: 150
   },
   button: {
     display: 'block',
     marginTop: theme.spacing(3),
     background: '#E3E0D8',
     '&:hover': {
-      background: '#CCBC8E',
-    },
+      background: '#CCBC8E'
+    }
   },
   icon: {
     marginRight: theme.spacing(1),
-    verticalAlign: 'middle',
+    verticalAlign: 'middle'
   },
   textField: {
     marginTop: theme.spacing(3),
     width: 400,
     [theme.breakpoints.down('sm')]: {
-      width: 300,
-    },
+      width: 300
+    }
   },
   searchInput: {
     width: 250,
-    marginTop: theme.spacing(3),
+    marginTop: theme.spacing(3)
   },
   searchButton: {
     background: '#E3E0D8',
     padding: theme.spacing(1),
     '&:hover': {
-      background: '#CCBC8E',
-    },
+      background: '#CCBC8E'
+    }
   },
   inputFieldGroup: {
     display: 'flex',
@@ -68,36 +68,36 @@ const materialUseStyles = makeStyles(theme => ({
     flexDirection: 'row',
     alignItems: 'center',
     flexWrap: 'wrap',
-    marginTop: theme.spacing(3),
+    marginTop: theme.spacing(3)
   },
   answerGroup: {
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'flex-end',
-    flexWrap: 'wrap',
+    flexWrap: 'wrap'
   },
   checkbox: {
     marginLeft: theme.spacing(0),
     marginTop: theme.spacing(3),
-    padding: theme.spacing(0),
+    padding: theme.spacing(0)
   },
   filledText: {
     paddingTop: theme.spacing(0.5),
-    marginRight: theme.spacing(2),
+    marginRight: theme.spacing(2)
   },
   inputField: {
-    marginRight: theme.spacing(2),
+    marginRight: theme.spacing(2)
   },
   backdrop: {
     zIndex: theme.zIndex.drawer + 1,
-    color: '#fff',
+    color: '#fff'
   },
   answerTypeMenu: {
-    marginRight: theme.spacing(2),
+    marginRight: theme.spacing(2)
   },
   resultsDrawer: {
-    flexShrink: 0,
-  },
+    flexShrink: 0
+  }
 }));
 
 const QuestionForm = props => {
@@ -127,7 +127,7 @@ const QuestionForm = props => {
     selectedTerms,
     minCard,
     maxCard,
-    showConfidence,
+    showConfidence
   };
 
   const handleSearch = async () => {
@@ -197,8 +197,8 @@ const QuestionForm = props => {
       [id]: {
         allowedTerm: { codeValue, codeMeaning, codingSchemeDesignator },
         title,
-        id,
-      },
+        id
+      }
     };
     const newSelected = selectedTerms
       ? { ...selectedTerms, ...newTerm }
@@ -396,7 +396,7 @@ const QuestionForm = props => {
             setMaxCard(e.target.value);
           }}
           InputLabelProps={{
-            shrink: maxCard >= 0 || disabled,
+            shrink: maxCard >= 0 || disabled
           }}
           type="number"
           size="small"
@@ -410,7 +410,7 @@ const QuestionForm = props => {
             setMinCard(e.target.value);
           }}
           InputLabelProps={{
-            shrink: minCard >= 0 || minCard === 0 || disabled,
+            shrink: minCard >= 0 || minCard === 0 || disabled
           }}
           type="number"
           size="small"
@@ -456,7 +456,7 @@ const QuestionForm = props => {
         anchor="right"
         open={showSearchResults}
         classes={{
-          paper: classes.drawerPaper,
+          paper: classes.drawerPaper
         }}
       >
         <SearchResults
@@ -475,5 +475,5 @@ export default QuestionForm;
 
 QuestionForm.propTypes = {
   postQuestion: PropTypes.func,
-  characteristic: PropTypes.bool,
+  characteristic: PropTypes.bool
 };

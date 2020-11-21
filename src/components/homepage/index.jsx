@@ -17,7 +17,7 @@ import Button from '@material-ui/core/Button';
 import AlertDialog from '../common/AlertDialog.jsx';
 import QuestionList from '../question/QuestionList.jsx';
 import QuestionCreation from '../questionCreation/index.jsx';
-import TemplatePreview from './templatePreview.jsx';
+// import TemplatePreview from './templatePreview.jsx';
 import { createID } from '../../utils/helper';
 import { getOntologyData } from '../../services/apiServices';
 import schema from '../../utils/AIMTemplate_v2rvStanford_schema.json';
@@ -29,13 +29,13 @@ const materialUseStyles = makeStyles(theme => ({
     width: '-webkit-fill-available',
     [theme.breakpoints.down('sm')]: {
       margin: theme.spacing(1),
-      padding: theme.spacing(1),
+      padding: theme.spacing(1)
     },
     [theme.breakpoints.up('lg')]: {
       marginRight: theme.spacing(20),
-      marginLeft: theme.spacing(20),
+      marginLeft: theme.spacing(20)
       // padding: theme.spacing(10),
-    },
+    }
   },
   form: {
     // margin: theme.spacing(2),
@@ -44,45 +44,45 @@ const materialUseStyles = makeStyles(theme => ({
   textField: {
     marginTop: theme.spacing(1),
     minWidth: 300,
-    width: 400,
+    width: 400
   },
   textFieldUID: {
-    marginTop: theme.spacing(1),
+    marginTop: theme.spacing(1)
     // minWidth: 300,
     // width:
   },
   button: {
     display: 'block',
-    marginTop: theme.spacing(2),
+    marginTop: theme.spacing(2)
   },
   formControl: {
     marginTop: theme.spacing(1),
     minWidth: 150,
-    width: 400,
+    width: 400
   },
   templateContent: {
     width: '45%',
-    minWidth: 300,
+    minWidth: 300
   },
   contentCard: {
     boxShadow: 'none',
     background: '#fafafa',
-    width: 'min-content',
+    width: 'min-content'
   },
   title: {
     marginTop: theme.spacing(3),
-    color: '#8c1717',
+    color: '#8c1717'
   },
 
   templateGrid: {
-    paddingTop: theme.spacing(2),
+    paddingTop: theme.spacing(2)
   },
   templateCard: {
     paddingTop: theme.spacing(2),
     [theme.breakpoints.down('sm')]: {
-      margin: 'auto',
-    },
-  },
+      margin: 'auto'
+    }
+  }
 }));
 
 const messages = { deleteLink: 'Are you sure you want to delete the link?' };
@@ -99,7 +99,7 @@ export default function HomePage(props) {
   const [linkTextMap, setlinkTextMap] = useState({});
   const [linkedIdMap, setLinkedIdMap] = useState({
     linkedAnswer: null,
-    linkedQuestion: null,
+    linkedQuestion: null
   });
   const [deletingAnswerLink, setDeletingAnswerLink] = useState(null);
   const [open, setOpen] = useState(false);
@@ -160,7 +160,7 @@ export default function HomePage(props) {
   const formCompleteTemplate = questionsList => {
     const temp = { ...formTemplateData(), Component: questionsList };
     const cont = {
-      TemplateContainer: { ...formContainerData(), Template: [temp] },
+      TemplateContainer: { ...formContainerData(), Template: [temp] }
     };
     setCompTemplate({ ...cont });
     validateTemplate(cont);
@@ -176,7 +176,7 @@ export default function HomePage(props) {
       answerLinkID,
       quesID,
       answerIndex,
-      questionIndex,
+      questionIndex
     });
     setOpen(!open);
   };
@@ -268,7 +268,7 @@ export default function HomePage(props) {
       setlinkTextMap(newLinkTextMap);
       setLinkedIdMap({
         linkedAnswer: null,
-        linkedQuestion: null,
+        linkedQuestion: null
       });
       return;
     }
@@ -276,7 +276,7 @@ export default function HomePage(props) {
       id: answer.id,
       questionId,
       questionText,
-      answerText: answer.allowedTerm.codeMeaning,
+      answerText: answer.allowedTerm.codeMeaning
     };
     setLinkedIdMap(newLinkedIdMap);
   };
@@ -295,7 +295,7 @@ export default function HomePage(props) {
     }
     newLinkedIdMap.linkedQuestion = {
       id: question.id,
-      questionText: question.question,
+      questionText: question.question
     };
     setLinkedIdMap(newLinkedIdMap);
     const { answerText, questionText, id } = linkedIdMap.linkedAnswer;
@@ -422,10 +422,11 @@ export default function HomePage(props) {
                   <Typography variant="h5" className={classes.title}>
                     Template Preview
                   </Typography>
-                  <TemplatePreview
+                  {console.log(completeTemplate)}
+                  {/* <TemplatePreview
                     template={completeTemplate}
                     noOfQuestions={questionsArr.length}
-                  />
+                  /> */}
                 </CardContent>
               </>
             )}
@@ -446,7 +447,7 @@ export default function HomePage(props) {
       <Snackbar
         anchorOrigin={{
           vertical: 'bottom',
-          horizontal: 'left',
+          horizontal: 'left'
         }}
         open={linkedIdMap.linkedAnswer && !linkedIdMap.linkedQuestion}
         message={`Click on the link icon next to the question you want to jump`}
@@ -474,5 +475,5 @@ export default function HomePage(props) {
 
 HomePage.propTypes = {
   showDialog: PropTypes.bool,
-  handleAddQuestion: PropTypes.func,
+  handleAddQuestion: PropTypes.func
 };

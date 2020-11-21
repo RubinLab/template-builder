@@ -24,7 +24,7 @@
   },
 
   "rules": {
-    "prettier/prettier": ["error", { "trailingComma": "es5" }],
+    "prettier/prettier": ["error", { "trailingComma": "none" }],
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn"
   }

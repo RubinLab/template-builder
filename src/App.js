@@ -9,9 +9,9 @@ const useStyles = makeStyles(theme => ({
     flexGrow: 1,
     width: 'fit-content',
     [theme.breakpoints.up('sm')]: {
-      width: '-webkit-fill-available',
-    },
-  },
+      width: '-webkit-fill-available'
+    }
+  }
 }));
 
 function App() {
