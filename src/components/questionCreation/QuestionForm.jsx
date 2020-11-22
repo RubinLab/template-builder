@@ -261,7 +261,7 @@ const QuestionForm = props => {
   };
   return (
     <div className={classes.root}>
-      {!characteristic && (
+      {(characteristic === 'anatomic' || characteristic === undefined) && (
         <div>
           <FormControl className={classes.formControl}>
             <InputLabel id="questionType">Question type</InputLabel>
@@ -279,10 +279,12 @@ const QuestionForm = props => {
                 <Visibility className={classes.icon} />
                 Imaging Observation
               </MenuItem>
-              <MenuItem value={'history'}>
-                <LocalHospital className={classes.icon} />
-                {`Clinical hist. & diagnosis`}
-              </MenuItem>
+              {!characteristic && (
+                <MenuItem value={'history'}>
+                  <LocalHospital className={classes.icon} />
+                  {`Clinical hist. & diagnosis`}
+                </MenuItem>
+              )}
             </Select>
           </FormControl>
         </div>
@@ -477,5 +479,5 @@ export default QuestionForm;
 
 QuestionForm.propTypes = {
   postQuestion: PropTypes.func,
-  characteristic: PropTypes.bool,
+  characteristic: PropTypes.string,
 };

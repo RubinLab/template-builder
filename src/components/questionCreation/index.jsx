@@ -133,13 +133,14 @@ export default function QuestionCreation(props) {
           </DialogContentText>
           <QuestionForm postQuestion={setQuestion} />
 
-          {question.questionType === 'observation' && (
+          {(question.questionType === 'observation' ||
+            question.questionType === 'anatomic') && (
             <Button
               variant="outlined"
               className={classes.button}
               onClick={() => setShowDetailCreation(true)}
             >
-              Add Observation Characteristics
+              Add Characteristics
             </Button>
           )}
 
@@ -153,6 +154,7 @@ export default function QuestionCreation(props) {
               handleSave={handleSaveDetail}
               setQuestion={setQuestion}
               authors={authors}
+              characteristic={question.questionType}
             />
           )}
         </DialogContent>

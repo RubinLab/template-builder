@@ -18,7 +18,7 @@ const materialUseStyles = makeStyles(theme => ({
 }));
 
 export default function DetailsCreation(props) {
-  const { open, handleClose, handleSave } = props;
+  const { open, handleClose, handleSave, characteristic } = props;
   const classes = materialUseStyles();
   const [question, setQuestion] = useState({});
 
@@ -33,13 +33,16 @@ export default function DetailsCreation(props) {
         scroll="body"
       >
         <DialogTitle id="createQuestion-title">
-          Create Observation Characteristics
+          Create Characteristics
         </DialogTitle>
         <DialogContent>
           <DialogContentText>
             {`Fill the form and save to add an observation characteristic question`}
           </DialogContentText>
-          <QuestionForm postQuestion={setQuestion} characteristic={true} />
+          <QuestionForm
+            postQuestion={setQuestion}
+            characteristic={characteristic}
+          />
         </DialogContent>
         <DialogActions>
           <Button onClick={() => handleClose(false)} color="secondary">
@@ -58,4 +61,5 @@ DetailsCreation.propTypes = {
   open: PropTypes.bool,
   handleClose: PropTypes.func,
   handleSave: PropTypes.func,
+  characteristic: PropTypes.string,
 };
