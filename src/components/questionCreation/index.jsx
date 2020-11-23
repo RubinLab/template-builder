@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useSnackbar } from 'notistack';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -46,29 +47,96 @@ export default function QuestionCreation(props) {
     index,
   } = props;
   const [showDetailCreation, setShowDetailCreation] = useState(false);
-  const [details, setDetails] = useState([]);
+  const [details, setDetails] = useState({
+    anatomic: [],
+    observation: [],
+  });
   const [question, setQuestion] = useState({});
+
+  const { enqueueSnackbar } = useSnackbar();
+
+  const validateQuestionAttributes = (ques, questionType, char) => {
+    const errors = [];
+    const invalidMin =
+      typeof ques.minCardinality !== 'number' ||
+      Number.isNaN(ques.minCardinality);
+    const invalidMax =
+      typeof ques.maxCardinality !== 'number' ||
+      Number.isNaN(ques.maxCardinality);
+
+    if (ques.minCardinality > ques.maxCardinality) {
+      errors.push(
+        'Minimum cardinaltiy can not be bigger than maximum Cardinality!'
+      );
+    }
+    if (invalidMin || invalidMax) {
+      errors.push('Minimum and maximum cardinality fields are both required!');
+    }
+
+    if (ques.maxCardinality === 0) {
+      errors.push('Maximum Cardinality should be bigger than 0!');
+    }
+
+    if (ques.maxCardinality < 0 || ques.minCardinality < 0) {
+      errors.push('Cardinality can not be a negative number!');
+    }
+
+    if (!ques.label) {
+      errors.push('Question text is required!');
+    }
+    if (!char) {
+      if (!questionType) {
+        errors.push('Question type is required!');
+      }
+    }
+    errors.map(msg => enqueueSnackbar(msg, { variant: 'error' }));
+    return errors.length === 0;
+  };
 
   const handleSaveDetail = detail => {
     const id = createID();
     let newDetail = { ...detail };
     newDetail.id = id;
     newDetail.questionID = questionID;
-    newDetail = createTemplateQuestion(newDetail, authors, details.length);
-    setDetails(details.concat(newDetail));
-    setShowDetailCreation(false);
+    const detailsIndex = details.anatomic.length + details.observation.length;
+    newDetail = createTemplateQuestion(newDetail, authors, detailsIndex, true);
+    const valid = validateQuestionAttributes(newDetail, true, true);
+    if (valid) {
+      const newDetails = { ...details };
+      newDetails[detail.questionType].push(newDetail);
+      setDetails(newDetails);
+      setShowDetailCreation(false);
+    }
   };
 
   const handleSave = () => {
     let updatedQuestion = { ...question };
     updatedQuestion.id = questionID;
     updatedQuestion = createTemplateQuestion(updatedQuestion, authors, index);
-    if (question.questionType === 'observation' && details.length > 0) {
-      updatedQuestion.ImagingObservation.ImagingObservationCharacteristic = details;
+    if (
+      question.questionType === 'observation' &&
+      details.observation.length > 0
+    ) {
+      updatedQuestion.ImagingObservation.ImagingObservationCharacteristic =
+        details.observation;
     }
-    setQuestion(updatedQuestion);
-    handleSaveQuestion(updatedQuestion);
-    handleClose(false);
+    if (question.questionType === 'anatomic') {
+      if (details.anatomic.length > 0)
+        updatedQuestion.AnatomicEntity.AnatomicEntityCharacteristic =
+          details.anatomic;
+      if (details.observation.length > 0)
+        updatedQuestion.AnatomicEntity.ImagingObservationCharacteristic =
+          details.observation;
+    }
+    const valid = validateQuestionAttributes(
+      updatedQuestion,
+      question.questionType
+    );
+    if (valid) {
+      setQuestion(updatedQuestion);
+      handleSaveQuestion(updatedQuestion);
+      handleClose(false);
+    }
   };
 
   return (
@@ -88,18 +156,22 @@ export default function QuestionCreation(props) {
           </DialogContentText>
           <QuestionForm postQuestion={setQuestion} />
 
-          {question.questionType === 'observation' && (
+          {(question.questionType === 'observation' ||
+            question.questionType === 'anatomic') && (
             <Button
               variant="outlined"
               className={classes.button}
               onClick={() => setShowDetailCreation(true)}
             >
-              Add Observation Characteristics
+              Add Characteristics
             </Button>
           )}
 
-          {details.length > 0 && (
-            <QuestionList questions={details} creation={true} />
+          {(details.anatomic.length > 0 || details.observation.length > 0) && (
+            <QuestionList
+              questions={[...details.anatomic, ...details.observation]}
+              creation={true}
+            />
           )}
           {showDetailCreation && (
             <DetailCreation
@@ -108,6 +180,7 @@ export default function QuestionCreation(props) {
               handleSave={handleSaveDetail}
               setQuestion={setQuestion}
               authors={authors}
+              characteristic={question.questionType}
             />
           )}
         </DialogContent>

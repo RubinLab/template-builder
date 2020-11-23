@@ -87,10 +87,10 @@ const materialUseStyles = makeStyles(theme => ({
 
 const messages = { deleteLink: 'Are you sure you want to delete the link?' };
 
-export default function HomePage(props) {
+export default function HomePage({ showDialog, handleAddQuestion }) {
   const classes = materialUseStyles();
   const [templateName, setTemplateName] = useState('');
-  const [templateLevel, setTemplateLevel] = useState('');
+  const [templateType, setTemplateType] = useState('');
   const [author, setAuthor] = useState('');
   const [description, setDescription] = useState('');
   const [version, setVersion] = useState('');
@@ -106,6 +106,7 @@ export default function HomePage(props) {
   const [completeTemplate, setCompTemplate] = useState({});
   const [validationErrors, setValErrors] = useState([]);
   const [tempContUID, setTempContUID] = useState('');
+  const [requiredError, setRequiredError] = useState(false);
 
   // TODO
   // CLARIFY how and whre to get data like version codemeaning, codevalue etc.
@@ -216,10 +217,23 @@ export default function HomePage(props) {
     const id = createID();
     setquestionID(id);
   };
+  const checkRequiredFields = addQuestionClicked => {
+    if ((!description || !templateName || !version) && showDialog) {
+      setRequiredError(true);
+      if (addQuestionClicked) handleAddQuestion(false);
+    }
+
+    if (description && templateName && version) {
+      setRequiredError(false);
+    }
+  };
 
   useEffect(() => {
     handleQuestionID();
-  }, [props.showDialog]);
+    if (showDialog) {
+      checkRequiredFields(true);
+    }
+  }, [showDialog]);
 
   const getOntologyMap = () => {
     getOntologyData()
@@ -339,10 +353,20 @@ export default function HomePage(props) {
             <div className={classes.templateContent}>
               <form className={classes.form} noValidate autoComplete="off">
                 <TextField
+                  error={requiredError && !templateName}
+                  helperText={
+                    requiredError && !templateName
+                      ? 'Fill before creating a question'
+                      : ''
+                  }
+                  required={true}
                   className={classes.textField}
                   id="standard-basic"
                   label="Template Name"
-                  onChange={e => setTemplateName(e.target.value)}
+                  onChange={e => {
+                    checkRequiredFields();
+                    setTemplateName(e.target.value);
+                  }}
                 />
                 <FormControl className={classes.formControl}>
                   <InputLabel id="templateLevel">Type of Template</InputLabel>
@@ -350,8 +374,8 @@ export default function HomePage(props) {
                     className={classes.textField}
                     labelId="templateLevel"
                     id="demo-controlled-open-select"
-                    value={templateLevel}
-                    onChange={e => setTemplateLevel(e.target.value)}
+                    value={templateType}
+                    onChange={e => setTemplateType(e.target.value)}
                   >
                     <MenuItem value={'study'}>Study</MenuItem>
                     <MenuItem value={'series'}>Series</MenuItem>
@@ -364,17 +388,37 @@ export default function HomePage(props) {
                     onChange={e => setAuthor(e.target.value)}
                   />
                   <TextField
+                    error={requiredError && !description}
+                    helperText={
+                      requiredError && !description
+                        ? 'Fill before creating a question'
+                        : ''
+                    }
+                    required={true}
                     className={classes.textField}
                     multiline
                     id="standard-basic"
                     label="Description"
-                    onChange={e => setDescription(e.target.value)}
+                    onChange={e => {
+                      checkRequiredFields();
+                      setDescription(e.target.value);
+                    }}
                   />
                   <TextField
+                    error={requiredError && !version}
+                    helperText={
+                      requiredError && !version
+                        ? 'Fill before creating a question'
+                        : ''
+                    }
+                    required={true}
                     className={classes.textField}
                     id="standard-basic"
                     label="Version"
-                    onChange={e => setVersion(e.target.value)}
+                    onChange={e => {
+                      checkRequiredFields();
+                      setVersion(e.target.value);
+                    }}
                   />
                   <TextField
                     disabled
@@ -433,11 +477,11 @@ export default function HomePage(props) {
           </Card>
         </Grid>
       </Grid>
-      {props.showDialog && (
+      {showDialog && !requiredError && (
         <QuestionCreation
-          open={props.showDialog}
+          open={showDialog}
           templateName={templateName}
-          handleClose={props.handleAddQuestion}
+          handleClose={handleAddQuestion}
           handleSaveQuestion={handleSaveQuestion}
           questionID={questionID}
           authors={author}
