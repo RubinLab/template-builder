@@ -47,7 +47,10 @@ export default function QuestionCreation(props) {
     index,
   } = props;
   const [showDetailCreation, setShowDetailCreation] = useState(false);
-  const [details, setDetails] = useState([]);
+  const [details, setDetails] = useState({
+    anatomic: [],
+    observation: [],
+  });
   const [question, setQuestion] = useState({});
 
   const { enqueueSnackbar } = useSnackbar();
@@ -73,6 +76,11 @@ export default function QuestionCreation(props) {
     if (ques.maxCardinality === 0) {
       errors.push('Maximum Cardinality should be bigger than 0!');
     }
+
+    if (ques.maxCardinality < 0 || ques.minCardinality < 0) {
+      errors.push('Cardinality can not be a negative number!');
+    }
+
     if (!ques.label) {
       errors.push('Question text is required!');
     }
@@ -90,10 +98,13 @@ export default function QuestionCreation(props) {
     let newDetail = { ...detail };
     newDetail.id = id;
     newDetail.questionID = questionID;
-    newDetail = createTemplateQuestion(newDetail, authors, details.length);
+    const detailsIndex = details.anatomic.length + details.observation.length;
+    newDetail = createTemplateQuestion(newDetail, authors, detailsIndex, true);
     const valid = validateQuestionAttributes(newDetail, true, true);
     if (valid) {
-      setDetails(details.concat(newDetail));
+      const newDetails = { ...details };
+      newDetails[detail.questionType].push(newDetail);
+      setDetails(newDetails);
       setShowDetailCreation(false);
     }
   };
@@ -102,8 +113,20 @@ export default function QuestionCreation(props) {
     let updatedQuestion = { ...question };
     updatedQuestion.id = questionID;
     updatedQuestion = createTemplateQuestion(updatedQuestion, authors, index);
-    if (question.questionType === 'observation' && details.length > 0) {
-      updatedQuestion.ImagingObservation.ImagingObservationCharacteristic = details;
+    if (
+      question.questionType === 'observation' &&
+      details.observation.length > 0
+    ) {
+      updatedQuestion.ImagingObservation.ImagingObservationCharacteristic =
+        details.observation;
+    }
+    if (question.questionType === 'anatomic') {
+      if (details.anatomic.length > 0)
+        updatedQuestion.AnatomicEntity.AnatomicEntityCharacteristic =
+          details.anatomic;
+      if (details.observation.length > 0)
+        updatedQuestion.AnatomicEntity.ImagingObservationCharacteristic =
+          details.observation;
     }
     const valid = validateQuestionAttributes(
       updatedQuestion,
@@ -144,8 +167,11 @@ export default function QuestionCreation(props) {
             </Button>
           )}
 
-          {details.length > 0 && (
-            <QuestionList questions={details} creation={true} />
+          {(details.anatomic.length > 0 || details.observation.length > 0) && (
+            <QuestionList
+              questions={[...details.anatomic, ...details.observation]}
+              creation={true}
+            />
           )}
           {showDetailCreation && (
             <DetailCreation

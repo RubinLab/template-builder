@@ -6,7 +6,7 @@ function createID() {
   return uid;
 }
 
-function createTemplateQuestion(ques, authors, index) {
+function createTemplateQuestion(ques, authors, index, characteristic) {
   const { questionType, explanatoryText, id, showConfidence } = ques;
   // eslint-disable-next-line radix
   const minCardinality = parseInt(ques.minCard);
@@ -28,11 +28,11 @@ function createTemplateQuestion(ques, authors, index) {
 
   component.AllowedTerm = allowedTerm;
 
-  if (questionType === 'anatomic') {
+  if (questionType === 'anatomic' && !characteristic) {
     component.AnatomicEntity = {
       annotatorConfidence: showConfidence,
     };
-  } else if (questionType === 'observation') {
+  } else if (questionType === 'observation' && !characteristic) {
     component.ImagingObservation = {
       annotatorConfidence: showConfidence,
     };

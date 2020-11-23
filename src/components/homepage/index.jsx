@@ -21,8 +21,6 @@ import TemplatePreview from './templatePreview.jsx';
 import { createID } from '../../utils/helper';
 import { getOntologyData } from '../../services/apiServices';
 import schema from '../../utils/AIMTemplate_v2rvStanford_schema.json';
-import recist from '../../utils/recist.1.json';
-import invalid from '../../utils/invalidRecist.json';
 
 const materialUseStyles = makeStyles(theme => ({
   root: {

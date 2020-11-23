@@ -403,6 +403,11 @@ const QuestionForm = props => {
           }}
           type="number"
           size="small"
+          InputProps={{
+            inputProps: {
+              min: 0,
+            },
+          }}
           disabled={disabled}
         />
         <TextField
@@ -418,6 +423,11 @@ const QuestionForm = props => {
           }}
           type="number"
           size="small"
+          InputProps={{
+            inputProps: {
+              min: 0,
+            },
+          }}
           disabled={disabled}
         />
         {/* <TextField
