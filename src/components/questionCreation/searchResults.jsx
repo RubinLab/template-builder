@@ -82,7 +82,7 @@ const SearchResults = props => {
                 window.open(results.collection[k].links.ui, '_blank', '');
               }}
             >
-              {`${ontologyMap[acronym].name} (${ontologyMap[acronym].acronym})`}
+              {`${results.collection[k].prefLabel} - ${ontologyMap[acronym].name} (${ontologyMap[acronym].acronym})`}
             </Link>
           </div>
           <ListItemText

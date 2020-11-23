@@ -9,14 +9,19 @@ const getResults = (keyword, ontologiesList, page) => {
     params = `${params}&ontologies=${ontologiesList.join(',')}`;
   }
   if (page) params = `${params}&page=${page}`;
-  return axios.get(`${REST_URL}${params}&pagesize=150`, {
-    headers: { Authorization: `apikey token=${config.API_KEY}` },
-  });
+  console.log(params);
+  return axios.get(
+    // `${REST_URL}${params}&pagesize=150&display=prefLabel,synonym,definition,notation,cui,semanticType,properties`,
+    `http://data.bioontology.org/ontologies/RADLEX/classes/http%3A%2F%2Fradlex.org%2FRID%2FRID1301?display=all`,
+    {
+      headers: { Authorization: `apikey token=${config.API_KEY}` }
+    }
+  );
 };
 
 const getOntologyData = () => {
   return axios.get(`${REST_URL}/ontologies`, {
-    headers: { Authorization: `apikey token=${config.API_KEY}` },
+    headers: { Authorization: `apikey token=${config.API_KEY}` }
   });
 };
 

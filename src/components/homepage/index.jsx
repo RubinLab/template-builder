@@ -17,7 +17,7 @@ import Button from '@material-ui/core/Button';
 import AlertDialog from '../common/AlertDialog.jsx';
 import QuestionList from '../question/QuestionList.jsx';
 import QuestionCreation from '../questionCreation/index.jsx';
-import TemplatePreview from './templatePreview.jsx';
+// import TemplatePreview from './templatePreview.jsx';
 import { createID } from '../../utils/helper';
 import { getOntologyData } from '../../services/apiServices';
 import schema from '../../utils/AIMTemplate_v2rvStanford_schema.json';
@@ -29,52 +29,60 @@ const materialUseStyles = makeStyles(theme => ({
     width: '-webkit-fill-available',
     [theme.breakpoints.down('sm')]: {
       margin: theme.spacing(1),
-      padding: theme.spacing(1),
+      padding: theme.spacing(1)
     },
     [theme.breakpoints.up('lg')]: {
       marginRight: theme.spacing(20),
-      marginLeft: theme.spacing(20),
+      marginLeft: theme.spacing(20)
       // padding: theme.spacing(10),
-    },
+    }
   },
   form: {
     // margin: theme.spacing(2),
     // width: 300,
   },
   textField: {
-    marginTop: theme.spacing(3),
+    marginTop: theme.spacing(1),
     minWidth: 300,
+    width: 400
+  },
+  textFieldUID: {
+    marginTop: theme.spacing(1)
+    // minWidth: 300,
+    // width:
   },
   button: {
     display: 'block',
-    marginTop: theme.spacing(2),
+    marginTop: theme.spacing(2)
   },
   formControl: {
-    marginTop: theme.spacing(3),
+    marginTop: theme.spacing(1),
     minWidth: 150,
+    width: 400
   },
   templateContent: {
     width: '45%',
-    minWidth: 300,
+    minWidth: 300
   },
   contentCard: {
     boxShadow: 'none',
     background: '#fafafa',
+    width: 'min-content'
   },
   title: {
     marginTop: theme.spacing(3),
-    color: '#8c1717',
+    color: '#8c1717'
   },
 
   templateGrid: {
-    paddingTop: theme.spacing(2),
+    paddingTop: theme.spacing(2)
   },
   templateCard: {
     paddingTop: theme.spacing(2),
     [theme.breakpoints.down('sm')]: {
-      margin: 'auto',
-    },
-  },
+      margin: 'auto'
+    }
+  }
 }));
 
 const messages = { deleteLink: 'Are you sure you want to delete the link?' };
@@ -91,12 +99,13 @@ export default function HomePage({ showDialog, handleAddQuestion }) {
   const [linkTextMap, setlinkTextMap] = useState({});
   const [linkedIdMap, setLinkedIdMap] = useState({
     linkedAnswer: null,
-    linkedQuestion: null,
+    linkedQuestion: null
   });
   const [deletingAnswerLink, setDeletingAnswerLink] = useState(null);
   const [open, setOpen] = useState(false);
   const [completeTemplate, setCompTemplate] = useState({});
   const [validationErrors, setValErrors] = useState([]);
+  const [tempContUID, setTempContUID] = useState('');
   const [requiredError, setRequiredError] = useState(false);
 
   // TODO
@@ -113,16 +122,15 @@ export default function HomePage({ showDialog, handleAddQuestion }) {
   const getDate = () => {
     const date = new Date();
     const year = date.getFullYear();
-    const month = date.getMonth();
-    const day = date.getDay();
+    const month =
+      date.getMonth() < 9 ? `0${date.getMonth() + 1} ` : date.getMonth() + 1;
+    const day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
     return `${year}-${month}-${day}`;
   };
 
-  // const validateRequiredTemplateMetadata = () => {};
-
   const formContainerData = () => {
     const newcontainer = {};
-    newcontainer.uid = createID();
+    newcontainer.uid = tempContUID;
     newcontainer.name = templateName; // ??
     newcontainer.authors = author; // ??
     newcontainer.version = version;
@@ -153,7 +161,7 @@ export default function HomePage({ showDialog, handleAddQuestion }) {
   const formCompleteTemplate = questionsList => {
     const temp = { ...formTemplateData(), Component: questionsList };
     const cont = {
-      TemplateContainer: { ...formContainerData(), Template: [temp] },
+      TemplateContainer: { ...formContainerData(), Template: [temp] }
     };
     setCompTemplate({ ...cont });
     validateTemplate(cont);
@@ -169,7 +177,7 @@ export default function HomePage({ showDialog, handleAddQuestion }) {
       answerLinkID,
       quesID,
       answerIndex,
-      questionIndex,
+      questionIndex
     });
     setOpen(!open);
   };
@@ -243,6 +251,7 @@ export default function HomePage({ showDialog, handleAddQuestion }) {
 
   useEffect(() => {
     getOntologyMap();
+    setTempContUID(createID());
   }, []);
 
   const createLink = newLinkedIdMap => {
@@ -273,7 +282,7 @@ export default function HomePage({ showDialog, handleAddQuestion }) {
       setlinkTextMap(newLinkTextMap);
       setLinkedIdMap({
         linkedAnswer: null,
-        linkedQuestion: null,
+        linkedQuestion: null
       });
       return;
     }
@@ -281,7 +290,7 @@ export default function HomePage({ showDialog, handleAddQuestion }) {
       id: answer.id,
       questionId,
       questionText,
-      answerText: answer.allowedTerm.codeMeaning,
+      answerText: answer.allowedTerm.codeMeaning
     };
     setLinkedIdMap(newLinkedIdMap);
   };
@@ -300,7 +309,7 @@ export default function HomePage({ showDialog, handleAddQuestion }) {
     }
     newLinkedIdMap.linkedQuestion = {
       id: question.id,
-      questionText: question.question,
+      questionText: question.question
     };
     setLinkedIdMap(newLinkedIdMap);
     const { answerText, questionText, id } = linkedIdMap.linkedAnswer;
@@ -362,6 +371,7 @@ export default function HomePage({ showDialog, handleAddQuestion }) {
                 <FormControl className={classes.formControl}>
                   <InputLabel id="templateLevel">Type of Template</InputLabel>
                   <Select
+                    className={classes.textField}
                     labelId="templateLevel"
                     id="demo-controlled-open-select"
                     value={templateType}
@@ -386,6 +396,7 @@ export default function HomePage({ showDialog, handleAddQuestion }) {
                     }
                     required={true}
                     className={classes.textField}
+                    multiline
                     id="standard-basic"
                     label="Description"
                     onChange={e => {
@@ -408,6 +419,21 @@ export default function HomePage({ showDialog, handleAddQuestion }) {
                       checkRequiredFields();
                       setVersion(e.target.value);
                     }}
+                  />
+                  <TextField
+                    disabled
+                    fullWidth={true}
+                    id="standard-read-only-input"
+                    className={classes.textFieldUID}
+                    label="Tmplate Container UID"
+                    value={tempContUID}
+                  />
+                  <TextField
+                    disabled
+                    id="standard-read-only-input"
+                    className={classes.textField}
+                    label="Date"
+                    value={getDate()}
                   />
                 </FormControl>
               </form>
@@ -440,10 +466,11 @@ export default function HomePage({ showDialog, handleAddQuestion }) {
                   <Typography variant="h5" className={classes.title}>
                     Template Preview
                   </Typography>
-                  <TemplatePreview
+                  {console.log(completeTemplate)}
+                  {/* <TemplatePreview
                     template={completeTemplate}
                     noOfQuestions={questionsArr.length}
-                  />
+                  /> */}
                 </CardContent>
               </>
             )}
@@ -464,7 +491,7 @@ export default function HomePage({ showDialog, handleAddQuestion }) {
       <Snackbar
         anchorOrigin={{
           vertical: 'bottom',
-          horizontal: 'left',
+          horizontal: 'left'
         }}
         open={linkedIdMap.linkedAnswer && !linkedIdMap.linkedQuestion}
         message={`Click on the link icon next to the question you want to jump`}
@@ -492,5 +519,5 @@ export default function HomePage({ showDialog, handleAddQuestion }) {
 
 HomePage.propTypes = {
   showDialog: PropTypes.bool,
-  handleAddQuestion: PropTypes.func,
+  handleAddQuestion: PropTypes.func
 };

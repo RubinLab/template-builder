@@ -45,7 +45,7 @@ export default function TemplatePreview(props) {
     const semanticAnswers = new questionaire.AimEditor(
       element,
       validateForm,
-      renderButtons
+      renderButtons,
     );
     semanticAnswers.loadTemplates([props.template, recist]);
     semanticAnswers.showTemplatePreview();
