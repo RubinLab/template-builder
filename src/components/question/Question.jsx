@@ -8,14 +8,38 @@ export default function Question(props) {
   const [characteristics, setCharacteristics] = useState([]);
 
   useEffect(() => {
-    const char =
+    let char = [];
+    const imagingObservationChar =
       props.question.ImagingObservation &&
-      props.question.ImagingObservation.ImagingObservationCharacteristic
-        ? [
-            ...props.question.ImagingObservation
-              .ImagingObservationCharacteristic,
-          ]
-        : [];
+      props.question.ImagingObservation.ImagingObservationCharacteristic;
+    const anatomicEntChar =
+      props.question.AnatomicEntity &&
+      props.question.AnatomicEntity.AnatomicEntityCharacteristic;
+    const anatomicEntObsChar =
+      props.question.AnatomicEntity &&
+      props.question.AnatomicEntity.ImagingObservationCharacteristic;
+
+    if (imagingObservationChar) {
+      char = [
+        ...char,
+        ...props.question.ImagingObservation.ImagingObservationCharacteristic,
+      ];
+    }
+
+    if (anatomicEntChar) {
+      char = [
+        ...char,
+        ...props.question.AnatomicEntity.AnatomicEntityCharacteristic,
+      ];
+    }
+
+    if (anatomicEntObsChar) {
+      char = [
+        ...char,
+        ...props.question.AnatomicEntity.ImagingObservationCharacteristic,
+      ];
+    }
+
     setCharacteristics(char);
   }, [props.question]);
 

@@ -261,7 +261,7 @@ const QuestionForm = props => {
   };
   return (
     <div className={classes.root}>
-      {!characteristic && (
+      {(characteristic === 'anatomic' || characteristic === undefined) && (
         <div>
           <FormControl className={classes.formControl}>
             <InputLabel id="questionType">Question type</InputLabel>
@@ -279,10 +279,12 @@ const QuestionForm = props => {
                 <Visibility className={classes.icon} />
                 Imaging Observation
               </MenuItem>
-              <MenuItem value={'history'}>
-                <LocalHospital className={classes.icon} />
-                {`Clinical hist. & diagnosis`}
-              </MenuItem>
+              {!characteristic && (
+                <MenuItem value={'history'}>
+                  <LocalHospital className={classes.icon} />
+                  {`Clinical hist. & diagnosis`}
+                </MenuItem>
+              )}
             </Select>
           </FormControl>
         </div>
@@ -394,12 +396,18 @@ const QuestionForm = props => {
           value={maxCard}
           onChange={e => {
             setMaxCard(e.target.value);
+            postQuestion({ ...formInput, maxCard: e.target.value });
           }}
           InputLabelProps={{
             shrink: maxCard >= 0 || disabled,
           }}
           type="number"
           size="small"
+          InputProps={{
+            inputProps: {
+              min: 0,
+            },
+          }}
           disabled={disabled}
         />
         <TextField
@@ -408,12 +416,18 @@ const QuestionForm = props => {
           value={minCard}
           onChange={e => {
             setMinCard(e.target.value);
+            postQuestion({ ...formInput, minCard: e.target.value });
           }}
           InputLabelProps={{
             shrink: minCard >= 0 || minCard === 0 || disabled,
           }}
           type="number"
           size="small"
+          InputProps={{
+            inputProps: {
+              min: 0,
+            },
+          }}
           disabled={disabled}
         />
         {/* <TextField
@@ -475,5 +489,5 @@ export default QuestionForm;
 
 QuestionForm.propTypes = {
   postQuestion: PropTypes.func,
-  characteristic: PropTypes.bool,
+  characteristic: PropTypes.string,
 };
