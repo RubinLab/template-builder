@@ -13,10 +13,10 @@ import Backdrop from '@material-ui/core/Backdrop';
 
 const useStyles = makeStyles(theme => ({
   listHeader: {
-    paddingLeft: theme.spacing(2),
+    paddingLeft: theme.spacing(2)
   },
   listItemCheckbox: {
-    padding: theme.spacing(0.5),
+    padding: theme.spacing(0.5)
   },
   listItemTitle: {
     whiteSpace: 'normal',
@@ -24,7 +24,7 @@ const useStyles = makeStyles(theme => ({
     color: 'blue',
     fontSize: '14px',
     maxWidth: 380,
-    textAlign: 'left',
+    textAlign: 'left'
   },
   listItemExplanation: {
     paddingLeft: theme.spacing(2),
@@ -32,20 +32,20 @@ const useStyles = makeStyles(theme => ({
     fontSize: '10px',
     whiteSpace: 'normal',
     wordWrap: 'break-word',
-    maxWidth: 380,
+    maxWidth: 380
   },
   listItemTextContainer: {
     paddingLeft: theme.spacing(1),
-    width: '100%',
+    width: '100%'
   },
   listItemContainer: {
     '&:hover': {
-      background: '#ededed',
+      background: '#ededed'
     },
     paddingLeft: theme.spacing(0),
     display: 'flex',
-    flexDirection: 'column',
-  },
+    flexDirection: 'column'
+  }
 }));
 
 const SearchResults = props => {
@@ -148,5 +148,5 @@ SearchResults.propTypes = {
   handleSelection: PropTypes.func,
   handleNewPage: PropTypes.func,
   results: PropTypes.object,
-  term: PropTypes.string,
+  term: PropTypes.string
 };

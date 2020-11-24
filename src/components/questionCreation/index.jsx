@@ -17,7 +17,7 @@ const useStyles = makeStyles(theme => ({
   root: {},
   title: {
     marginBottom: theme.spacing(0),
-    paddingBottom: theme.spacing(0),
+    paddingBottom: theme.spacing(0)
   },
   button: {
     display: 'block',
@@ -26,13 +26,13 @@ const useStyles = makeStyles(theme => ({
 
     background: '#E3E0D8',
     '&:hover': {
-      background: '#CCBC8E',
-    },
+      background: '#CCBC8E'
+    }
   },
   checkbox: {
     marginLeft: theme.spacing(1),
-    marginTop: theme.spacing(3),
-  },
+    marginTop: theme.spacing(3)
+  }
 }));
 
 export default function QuestionCreation(props) {
@@ -44,12 +44,12 @@ export default function QuestionCreation(props) {
     handleSaveQuestion,
     questionID,
     authors,
-    index,
+    index
   } = props;
   const [showDetailCreation, setShowDetailCreation] = useState(false);
   const [details, setDetails] = useState({
     anatomic: [],
-    observation: [],
+    observation: []
   });
   const [question, setQuestion] = useState({});
 
@@ -149,7 +149,9 @@ export default function QuestionCreation(props) {
         onClose={() => handleClose(false)}
         scroll="body"
       >
-        <DialogTitle id="createQuestion-title">Create Question</DialogTitle>
+        <DialogTitle id="createQuestion-title" className={classes.title}>
+          Create Question
+        </DialogTitle>
         <DialogContent>
           <DialogContentText>
             {`Fill the form and save to add a new question to the template ${templateName}`}
@@ -204,5 +206,5 @@ QuestionCreation.propTypes = {
   handleSaveQuestion: PropTypes.func,
   questionID: PropTypes.string,
   authors: PropTypes.string,
-  index: PropTypes.number,
+  index: PropTypes.number
 };

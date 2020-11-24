@@ -23,6 +23,7 @@ import Backdrop from '@material-ui/core/Backdrop';
 import Drawer from '@material-ui/core/Drawer';
 import SearchResults from './SearchResults.jsx';
 import AnswerList from './answersList.jsx';
+import TermSearch from './TermSearch.jsx';
 import { getResults } from '../../services/apiServices';
 import { createID } from '../../utils/helper';
 
@@ -307,7 +308,9 @@ const QuestionForm = props => {
           }}
         />
       </div>
+
       <div className={classes.answerGroup}>
+        <TermSearch />
         <FormControl className={classes.formControl}>
           <InputLabel id="answerType">Answer type</InputLabel>
           <Select
@@ -405,8 +408,8 @@ const QuestionForm = props => {
           size="small"
           InputProps={{
             inputProps: {
-              min: 0,
-            },
+              min: 0
+            }
           }}
           disabled={disabled}
         />
@@ -425,8 +428,8 @@ const QuestionForm = props => {
           size="small"
           InputProps={{
             inputProps: {
-              min: 0,
-            },
+              min: 0
+            }
           }}
           disabled={disabled}
         />
@@ -489,5 +492,5 @@ export default QuestionForm;
 
 QuestionForm.propTypes = {
   postQuestion: PropTypes.func,
-  characteristic: PropTypes.string,
+  characteristic: PropTypes.string
 };

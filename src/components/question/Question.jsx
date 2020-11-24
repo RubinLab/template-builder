@@ -22,21 +22,21 @@ export default function Question(props) {
     if (imagingObservationChar) {
       char = [
         ...char,
-        ...props.question.ImagingObservation.ImagingObservationCharacteristic,
+        ...props.question.ImagingObservation.ImagingObservationCharacteristic
       ];
     }
 
     if (anatomicEntChar) {
       char = [
         ...char,
-        ...props.question.AnatomicEntity.AnatomicEntityCharacteristic,
+        ...props.question.AnatomicEntity.AnatomicEntityCharacteristic
       ];
     }
 
     if (anatomicEntObsChar) {
       char = [
         ...char,
-        ...props.question.AnatomicEntity.ImagingObservationCharacteristic,
+        ...props.question.AnatomicEntity.ImagingObservationCharacteristic
       ];
     }
 
@@ -139,5 +139,5 @@ Question.propTypes = {
   linkTextMap: PropTypes.object,
   linkedIdMap: PropTypes.object,
   handleDeleteLink: PropTypes.func,
-  creation: PropTypes.bool,
+  creation: PropTypes.bool
 };
