@@ -13,9 +13,8 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import { useSnackbar } from 'notistack';
 
-const handleForce = (data, fileInfo) => console.log(data, fileInfo);
 const ontologyMap = JSON.parse(sessionStorage.getItem('ontologyMap'));
 
 const papaparseOptions = {
@@ -62,6 +61,9 @@ const useStyles = makeStyles(theme => ({
   root: {
     backgroundColor: theme.palette.background.paper,
     width: 500
+  },
+  attributes: {
+    color: '#3f51b5'
   }
 }));
 
@@ -69,12 +71,15 @@ const TermSearch = props => {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
 
+  const { enqueueSnackbar } = useSnackbar();
+
   const {
     handleBioportalSearch,
     ontologyLibs,
     handleSearchInput,
     handleOntologyInput,
-    searchTerm
+    searchTerm,
+    getUploadedTerms
   } = props;
 
   const handleChange = (event, newValue) => {
@@ -82,16 +87,71 @@ const TermSearch = props => {
     setValue(newValue);
   };
 
+  const checkAllowedTermsAttributes = attribute => {
+    const errors = [];
+    const allowedAttributes = [
+      'codeMeaning',
+      'codeValue',
+      'codingSchemeDesignator',
+      'codingSchemeVersion',
+      'defaultAnswer',
+      'nextId',
+      'noMoreQuestions',
+      'CharacteristicQuantification'
+    ];
+
+    const requiredAttributes = [
+      'codeMeaning',
+      'codeValue',
+      'codingSchemeDesignator'
+    ];
+    const keys = Object.keys(attribute);
+
+    keys.forEach(attr => {
+      if (!allowedAttributes.includes(attr)) {
+        errors.push(`${attr} is not an allowed key!`);
+        enqueueSnackbar(`${attr} is not an allowed key!`, { variant: 'error' });
+      }
+    });
+
+    requiredAttributes.forEach(el => {
+      if (!keys.includes(el)) {
+        errors.push(`${el} is required!`);
+        enqueueSnackbar(`${el} is required!`, { variant: 'error' });
+      }
+    });
+
+    return errors.length === 0;
+  };
+
+  const handleUpload = data => {
+    if (checkAllowedTermsAttributes(data[0])) {
+      const shapedData = {};
+      data.forEach(el => {
+        shapedData[el.codeValue] = {
+          allowedTerm: el,
+          title: el.codingSchemeDesignator,
+          id: el.codeValue
+        };
+      });
+      getUploadedTerms(shapedData);
+    }
+  };
+
   const upload = () => {
     return (
       <div className="container">
         <CSVReader
           cssClass="react-csv-input"
-          label="Select CSV with secret Death Star statistics"
-          onFileLoaded={handleForce}
+          onFileLoaded={handleUpload}
           parserOptions={papaparseOptions}
         />
-        <p>and then open the console</p>
+        <p>
+          Upload CSV file with the columns of
+          <span className={classes.attributes}> codeMeaning, codeValue</span>,
+          and
+          <span className={classes.attributes}> codingSchemeDesignator</span>
+        </p>
       </div>
     );
   };
@@ -154,7 +214,6 @@ const TermSearch = props => {
   };
   return (
     <Dialog open={true}>
-      <DialogTitle>Search terms</DialogTitle>
       <DialogContent>
         <div className={classes.root}>
           <AppBar position="static" color="default">
@@ -191,5 +250,6 @@ TermSearch.propTypes = {
   ontologyLibs: PropTypes.object,
   handleSearchInput: PropTypes.func,
   handleOntologyInput: PropTypes.func,
-  searchTerm: PropTypes.string
+  searchTerm: PropTypes.string,
+  getUploadedTerms: PropTypes.func
 };

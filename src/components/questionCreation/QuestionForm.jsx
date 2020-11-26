@@ -213,6 +213,13 @@ const QuestionForm = props => {
     setSearchTerm('');
   };
 
+  const getUploadedTerms = data => {
+    const newSelected = { ...selectedTerms, ...data };
+    postQuestion({ ...formInput, selectedTerms: newSelected });
+    setTermSelection(newSelected);
+    setOpenSearch(false);
+  };
+
   const assignDefaultVals = (min, max, disabledBool) => {
     setMinCard(min);
     setMaxCard(max);
@@ -319,6 +326,7 @@ const QuestionForm = props => {
             handleSearchInput={handleSearchInput}
             handleOntologyInput={handleOntologyInput}
             searchTerm={searchTerm}
+            getUploadedTerms={getUploadedTerms}
           />
         )}
         <FormControl className={classes.formControl}>
