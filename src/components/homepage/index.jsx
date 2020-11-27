@@ -87,7 +87,13 @@ const materialUseStyles = makeStyles(theme => ({
 
 const messages = { deleteLink: 'Are you sure you want to delete the link?' };
 
-export default function HomePage({ showDialog, handleAddQuestion }) {
+export default function HomePage({
+  showDialog,
+  handleAddQuestion,
+  setValidTemplate,
+  setMissingInfo,
+  getTemplate
+}) {
   const classes = materialUseStyles();
   const [templateName, setTemplateName] = useState('');
   const [templateType, setTemplateType] = useState('');
@@ -116,7 +122,19 @@ export default function HomePage({ showDialog, handleAddQuestion }) {
     const ajv = new Ajv({ schemaId: 'id' });
     ajv.addMetaSchema(ajvDraft);
     const valid = ajv.validate(schema, cont);
-    if (!valid) setValErrors(validationErrors.concat(ajv.errors));
+    if (!valid) {
+      setValErrors(validationErrors.concat(ajv.errors));
+    } else {
+      const containerExists = cont.TemplateContainer !== undefined;
+      const temp = cont.TemplateContainer.Template;
+      const templatexists = temp && temp.length > 0;
+      const questionExists = temp[0].Component.length > 0;
+      const valTemplate =
+        validationErrors.length === 0 && containerExists && templatexists;
+      setValidTemplate(valTemplate);
+      setMissingInfo(!questionExists);
+      getTemplate(cont);
+    }
   };
 
   const getDate = () => {
@@ -519,5 +537,8 @@ export default function HomePage({ showDialog, handleAddQuestion }) {
 
 HomePage.propTypes = {
   showDialog: PropTypes.bool,
-  handleAddQuestion: PropTypes.func
+  handleAddQuestion: PropTypes.func,
+  setValidTemplate: PropTypes.func,
+  setMissingInfo: PropTypes.func,
+  getTemplate: PropTypes.func
 };
