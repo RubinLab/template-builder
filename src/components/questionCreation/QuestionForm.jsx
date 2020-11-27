@@ -50,13 +50,6 @@ const materialUseStyles = makeStyles(theme => ({
     width: 250,
     marginTop: theme.spacing(3)
   },
-  searchButton: {
-    background: '#E3E0D8',
-    padding: theme.spacing(1),
-    '&:hover': {
-      background: '#CCBC8E'
-    }
-  },
   inputFieldGroup: {
     display: 'flex',
     justifyContent: 'start',
@@ -209,6 +202,7 @@ const QuestionForm = props => {
     postQuestion({ ...formInput, selectedTerms: newSelected });
     setTermSelection(newSelected);
     setShowSearchResults(false);
+    setOpenSearch(false);
     setOntologyLibs([]);
     setSearchTerm('');
   };
@@ -327,6 +321,7 @@ const QuestionForm = props => {
             handleOntologyInput={handleOntologyInput}
             searchTerm={searchTerm}
             getUploadedTerms={getUploadedTerms}
+            handleClose={() => setOpenSearch(false)}
           />
         )}
         <FormControl className={classes.formControl}>

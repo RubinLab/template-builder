@@ -39,8 +39,9 @@ const useStyles = makeStyles(theme => ({
   //   marginBottom: theme.spacing(0.5)
   // }
   list: {
-    height: '20rem',
-    overflow: 'scroll'
+    maxHeight: '20rem',
+    height: 'fit-content',
+    overflow: 'auto'
   }
 }));
 

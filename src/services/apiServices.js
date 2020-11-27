@@ -11,8 +11,8 @@ const getResults = (keyword, ontologiesList, page) => {
   if (page) params = `${params}&page=${page}`;
   console.log(params);
   return axios.get(
-    // `${REST_URL}${params}&pagesize=150&display=prefLabel,synonym,definition,notation,cui,semanticType,properties`,
-    `http://data.bioontology.org/ontologies/RADLEX/classes/http%3A%2F%2Fradlex.org%2FRID%2FRID1301?display=all`,
+    `${REST_URL}${params}&pagesize=150&display=prefLabel,synonym,definition,notation,cui,semanticType,properties`,
+    // `http://data.bioontology.org/ontologies/RADLEX/classes/http%3A%2F%2Fradlex.org%2FRID%2FRID1301?display=all`,
     {
       headers: { Authorization: `apikey token=${config.API_KEY}` }
     }

@@ -13,6 +13,13 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
+import DialogActions from '@material-ui/core/DialogActions';
+import Button from '@material-ui/core/Button';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import SaveIcon from '@material-ui/icons/Save';
 import { useSnackbar } from 'notistack';
 
 const ontologyMap = JSON.parse(sessionStorage.getItem('ontologyMap'));
@@ -58,32 +65,67 @@ function a11yProps(index) {
 }
 
 const useStyles = makeStyles(theme => ({
+  accordionRoot: {
+    width: '100%'
+  },
+  heading: {
+    fontSize: theme.typography.pxToRem(15),
+    fontWeight: theme.typography.fontWeightBold
+  },
   root: {
     backgroundColor: theme.palette.background.paper,
     width: 500
   },
   attributes: {
     color: '#3f51b5'
+  },
+  inputGroup: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    flexWrap: 'wrap'
+  },
+  searchGroup: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    width: '100%'
+    // flexDirection: 'column'
+  },
+  searchInput: {
+    width: 400,
+    marginTop: theme.spacing(1.5)
+  },
+  entryInput: {
+    width: 300,
+    marginTop: theme.spacing(1.5)
+  },
+  searchButton: {
+    width: 'fit-content',
+    background: '#E3E0D8',
+    height: 'fit-content',
+    padding: theme.spacing(1),
+    '&:hover': {
+      background: '#CCBC8E'
+    }
   }
 }));
 
 const TermSearch = props => {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
-
   const { enqueueSnackbar } = useSnackbar();
-
   const {
     handleBioportalSearch,
     ontologyLibs,
     handleSearchInput,
     handleOntologyInput,
     searchTerm,
-    getUploadedTerms
+    getUploadedTerms,
+    handleClose
   } = props;
 
   const handleChange = (event, newValue) => {
-    console.log('---> newValue', newValue);
     setValue(newValue);
   };
 
@@ -158,47 +200,49 @@ const TermSearch = props => {
 
   const bioPortalSearch = () => {
     return (
-      <div className={classes.answerGroup}>
-        <Autocomplete
-          options={JSON.parse(sessionStorage.getItem('searchedTerms')) || []}
-          value={searchTerm}
-          onChange={(_, data) => handleSearchInput(null, data)}
-          onInputChange={handleSearchInput}
-          style={{ width: 300 }}
-          renderInput={params => (
-            <TextField
-              {...params}
-              className={classes.searchInput}
-              placeholder="Search terms"
-            />
-          )}
-        />
-        <Autocomplete
-          multiple
-          size="small"
-          options={ontologyMap ? Object.values(ontologyMap) : []}
-          renderOption={option => (
-            <React.Fragment>
-              {option.name} ({option.acronym})
-            </React.Fragment>
-          )}
-          getOptionLabel={option => option.acronym || ''}
-          onChange={(_, data) => handleOntologyInput(null, data)}
-          onInputChange={handleOntologyInput}
-          style={{ width: 300 }}
-          value={ontologyLibs || []}
-          renderInput={params => (
-            <TextField
-              {...params}
-              className={classes.searchInput}
-              placeholder={
-                !ontologyLibs || ontologyLibs.length === 0
-                  ? 'Choose Ontology'
-                  : ''
-              }
-            />
-          )}
-        />
+      <div className={classes.searchGroup}>
+        <div className={classes.inputGroup}>
+          <Autocomplete
+            options={JSON.parse(sessionStorage.getItem('searchedTerms')) || []}
+            value={searchTerm}
+            onChange={(_, data) => handleSearchInput(null, data)}
+            onInputChange={handleSearchInput}
+            style={{ width: 300 }}
+            renderInput={params => (
+              <TextField
+                {...params}
+                className={classes.searchInput}
+                placeholder="Search term"
+              />
+            )}
+          />
+          <Autocomplete
+            multiple
+            size="small"
+            options={ontologyMap ? Object.values(ontologyMap) : []}
+            renderOption={option => (
+              <React.Fragment>
+                {option.name} ({option.acronym})
+              </React.Fragment>
+            )}
+            getOptionLabel={option => option.acronym || ''}
+            onChange={(_, data) => handleOntologyInput(null, data)}
+            onInputChange={handleOntologyInput}
+            style={{ width: 300 }}
+            value={ontologyLibs || []}
+            renderInput={params => (
+              <TextField
+                {...params}
+                className={classes.searchInput}
+                placeholder={
+                  !ontologyLibs || ontologyLibs.length === 0
+                    ? 'Choose Ontology'
+                    : ''
+                }
+              />
+            )}
+          />
+        </div>
         <IconButton
           className={classes.searchButton}
           onClick={handleBioportalSearch}
@@ -210,7 +254,65 @@ const TermSearch = props => {
   };
 
   const ePADSearch = () => {
-    return <div>ePAD search</div>;
+    return (
+      <div className={classes.accordionRoot}>
+        <Accordion>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel1a-content"
+            id="panel1a-header"
+          >
+            <Typography className={classes.heading}>
+              Search term in ePAD lexicon
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <div className={classes.searchGroup}>
+              <div className={classes.inputGroup}>
+                <TextField
+                  className={classes.entryInput}
+                  placeholder="Search term"
+                />
+              </div>
+              <IconButton
+                className={classes.searchButton}
+                onClick={() => console.log('clicked')}
+              >
+                <Search />
+              </IconButton>
+            </div>
+          </AccordionDetails>
+        </Accordion>
+        <Accordion>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel1a-content"
+            id="panel1a-header"
+          >
+            <Typography className={classes.heading}>
+              Save term to ePAD lexicon
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <div className={classes.searchGroup}>
+              <div className={classes.inputGroup}>
+                <TextField className={classes.entryInput} placeholder="Term" />
+                <TextField
+                  className={classes.entryInput}
+                  placeholder="Unique code"
+                />
+              </div>
+              <IconButton
+                className={classes.searchButton}
+                onClick={() => console.log('clicked')}
+              >
+                <SaveIcon />
+              </IconButton>
+            </div>
+          </AccordionDetails>
+        </Accordion>
+      </div>
+    );
   };
   return (
     <Dialog open={true}>
@@ -239,6 +341,11 @@ const TermSearch = props => {
           </TabPanel>
         </div>
       </DialogContent>
+      <DialogActions>
+        <Button onClick={handleClose} color="secondary">
+          Cancel
+        </Button>
+      </DialogActions>
     </Dialog>
   );
 };
@@ -251,5 +358,6 @@ TermSearch.propTypes = {
   handleSearchInput: PropTypes.func,
   handleOntologyInput: PropTypes.func,
   searchTerm: PropTypes.string,
-  getUploadedTerms: PropTypes.func
+  getUploadedTerms: PropTypes.func,
+  handleClose: PropTypes.func
 };
