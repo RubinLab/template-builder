@@ -20,34 +20,34 @@ const useStyles = makeStyles(theme => ({
     paddingBottom: theme.spacing(2),
     [theme.breakpoints.down('sm')]: {
       paddingRight: theme.spacing(3),
-      paddingLeft: theme.spacing(3),
+      paddingLeft: theme.spacing(3)
     },
     [theme.breakpoints.up('lg')]: {
       paddingRight: theme.spacing(25),
-      paddingLeft: theme.spacing(25),
-    },
+      paddingLeft: theme.spacing(25)
+    }
   },
   button: {
     color: '#E3E0D8',
     marginLeft: theme.spacing(2),
     '&:hover': {
       color: 'white',
-      border: '1px solid #E3E0D8',
-    },
+      border: '1px solid #E3E0D8'
+    }
   },
   buttonGroup: {
     display: 'flex',
-    justifyContent: 'flex-end',
+    justifyContent: 'flex-end'
   },
   title: {
     flexGrow: 1,
-    fontWeight: 'bold',
-  },
+    fontWeight: 'bold'
+  }
 }));
 
 export default function Navbar(props) {
   const classes = useStyles();
-  const { handleAddQuestion } = props;
+  const { handleAddQuestion, handleDownload } = props;
 
   return (
     <AppBar position="static" className={classes.root}>
@@ -70,6 +70,7 @@ export default function Navbar(props) {
           className={classes.button}
           variant="outlined"
           startIcon={<GetApp />}
+          onClick={handleDownload}
         >
           Download
         </Button>
@@ -80,4 +81,5 @@ export default function Navbar(props) {
 
 Navbar.propTypes = {
   handleAddQuestion: PropTypes.func,
+  handleDownload: PropTypes.func
 };
