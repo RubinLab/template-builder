@@ -13,8 +13,8 @@ const materialUseStyles = makeStyles(theme => ({
   root: { direction: 'row', marginLeft: theme.spacing(1) },
   checkbox: {
     marginLeft: theme.spacing(1),
-    marginTop: theme.spacing(3),
-  },
+    marginTop: theme.spacing(3)
+  }
 }));
 
 export default function DetailsCreation(props) {
@@ -61,5 +61,5 @@ DetailsCreation.propTypes = {
   open: PropTypes.bool,
   handleClose: PropTypes.func,
   handleSave: PropTypes.func,
-  characteristic: PropTypes.string,
+  characteristic: PropTypes.string
 };

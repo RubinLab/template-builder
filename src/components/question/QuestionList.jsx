@@ -79,5 +79,5 @@ QuestionsList.propTypes = {
   linkTextMap: PropTypes.object,
   linkedIdMap: PropTypes.object,
   handleDeleteLink: PropTypes.func,
-  creation: PropTypes.bool,
+  creation: PropTypes.bool
 };

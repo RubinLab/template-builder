@@ -7,14 +7,14 @@ import recist from '../../utils/recist.json';
 const materialUseStyles = makeStyles(theme => ({
   root: {
     margin: 'auto',
-    width: 'fit-content',
+    width: 'fit-content'
     // color: 'black',
     // borderLeft: '3px solid #8c1717',
     // paddingLeft: theme.spacing(10),
   },
   title: {
     margin: theme.spacing(3),
-    color: '#8c1717',
+    color: '#8c1717'
   },
   questionaire: {
     margin: theme.spacing(4),
@@ -25,13 +25,14 @@ const materialUseStyles = makeStyles(theme => ({
     background: '#E3E0D8',
     [theme.breakpoints.down('sm')]: {
       margin: theme.spacing(3),
-      padding: theme.spacing(3),
-    },
-  },
+      padding: theme.spacing(3)
+    }
+  }
 }));
 
 export default function TemplatePreview(props) {
   const [buttonGroupShow, setButtonGroupShow] = useState(false);
+  console.log(buttonGroupShow);
   const validateForm = hasError => {
     if (hasError) console.log('Answer form has error/s!!!');
   };
@@ -45,7 +46,7 @@ export default function TemplatePreview(props) {
     const semanticAnswers = new questionaire.AimEditor(
       element,
       validateForm,
-      renderButtons,
+      renderButtons
     );
     semanticAnswers.loadTemplates([props.template, recist]);
     semanticAnswers.showTemplatePreview();
@@ -63,5 +64,5 @@ export default function TemplatePreview(props) {
 
 TemplatePreview.propTypes = {
   template: PropTypes.object,
-  noOfQuestions: PropTypes.number,
+  noOfQuestions: PropTypes.number
 };

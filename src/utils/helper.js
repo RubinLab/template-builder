@@ -23,18 +23,18 @@ function createTemplateQuestion(ques, authors, index, characteristic) {
     minCardinality,
     maxCardinality,
     shouldDisplay: true,
-    id,
+    id
   };
 
   component.AllowedTerm = allowedTerm;
 
   if (questionType === 'anatomic' && !characteristic) {
     component.AnatomicEntity = {
-      annotatorConfidence: showConfidence,
+      annotatorConfidence: showConfidence
     };
   } else if (questionType === 'observation' && !characteristic) {
     component.ImagingObservation = {
-      annotatorConfidence: showConfidence,
+      annotatorConfidence: showConfidence
     };
   } else {
     component.annotatorConfidence = showConfidence;

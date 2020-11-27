@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Accessibility from '@material-ui/icons/Accessibility';
 import Visibility from '@material-ui/icons/Visibility';
-import Search from '@material-ui/icons/Search';
+// import Search from '@material-ui/icons/Search';
 import LocalHospital from '@material-ui/icons/LocalHospital';
 import RadioButtonChecked from '@material-ui/icons/RadioButtonChecked';
 import CheckBox from '@material-ui/icons/CheckBox';
@@ -16,13 +16,15 @@ import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Select from '@material-ui/core/Select';
 import Checkbox from '@material-ui/core/Checkbox';
-import IconButton from '@material-ui/core/IconButton';
+// import IconButton from '@material-ui/core/IconButton';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+// import Autocomplete from '@material-ui/lab/Autocomplete';
 import Backdrop from '@material-ui/core/Backdrop';
 import Drawer from '@material-ui/core/Drawer';
+import Button from '@material-ui/core/Button';
 import SearchResults from './SearchResults.jsx';
 import AnswerList from './answersList.jsx';
+import TermSearch from './TermSearch.jsx';
 import { getResults } from '../../services/apiServices';
 import { createID } from '../../utils/helper';
 
@@ -32,14 +34,7 @@ const materialUseStyles = makeStyles(theme => ({
     marginTop: theme.spacing(3),
     minWidth: 150
   },
-  button: {
-    display: 'block',
-    marginTop: theme.spacing(3),
-    background: '#E3E0D8',
-    '&:hover': {
-      background: '#CCBC8E'
-    }
-  },
+
   icon: {
     marginRight: theme.spacing(1),
     verticalAlign: 'middle'
@@ -54,13 +49,6 @@ const materialUseStyles = makeStyles(theme => ({
   searchInput: {
     width: 250,
     marginTop: theme.spacing(3)
-  },
-  searchButton: {
-    background: '#E3E0D8',
-    padding: theme.spacing(1),
-    '&:hover': {
-      background: '#CCBC8E'
-    }
   },
   inputFieldGroup: {
     display: 'flex',
@@ -97,6 +85,15 @@ const materialUseStyles = makeStyles(theme => ({
   },
   resultsDrawer: {
     flexShrink: 0
+  },
+  button: {
+    display: 'block',
+    marginTop: theme.spacing(3),
+    marginLeft: theme.spacing(1),
+    background: '#E3E0D8',
+    '&:hover': {
+      background: '#CCBC8E'
+    }
   }
 }));
 
@@ -117,8 +114,7 @@ const QuestionForm = props => {
   const [answerType, setAnswerType] = useState('');
   const [showBackdrop, setShowBackdrop] = useState(false);
   const [ontologyLibs, setOntologyLibs] = useState(null);
-
-  const ontologyMap = JSON.parse(sessionStorage.getItem('ontologyMap'));
+  const [openSearch, setOpenSearch] = useState(false);
 
   const formInput = {
     questionType,
@@ -130,7 +126,7 @@ const QuestionForm = props => {
     showConfidence
   };
 
-  const handleSearch = async () => {
+  const handleBioportalSearch = async () => {
     let searchedTerms = JSON.parse(sessionStorage.getItem('searchedTerms'));
     const trimmedSearchTerm = searchTerm.trim();
     if (searchedTerms && !searchedTerms.includes(trimmedSearchTerm)) {
@@ -178,7 +174,7 @@ const QuestionForm = props => {
       const termNotEmpty =
         searchTerm && searchTerm.length > 0 && searchTerm.trim().length > 0;
       if (e.key === 'Enter' && termNotEmpty) {
-        handleSearch();
+        handleBioportalSearch();
       }
     };
     window.addEventListener('keydown', handleKeyboardEvent);
@@ -206,8 +202,16 @@ const QuestionForm = props => {
     postQuestion({ ...formInput, selectedTerms: newSelected });
     setTermSelection(newSelected);
     setShowSearchResults(false);
+    setOpenSearch(false);
     setOntologyLibs([]);
     setSearchTerm('');
+  };
+
+  const getUploadedTerms = data => {
+    const newSelected = { ...selectedTerms, ...data };
+    postQuestion({ ...formInput, selectedTerms: newSelected });
+    setTermSelection(newSelected);
+    setOpenSearch(false);
   };
 
   const assignDefaultVals = (min, max, disabledBool) => {
@@ -307,7 +311,19 @@ const QuestionForm = props => {
           }}
         />
       </div>
+
       <div className={classes.answerGroup}>
+        {openSearch && (
+          <TermSearch
+            handleBioportalSearch={handleBioportalSearch}
+            ontologyLibs={ontologyLibs}
+            handleSearchInput={handleSearchInput}
+            handleOntologyInput={handleOntologyInput}
+            searchTerm={searchTerm}
+            getUploadedTerms={getUploadedTerms}
+            handleClose={() => setOpenSearch(false)}
+          />
+        )}
         <FormControl className={classes.formControl}>
           <InputLabel id="answerType">Answer type</InputLabel>
           <Select
@@ -334,8 +350,15 @@ const QuestionForm = props => {
               Short answer
             </MenuItem>
           </Select>
+          <Button
+            variant="outlined"
+            className={classes.button}
+            onClick={() => setOpenSearch(true)}
+          >
+            Search Terms
+          </Button>
         </FormControl>
-        <div className={classes.answerGroup}>
+        {/* <div className={classes.answerGroup}>
           <Autocomplete
             options={JSON.parse(sessionStorage.getItem('searchedTerms')) || []}
             value={searchTerm}
@@ -379,7 +402,7 @@ const QuestionForm = props => {
           <IconButton className={classes.searchButton} onClick={handleSearch}>
             <Search />
           </IconButton>
-        </div>
+        </div> */}
       </div>
       {selectedTerms && (
         <div>
@@ -405,8 +428,8 @@ const QuestionForm = props => {
           size="small"
           InputProps={{
             inputProps: {
-              min: 0,
-            },
+              min: 0
+            }
           }}
           disabled={disabled}
         />
@@ -425,8 +448,8 @@ const QuestionForm = props => {
           size="small"
           InputProps={{
             inputProps: {
-              min: 0,
-            },
+              min: 0
+            }
           }}
           disabled={disabled}
         />
@@ -489,5 +512,5 @@ export default QuestionForm;
 
 QuestionForm.propTypes = {
   postQuestion: PropTypes.func,
-  characteristic: PropTypes.string,
+  characteristic: PropTypes.string
 };
