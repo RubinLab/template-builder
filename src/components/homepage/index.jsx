@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Ajv from 'ajv';
 import ajvDraft from 'ajv/lib/refs/json-schema-draft-04.json';
+import _ from 'lodash';
 import { makeStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
 import InputLabel from '@material-ui/core/InputLabel';
@@ -339,23 +340,69 @@ export default function HomePage({
 
   const handleEdit = () => {};
 
-  const handleDelete = question => {
-    const updatedQuestions = { ...questions };
-    const details = [];
-    const arr = Object.values(updatedQuestions);
-    if (!question.questionID) {
-      arr.forEach(el => {
-        if (el.questionID === question.id) {
-          details.push(el.id);
+  const handleDelete = (combinedIndex, id) => {
+    const newQestions = _.cloneDeep(questions);
+    const indeces = combinedIndex.split('-');
+    let quesIndex;
+    let charIndex;
+    if (indeces.length === 2) {
+      quesIndex = parseInt(indeces[0], 10);
+      charIndex = parseInt(indeces[1], 10);
+    } else quesIndex = parseInt(indeces[0], 10);
+    const question = newQestions[quesIndex];
+    if (charIndex >= 0) {
+      // if anatomic entity anatomicEntity arr length
+      // if the char index in that boundary delete from that
+      // else delete from imaging observation
+      let anatomicChars;
+      let observationChars;
+      let anatomic = false;
+      if (question.AnatomicEntity) {
+        anatomicChars = question.AnatomicEntity.AnatomicEntityCharacteristic;
+        observationChars =
+          question.AnatomicEntity.ImagingObservationCharacteristic;
+        anatomic = true;
+      }
+      if (question.ImagingObservation)
+        observationChars =
+          question.ImagingObservation.ImagingObservationCharacteristic;
+
+      if (anatomic) {
+        if (anatomicChars && anatomicChars.length > charIndex) {
+          if (anatomicChars[charIndex] && anatomicChars[charIndex].id === id) {
+            anatomicChars.splice(charIndex, 1);
+            if (anatomicChars.length === 0)
+              delete question.AnatomicEntity.AnatomicEntityCharacteristic;
+          }
         }
-      });
-      details.forEach(el => delete updatedQuestions[el]);
+        if (observationChars && anatomicChars.length <= charIndex) {
+          const obsIndex = charIndex - anatomicChars.length;
+          if (
+            observationChars[obsIndex] &&
+            observationChars[obsIndex].id === id
+          ) {
+            observationChars.splice(obsIndex, 1);
+            if (observationChars.length === 0)
+              delete question.AnatomicEntity.ImagingObservationCharacteristic;
+          }
+        }
+        // if it is imaging observation delete the index directly
+      } else if (
+        observationChars &&
+        observationChars[charIndex] &&
+        observationChars[charIndex].id === id
+      ) {
+        observationChars.splice(charIndex, 1);
+        if (observationChars.length === 0) {
+          delete question.ImagingObservation.ImagingObservationCharacteristic;
+        }
+      }
+    } else {
+      newQestions.splice(quesIndex, 1);
     }
-    delete updatedQuestions[question.id];
-    setQuestions(updatedQuestions);
+    setQuestions(newQestions);
   };
 
-  const questionsArr = Object.values(questions);
   return (
     <>
       <Grid
@@ -455,7 +502,7 @@ export default function HomePage({
                   />
                 </FormControl>
               </form>
-              {questionsArr.length > 0 && (
+              {questions.length > 0 && (
                 <>
                   <Typography variant="h6" className={classes.title}>
                     Questions
@@ -463,7 +510,7 @@ export default function HomePage({
                   <QuestionList
                     handleEdit={handleEdit}
                     handleDelete={handleDelete}
-                    questions={questionsArr}
+                    questions={questions}
                     handleAnswerLink={handleAnswerLink}
                     handleQuestionLink={handleQuestionLink}
                     linkTextMap={linkTextMap}
@@ -478,7 +525,7 @@ export default function HomePage({
         </Grid>
         <Grid item={true} className={classes.templateGrid}>
           <Card>
-            {questionsArr.length > 0 && (
+            {questions.length > 0 && (
               <>
                 <CardContent>
                   <Typography variant="h5" className={classes.title}>

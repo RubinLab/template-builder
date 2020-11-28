@@ -21,7 +21,7 @@ const useStyles = makeStyles(theme => ({
     borderBottom: '1px solid #E3E0D8',
     // paddingTop: theme.spacing(0),
     // paddingBottom: theme.spacing(0),
-    padding: theme.spacing(0),
+    padding: theme.spacing(0)
   },
   listItem1: {
     direction: 'column',
@@ -30,7 +30,7 @@ const useStyles = makeStyles(theme => ({
     // paddingTop: theme.spacing(0),
     // paddingBottom: theme.spacing(0),
     marginLeft: theme.spacing(2),
-    padding: theme.spacing(0),
+    padding: theme.spacing(0)
   },
   listItem2: {
     direction: 'column',
@@ -39,18 +39,18 @@ const useStyles = makeStyles(theme => ({
     // paddingTop: theme.spacing(0),
     // paddingBottom: theme.spacing(0),
     padding: theme.spacing(0),
-    marginLeft: theme.spacing(4),
+    marginLeft: theme.spacing(4)
   },
   listItemText: { witdh: '-webkit-fill-available' },
   nestedListItemText: {
-    paddingLeft: theme.spacing(8),
+    paddingLeft: theme.spacing(8)
   },
   listItemHeader: {
-    fontSize: '1.2rem',
+    fontSize: '1.2rem'
   },
   listItemIcon: {
-    padding: theme.spacing(0.5),
-  },
+    padding: theme.spacing(0.5)
+  }
 }));
 
 export default function QuestionItem(props) {
@@ -67,6 +67,7 @@ export default function QuestionItem(props) {
     linkedIdMap,
     handleDeleteLink,
     creation,
+    combinedIndex
   } = props;
   const [open, setOpen] = useState(false);
 
@@ -96,7 +97,7 @@ export default function QuestionItem(props) {
           <EditIcon />
         </IconButton>
         <IconButton
-          onClick={() => handleDelete()}
+          onClick={() => handleDelete(combinedIndex, question.id)}
           className={classes.listItemIcon}
         >
           <Delete />
@@ -154,4 +155,5 @@ QuestionItem.propTypes = {
   linkedIdMap: PropTypes.object,
   handleDeleteLink: PropTypes.func,
   creation: PropTypes.bool,
+  combinedIndex: PropTypes.string
 };

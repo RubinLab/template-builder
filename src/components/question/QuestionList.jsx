@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import _ from 'lodash';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
 import Question from './Question.jsx';
 
@@ -20,6 +21,9 @@ export default function QuestionsList(props) {
       } else {
         setQuestions([...props.questions]);
       }
+    }
+    if (!_.isEqual(props.questions, questions)) {
+      setQuestions([...props.questions]);
     }
   }, [props.questions, questions]);
 
