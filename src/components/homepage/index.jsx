@@ -401,6 +401,7 @@ export default function HomePage({
       newQestions.splice(quesIndex, 1);
     }
     setQuestions(newQestions);
+    formCompleteTemplate(newQestions);
   };
 
   return (
