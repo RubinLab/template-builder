@@ -85,6 +85,7 @@ export default function Question(props) {
             linkTextMap={props.linkTextMap}
             linkedIdMap={props.linkedIdMap}
             handleDeleteLink={props.handleDeleteLink}
+            combinedIndex={`${index}`}
           />
           {characteristics && characteristics.length > 0 && (
             <DragDropContext onDragEnd={handleReorder}>
@@ -112,6 +113,7 @@ export default function Question(props) {
                               linkedIdMap={props.linkedIdMap}
                               handleDeleteLink={props.handleDeleteLink}
                               creation={props.creation}
+                              combinedIndex={`${index}-${i}`}
                             />
                           </div>
                         )}
