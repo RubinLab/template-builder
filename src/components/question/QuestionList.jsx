@@ -6,7 +6,7 @@ import Question from './Question.jsx';
 
 export default function QuestionsList(props) {
   const [questions, setQuestions] = useState([...props.questions]);
-  const { handleDelete, handleEdit } = props;
+  const { handleDelete, handleEdit, getList } = props;
 
   useEffect(() => {
     const newList = [...questions];
@@ -25,7 +25,7 @@ export default function QuestionsList(props) {
     if (!_.isEqual(props.questions, questions)) {
       setQuestions([...props.questions]);
     }
-  }, [props.questions, questions]);
+  }, [props.questions]);
 
   const reorder = (list, startIndex, endIndex) => {
     const result = Array.from(list);
@@ -39,10 +39,11 @@ export default function QuestionsList(props) {
       return;
     }
     const items = reorder(
-      questions,
+      [...questions],
       result.source.index,
       result.destination.index
     );
+    getList(items);
     setQuestions(items);
   };
 
@@ -83,5 +84,6 @@ QuestionsList.propTypes = {
   linkTextMap: PropTypes.object,
   linkedIdMap: PropTypes.object,
   handleDeleteLink: PropTypes.func,
-  creation: PropTypes.bool
+  creation: PropTypes.bool,
+  getList: PropTypes.func
 };
