@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useSnackbar } from 'notistack';
+import _ from 'lodash';
 import { makeStyles } from '@material-ui/core/styles';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
@@ -103,7 +104,9 @@ export default function QuestionCreation(props) {
     const valid = validateQuestionAttributes(newDetail, true, true);
     if (valid) {
       const newDetails = { ...details };
-      newDetails[detail.questionType].push(newDetail);
+      if (question.questionType === 'anatomic')
+        newDetails[detail.questionType].push(newDetail);
+      else newDetails.observation.push(newDetail);
       setDetails(newDetails);
       setShowDetailCreation(false);
     }
@@ -137,6 +140,23 @@ export default function QuestionCreation(props) {
       handleSaveQuestion(updatedQuestion);
       handleClose(false);
     }
+  };
+
+  const handleDelete = (quesIndex, id) => {
+    const newDetails = _.cloneDeep(details);
+    const len = newDetails.anatomic.length;
+    const ana = newDetails.anatomic;
+    const obs = newDetails.observation;
+    if (len > 0 && len > quesIndex && id === ana[quesIndex].id) {
+      newDetails.anatomic.splice(quesIndex, 1);
+    } else if (
+      obs.length > 0 &&
+      quesIndex >= len &&
+      id === obs[quesIndex - len].id
+    ) {
+      newDetails.observation.splice(quesIndex - len, 1);
+    }
+    setDetails(newDetails);
   };
 
   return (
@@ -173,6 +193,7 @@ export default function QuestionCreation(props) {
             <QuestionList
               questions={[...details.anatomic, ...details.observation]}
               creation={true}
+              handleDelete={handleDelete}
             />
           )}
           {showDetailCreation && (

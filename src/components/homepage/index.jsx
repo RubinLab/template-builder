@@ -368,6 +368,7 @@ export default function HomePage({
           question.ImagingObservation.ImagingObservationCharacteristic;
 
       if (anatomic) {
+        const anaCharMinus = anatomicChars && anatomicChars.length <= charIndex;
         if (anatomicChars && anatomicChars.length > charIndex) {
           if (anatomicChars[charIndex] && anatomicChars[charIndex].id === id) {
             anatomicChars.splice(charIndex, 1);
@@ -375,8 +376,10 @@ export default function HomePage({
               delete question.AnatomicEntity.AnatomicEntityCharacteristic;
           }
         }
-        if (observationChars && anatomicChars.length <= charIndex) {
-          const obsIndex = charIndex - anatomicChars.length;
+        if (observationChars) {
+          const obsIndex = anaCharMinus
+            ? charIndex - anatomicChars.length
+            : charIndex;
           if (
             observationChars[obsIndex] &&
             observationChars[obsIndex].id === id
