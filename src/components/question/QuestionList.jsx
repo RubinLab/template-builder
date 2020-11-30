@@ -2,11 +2,21 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import { DragDropContext, Droppable } from 'react-beautiful-dnd';
+import { useSnackbar } from 'notistack';
+
 import Question from './Question.jsx';
 
 export default function QuestionsList(props) {
   const [questions, setQuestions] = useState([...props.questions]);
-  const { handleDelete, handleEdit } = props;
+  const {
+    handleDelete,
+    handleEdit,
+    getList,
+    characteristics,
+    getDetails
+  } = props;
+
+  const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
     const newList = [...questions];
@@ -25,7 +35,7 @@ export default function QuestionsList(props) {
     if (!_.isEqual(props.questions, questions)) {
       setQuestions([...props.questions]);
     }
-  }, [props.questions, questions]);
+  }, [props.questions]);
 
   const reorder = (list, startIndex, endIndex) => {
     const result = Array.from(list);
@@ -34,20 +44,48 @@ export default function QuestionsList(props) {
     return result;
   };
 
-  const handleReorder = result => {
+  function handleReorder(...args) {
+    const result = args[0];
+    const char = args[2];
     if (!result.destination) {
       return;
     }
-    const items = reorder(
-      questions,
-      result.source.index,
-      result.destination.index
-    );
+    const start = result.source.index;
+    const end = result.destination.index;
+    // if charLengths both bigger than 0
+    // source index and destination indexes both
+    // must be in the same charsset
+    let anaLen;
+    let obsLen;
+    if (char) {
+      anaLen = char.anatomic.length;
+      obsLen = char.observation.length;
+      if (anaLen > 0 && obsLen > 0) {
+        const areSameType =
+          start < anaLen ? end < anaLen : start >= anaLen && end >= anaLen;
+        if (!areSameType) {
+          enqueueSnackbar(
+            'Only same type of characteristics can be reordered!',
+            { variant: 'error' }
+          );
+          return;
+        }
+      }
+    }
+    const items = reorder([...questions], start, end);
     setQuestions(items);
-  };
+    if (char) {
+      const newChar = { ...char };
+      newChar.anatomic = items.slice(0, anaLen);
+      newChar.observation = items.slice(anaLen);
+      getDetails(newChar);
+    } else getList(items);
+  }
 
   return (
-    <DragDropContext onDragEnd={handleReorder}>
+    <DragDropContext
+      onDragEnd={(...args) => handleReorder(...args, characteristics)}
+    >
       <Droppable key={1} droppableId={`${1}`}>
         {provided => (
           <div ref={provided.innerRef} {...provided.droppableProps}>
@@ -83,5 +121,8 @@ QuestionsList.propTypes = {
   linkTextMap: PropTypes.object,
   linkedIdMap: PropTypes.object,
   handleDeleteLink: PropTypes.func,
-  creation: PropTypes.bool
+  creation: PropTypes.bool,
+  getList: PropTypes.func,
+  characteristics: PropTypes.object,
+  getDetails: PropTypes.func
 };

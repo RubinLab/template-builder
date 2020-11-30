@@ -521,6 +521,10 @@ export default function HomePage({
                     linkedIdMap={linkedIdMap}
                     handleDeleteLink={handleDeleteLinkModal}
                     creation={false}
+                    getList={list => {
+                      setQuestions(list);
+                      formCompleteTemplate(list);
+                    }}
                   />
                 </>
               )}

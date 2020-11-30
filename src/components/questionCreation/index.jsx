@@ -194,6 +194,8 @@ export default function QuestionCreation(props) {
               questions={[...details.anatomic, ...details.observation]}
               creation={true}
               handleDelete={handleDelete}
+              characteristics={details}
+              getDetails={newDetails => setDetails(newDetails)}
             />
           )}
           {showDetailCreation && (
@@ -203,7 +205,7 @@ export default function QuestionCreation(props) {
               handleSave={handleSaveDetail}
               setQuestion={setQuestion}
               authors={authors}
-              characteristic={question.questionType}
+              characteristics={question.questionType}
             />
           )}
         </DialogContent>

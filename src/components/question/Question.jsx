@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+// import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { Draggable } from 'react-beautiful-dnd';
 import QuestionItem from './QuestionItem.jsx';
 
 export default function Question(props) {
@@ -43,25 +44,6 @@ export default function Question(props) {
     setCharacteristics(char);
   }, [props.question]);
 
-  const reorder = (list, startIndex, endIndex) => {
-    const result = Array.from(list);
-    const [removed] = result.splice(startIndex, 1);
-    result.splice(endIndex, 0, removed);
-    return result;
-  };
-
-  const handleReorder = result => {
-    if (!result.destination) {
-      return;
-    }
-    const items = reorder(
-      characteristics,
-      result.source.index,
-      result.destination.index
-    );
-    setCharacteristics(items);
-  };
-
   // TODO if reorder happens, sent the new characteristics
   // to the parent component so it can be updated
 
@@ -87,44 +69,25 @@ export default function Question(props) {
             handleDeleteLink={props.handleDeleteLink}
             combinedIndex={`${index}`}
           />
-          {characteristics && characteristics.length > 0 && (
-            <DragDropContext onDragEnd={handleReorder}>
-              <Droppable key={characteristics.id} droppableId={question.id}>
-                {provided1 => (
-                  <div ref={provided1.innerRef} {...provided1.droppableProps}>
-                    {characteristics.map((el, i) => (
-                      <Draggable key={el.id} draggableId={el.id} index={i}>
-                        {provided2 => (
-                          <div
-                            ref={provided2.innerRef}
-                            {...provided2.draggableProps}
-                            {...provided2.dragHandleProps}
-                          >
-                            <QuestionItem
-                              key={`${el.id}-${i}`}
-                              handleDelete={handleDelete}
-                              handleEdit={handleEdit}
-                              question={el}
-                              index={i}
-                              level={1}
-                              handleAnswerLink={props.handleAnswerLink}
-                              handleQuestionLink={props.handleQuestionLink}
-                              linkTextMap={props.linkTextMap}
-                              linkedIdMap={props.linkedIdMap}
-                              handleDeleteLink={props.handleDeleteLink}
-                              creation={props.creation}
-                              combinedIndex={`${index}-${i}`}
-                            />
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided1.placeholder}
-                  </div>
-                )}
-              </Droppable>
-            </DragDropContext>
-          )}
+          {characteristics &&
+            characteristics.length > 0 &&
+            characteristics.map((el, i) => (
+              <QuestionItem
+                key={`${el.id}-${i}`}
+                handleDelete={handleDelete}
+                handleEdit={handleEdit}
+                question={el}
+                index={i}
+                level={1}
+                handleAnswerLink={props.handleAnswerLink}
+                handleQuestionLink={props.handleQuestionLink}
+                linkTextMap={props.linkTextMap}
+                linkedIdMap={props.linkedIdMap}
+                handleDeleteLink={props.handleDeleteLink}
+                creation={props.creation}
+                combinedIndex={`${index}-${i}`}
+              />
+            ))}
         </div>
       )}
     </Draggable>
