@@ -22,13 +22,21 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import SaveIcon from '@material-ui/icons/Save';
 import { useSnackbar } from 'notistack';
 
-const ontologyMap = JSON.parse(sessionStorage.getItem('ontologyMap'));
-
 const papaparseOptions = {
   header: true,
   dynamicTyping: true,
   skipEmptyLines: true
   //   transformHeader: header => header.toLowerCase().replace(/\W/g, '_')
+};
+
+const ontologies = {
+  ICD10: {
+    name: `International Classification of Diseases, Version 10`,
+    acronym: `ICD10`
+  },
+  RADLEX: { name: `Radiology Lexicon`, acronym: `RADLEX` },
+  NCIT: { name: `National Cancer Institute Thesaurus`, acronym: `NCIT` },
+  SNOMEDCT: { name: `SNOMED CT`, acronym: `SNOMEDCT` }
 };
 
 function TabPanel(props) {
@@ -108,6 +116,11 @@ const useStyles = makeStyles(theme => ({
     '&:hover': {
       background: '#CCBC8E'
     }
+  },
+  textField: {
+    marginTop: theme.spacing(1),
+    minWidth: 300,
+    width: 400
   }
 }));
 
@@ -122,7 +135,8 @@ const TermSearch = props => {
     handleOntologyInput,
     searchTerm,
     getUploadedTerms,
-    handleClose
+    handleClose,
+    ontology
   } = props;
 
   const handleChange = (event, newValue) => {
@@ -198,6 +212,16 @@ const TermSearch = props => {
     );
   };
 
+  const selectedOntologies = () => {
+    let selectValue = [];
+    if (ontologyLibs) {
+      selectValue = ontologyLibs;
+    } else if (ontology) {
+      selectValue = [ontologies[ontology]];
+    }
+    return selectValue;
+  };
+
   const bioPortalSearch = () => {
     return (
       <div className={classes.searchGroup}>
@@ -219,7 +243,7 @@ const TermSearch = props => {
           <Autocomplete
             multiple
             size="small"
-            options={ontologyMap ? Object.values(ontologyMap) : []}
+            options={ontologies ? Object.values(ontologies) : []}
             renderOption={option => (
               <React.Fragment>
                 {option.name} ({option.acronym})
@@ -229,19 +253,33 @@ const TermSearch = props => {
             onChange={(_, data) => handleOntologyInput(null, data)}
             onInputChange={handleOntologyInput}
             style={{ width: 300 }}
-            value={ontologyLibs || []}
+            value={selectedOntologies()}
             renderInput={params => (
               <TextField
                 {...params}
                 className={classes.searchInput}
-                placeholder={
-                  !ontologyLibs || ontologyLibs.length === 0
-                    ? 'Choose Ontology'
-                    : ''
-                }
+                placeholder={`Choose ${ontology ? 'more' : 'an'} ontology`}
               />
             )}
           />
+          {/* <FormControl className={classes.searchGroup}>
+            <InputLabel id="ontology">Default Ontology</InputLabel>
+            <Select
+              className={classes.textField}
+              labelId="ontology"
+              id="demo-controlled-open-select"
+              value={selectedOntologies()}
+              multiple
+              onChange={handleOntologyInput}
+            >
+              {Object.keys(ontologies).map(el => (
+                <MenuItem
+                  value={el}
+                  key={el}
+                >{`${el} - ${ontologies[el]}`}</MenuItem>
+              ))}
+            </Select>
+          </FormControl> */}
         </div>
         <IconButton
           className={classes.searchButton}
@@ -359,5 +397,6 @@ TermSearch.propTypes = {
   handleOntologyInput: PropTypes.func,
   searchTerm: PropTypes.string,
   getUploadedTerms: PropTypes.func,
-  handleClose: PropTypes.func
+  handleClose: PropTypes.func,
+  ontology: PropTypes.string
 };

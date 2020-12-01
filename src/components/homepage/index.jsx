@@ -20,7 +20,6 @@ import QuestionList from '../question/QuestionList.jsx';
 import QuestionCreation from '../questionCreation/index.jsx';
 // import TemplatePreview from './templatePreview.jsx';
 import { createID } from '../../utils/helper';
-import { getOntologyData } from '../../services/apiServices';
 import schema from '../../utils/AIMTemplate_v2rvStanford_schema.json';
 
 const materialUseStyles = makeStyles(theme => ({
@@ -262,22 +261,7 @@ export default function HomePage({
     }
   }, [showDialog]);
 
-  const getOntologyMap = () => {
-    getOntologyData()
-      .then(res => {
-        const map = {};
-        const { data } = res;
-        data.forEach(el => {
-          const { acronym, name } = el;
-          map[acronym] = { acronym, name };
-        });
-        sessionStorage.setItem('ontologyMap', JSON.stringify(map));
-      })
-      .catch(err => console.error(err));
-  };
-
   useEffect(() => {
-    getOntologyMap();
     setTempContUID(createID());
   }, []);
 

@@ -18,7 +18,7 @@ const materialUseStyles = makeStyles(theme => ({
 }));
 
 export default function DetailsCreation(props) {
-  const { open, handleClose, handleSave, characteristic } = props;
+  const { open, handleClose, handleSave, characteristic, ontology } = props;
   const classes = materialUseStyles();
   const [question, setQuestion] = useState({});
 
@@ -42,6 +42,7 @@ export default function DetailsCreation(props) {
           <QuestionForm
             postQuestion={setQuestion}
             characteristic={characteristic}
+            ontology={ontology}
           />
         </DialogContent>
         <DialogActions>
@@ -61,5 +62,6 @@ DetailsCreation.propTypes = {
   open: PropTypes.bool,
   handleClose: PropTypes.func,
   handleSave: PropTypes.func,
-  characteristic: PropTypes.string
+  characteristic: PropTypes.string,
+  ontology: PropTypes.string
 };

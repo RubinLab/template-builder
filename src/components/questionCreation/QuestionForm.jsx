@@ -322,6 +322,7 @@ const QuestionForm = props => {
             searchTerm={searchTerm}
             getUploadedTerms={getUploadedTerms}
             handleClose={() => setOpenSearch(false)}
+            ontology={props.ontology}
           />
         )}
         <FormControl className={classes.formControl}>
@@ -512,5 +513,6 @@ export default QuestionForm;
 
 QuestionForm.propTypes = {
   postQuestion: PropTypes.func,
-  characteristic: PropTypes.string
+  characteristic: PropTypes.string,
+  ontology: PropTypes.string
 };

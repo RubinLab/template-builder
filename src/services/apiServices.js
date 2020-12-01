@@ -19,10 +19,10 @@ const getResults = (keyword, ontologiesList, page) => {
   );
 };
 
-const getOntologyData = () => {
-  return axios.get(`${REST_URL}/ontologies`, {
+const getSelectedDetails = (ontology, url) => {
+  return axios.get(`${REST_URL}/ontologies/${ontology}/${url}?display=all`, {
     headers: { Authorization: `apikey token=${config.API_KEY}` }
   });
 };
 
-export { getResults, getOntologyData };
+export { getResults, getSelectedDetails };
