@@ -229,5 +229,6 @@ QuestionCreation.propTypes = {
   handleSaveQuestion: PropTypes.func,
   questionID: PropTypes.string,
   authors: PropTypes.string,
-  index: PropTypes.number
+  index: PropTypes.number,
+  ontology: PropTypes.string
 };

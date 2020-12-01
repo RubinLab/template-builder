@@ -88,6 +88,13 @@ const materialUseStyles = makeStyles(theme => ({
 
 const messages = { deleteLink: 'Are you sure you want to delete the link?' };
 
+const ontologies = {
+  ICD10: `International Classification of Diseases, Version 10`,
+  RADLEX: `Radiology Lexicon`,
+  NCIT: `National Cancer Institute Thesaurus`,
+  SNOMEDCT: `SNOMED CT`
+};
+
 export default function HomePage({
   showDialog,
   handleAddQuestion,
@@ -101,6 +108,7 @@ export default function HomePage({
   const [author, setAuthor] = useState('');
   const [description, setDescription] = useState('');
   const [version, setVersion] = useState('');
+  const [ontology, setOntology] = useState('');
   const [questions, setQuestions] = useState([]);
   const [questionID, setquestionID] = useState('');
   const [linkTextMap, setlinkTextMap] = useState({});
@@ -438,18 +446,20 @@ export default function HomePage({
                   }}
                 />
                 <FormControl className={classes.formControl}>
-                  <InputLabel id="templateLevel">Type of Template</InputLabel>
-                  <Select
-                    className={classes.textField}
-                    labelId="templateLevel"
-                    id="demo-controlled-open-select"
-                    value={templateType}
-                    onChange={e => setTemplateType(e.target.value)}
-                  >
-                    <MenuItem value={'study'}>Study</MenuItem>
-                    <MenuItem value={'series'}>Series</MenuItem>
-                    <MenuItem value={'image'}>Image</MenuItem>
-                  </Select>
+                  <>
+                    <InputLabel id="templateLevel">Type of Template</InputLabel>
+                    <Select
+                      className={classes.textField}
+                      labelId="templateLevel"
+                      id="demo-controlled-open-select"
+                      value={templateType || ''}
+                      onChange={e => setTemplateType(e.target.value)}
+                    >
+                      <MenuItem value={'study'}>Study</MenuItem>
+                      <MenuItem value={'series'}>Series</MenuItem>
+                      <MenuItem value={'image'}>Image</MenuItem>
+                    </Select>
+                  </>
                   <TextField
                     className={classes.textField}
                     id="standard-basic"
@@ -489,6 +499,25 @@ export default function HomePage({
                       setVersion(e.target.value);
                     }}
                   />
+                </FormControl>
+                <FormControl className={classes.formControl}>
+                  <>
+                    <InputLabel id="ontology">Default Ontology</InputLabel>
+                    <Select
+                      className={classes.textField}
+                      labelId="ontology"
+                      id="demo-controlled-open-select"
+                      value={ontology || ''}
+                      onChange={e => setOntology(e.target.value)}
+                    >
+                      {Object.keys(ontologies).map(el => (
+                        <MenuItem
+                          value={el}
+                          key={el}
+                        >{`${el} - ${ontologies[el]}`}</MenuItem>
+                      ))}
+                    </Select>
+                  </>
                   <TextField
                     disabled
                     fullWidth={true}
@@ -559,6 +588,7 @@ export default function HomePage({
           questionID={questionID}
           authors={author}
           index={questions.length}
+          ontology={ontology}
         />
       )}
       <Snackbar
