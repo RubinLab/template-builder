@@ -3,16 +3,31 @@ import config from './keys';
 
 const REST_URL = 'http://data.bioontology.org';
 
-const getResults = (keyword, ontologiesList, page) => {
+const getCollectionResults = (keyword, ontologiesList, page) => {
   let params = `/search?q=${keyword}`;
-  if (ontologiesList && ontologiesList.length > 0) {
+  if (
+    ontologiesList &&
+    ontologiesList.length > 0 &&
+    ontologiesList.length < 5
+  ) {
     params = `${params}&ontologies=${ontologiesList.join(',')}`;
-  }
+  } else if (!ontologiesList)
+    params = `${params}&ontologies=NCIT,SNOMEDCT,ICD10,RADLEX`;
+  else if (!ontologiesList.length > 4)
+    params = `${params}&ontologies=NCIT,SNOMEDCT,ICD10,RADLEX`;
   if (page) params = `${params}&page=${page}`;
-  console.log(params);
   return axios.get(
     `${REST_URL}${params}&pagesize=150&display=prefLabel,synonym,definition,notation,cui,semanticType,properties`,
-    // `http://data.bioontology.org/ontologies/RADLEX/classes/http%3A%2F%2Fradlex.org%2FRID%2FRID1301?display=all`,
+    {
+      headers: { Authorization: `apikey token=${config.API_KEY}` }
+    }
+  );
+};
+
+const getDetail = (ontology, url) => {
+  const encodedURL = url;
+  return axios.get(
+    `${REST_URL}/ontologies/${ontology}/classes/${encodedURL}?display=all`,
     {
       headers: { Authorization: `apikey token=${config.API_KEY}` }
     }
@@ -25,4 +40,4 @@ const getSelectedDetails = (ontology, url) => {
   });
 };
 
-export { getResults, getSelectedDetails };
+export { getCollectionResults, getSelectedDetails, getDetail };

@@ -13,7 +13,7 @@
     "ajv": "^6.12.6",
     "array-move": "^2.2.1",
     "axios": "^0.19.2",
-    "encodeurl": "^1.0.2",
+    "form-urlencoded": "^4.2.1",
     "jquery": "^3.5.1",
     "lodash": "^4.17.20",
     "mocha": "^8.2.0",

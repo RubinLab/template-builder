@@ -214,7 +214,7 @@ const TermSearch = props => {
 
   const selectedOntologies = () => {
     let selectValue = [];
-    if (ontologyLibs) {
+    if (ontologyLibs && ontologyLibs.length > 0) {
       selectValue = ontologyLibs;
     } else if (ontology) {
       selectValue = [ontologies[ontology]];
@@ -258,28 +258,18 @@ const TermSearch = props => {
               <TextField
                 {...params}
                 className={classes.searchInput}
-                placeholder={`Choose ${ontology ? 'more' : 'an'} ontology`}
+                placeholder={
+                  selectedOntologies().length < 3
+                    ? `Choose ${
+                        ontology || selectedOntologies().length > 0
+                          ? 'more'
+                          : 'an'
+                      } ontology`
+                    : ''
+                }
               />
             )}
           />
-          {/* <FormControl className={classes.searchGroup}>
-            <InputLabel id="ontology">Default Ontology</InputLabel>
-            <Select
-              className={classes.textField}
-              labelId="ontology"
-              id="demo-controlled-open-select"
-              value={selectedOntologies()}
-              multiple
-              onChange={handleOntologyInput}
-            >
-              {Object.keys(ontologies).map(el => (
-                <MenuItem
-                  value={el}
-                  key={el}
-                >{`${el} - ${ontologies[el]}`}</MenuItem>
-              ))}
-            </Select>
-          </FormControl> */}
         </div>
         <IconButton
           className={classes.searchButton}

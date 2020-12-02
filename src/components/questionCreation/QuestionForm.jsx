@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Accessibility from '@material-ui/icons/Accessibility';
+import { useSnackbar } from 'notistack';
 import Visibility from '@material-ui/icons/Visibility';
 // import Search from '@material-ui/icons/Search';
 import LocalHospital from '@material-ui/icons/LocalHospital';
@@ -22,10 +23,11 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import Backdrop from '@material-ui/core/Backdrop';
 import Drawer from '@material-ui/core/Drawer';
 import Button from '@material-ui/core/Button';
+import formurlencoded from 'form-urlencoded';
 import SearchResults from './SearchResults.jsx';
 import AnswerList from './answersList.jsx';
 import TermSearch from './TermSearch.jsx';
-import { getResults } from '../../services/apiServices';
+import { getCollectionResults, getDetail } from '../../services/apiServices';
 import { createID } from '../../utils/helper';
 
 const materialUseStyles = makeStyles(theme => ({
@@ -126,6 +128,8 @@ const QuestionForm = props => {
     showConfidence
   };
 
+  const { enqueueSnackbar } = useSnackbar();
+
   const handleBioportalSearch = async () => {
     let searchedTerms = JSON.parse(sessionStorage.getItem('searchedTerms'));
     const trimmedSearchTerm = searchTerm.trim();
@@ -135,13 +139,19 @@ const QuestionForm = props => {
       searchedTerms = [trimmedSearchTerm];
     }
     sessionStorage.setItem('searchedTerms', JSON.stringify(searchedTerms));
-    const filteredOntology =
-      ontologyLibs && Array.isArray(ontologyLibs)
-        ? ontologyLibs.map(el => el.acronym)
-        : [];
+    let filteredOntology = [];
+    if (
+      ontologyLibs &&
+      Array.isArray(ontologyLibs) &&
+      ontologyLibs.length > 0
+    ) {
+      filteredOntology = ontologyLibs.map(el => el.acronym);
+    } else if (props.ontology) {
+      filteredOntology = [props.ontology];
+    }
     setShowBackdrop(true);
     if (trimmedSearchTerm) {
-      getResults(trimmedSearchTerm, filteredOntology)
+      getCollectionResults(trimmedSearchTerm, filteredOntology)
         .then(res => {
           setSearchResults(res.data);
           setShowSearchResults(true);
@@ -162,7 +172,7 @@ const QuestionForm = props => {
   };
 
   const getNewSearchResult = pageNo => {
-    getResults(searchTerm, ontologyLibs, pageNo)
+    getCollectionResults(searchTerm, ontologyLibs, pageNo)
       .then(res => {
         setSearchResults(res.data);
       })
@@ -183,28 +193,77 @@ const QuestionForm = props => {
     };
   });
 
-  const handleTermSelection = (termIndex, title) => {
-    const term = searchResults.collection[termIndex];
-    const codeValue = term['@id'].split('/').pop();
-    const codeMeaning = term.prefLabel;
-    const codingSchemeDesignator = title.acronym;
-    const id = createID();
-    const newTerm = {
-      [id]: {
-        allowedTerm: { codeValue, codeMeaning, codingSchemeDesignator },
-        title,
-        id
+  const selectCodeValue = (ontology, item) => {
+    const { cui, notation } = item;
+    let codeValue = null;
+    if (ontology === 'ICD10' || ontology === 'SNOMEDCT') {
+      if (cui && cui.length > 0) {
+        codeValue = cui.shift();
+      } else if (notation) {
+        codeValue = notation;
       }
-    };
-    const newSelected = selectedTerms
-      ? { ...selectedTerms, ...newTerm }
-      : newTerm;
-    postQuestion({ ...formInput, selectedTerms: newSelected });
-    setTermSelection(newSelected);
-    setShowSearchResults(false);
-    setOpenSearch(false);
-    setOntologyLibs([]);
-    setSearchTerm('');
+    } else if (ontology === 'RADLEX') {
+      codeValue = item.prefixIRI;
+    } else if (ontology === 'NCIT') {
+      codeValue = item.prefixIRI.split(':').pop();
+    }
+    return codeValue;
+  };
+
+  const returnSelection = (acronym, item) => {
+    const result = {};
+    const codeValue = selectCodeValue(acronym, item);
+    if (codeValue) {
+      result.codeValue = codeValue;
+      result.codeMeaning = item.prefLabel;
+      result.codingSchemeDesignator = acronym;
+      return result;
+    }
+    return codeValue;
+  };
+
+  const handleTermSelection = async (termIndex, title) => {
+    try {
+      const term = searchResults.collection[termIndex];
+      console.log('term', term);
+      const acronym = searchResults.collection[termIndex].links.ontology
+        .split('/')
+        .pop();
+      const url = searchResults.collection[termIndex][`@id`];
+      const encodedURL = formurlencoded({ url })
+        .split('=')
+        .pop();
+      const details = await getDetail(acronym, encodedURL);
+      const allowedTerm = returnSelection(acronym, details.data);
+      if (allowedTerm || !allowedTerm.codeMeaning) {
+        const id = createID();
+        const newTerm = {
+          [id]: {
+            allowedTerm,
+            title,
+            id
+          }
+        };
+        const newSelected = selectedTerms
+          ? { ...selectedTerms, ...newTerm }
+          : newTerm;
+        postQuestion({ ...formInput, selectedTerms: newSelected });
+        setTermSelection(newSelected);
+        setShowSearchResults(false);
+        setOpenSearch(false);
+        setOntologyLibs([]);
+        setSearchTerm('');
+      } else {
+        const message = `Couldnt find ${
+          allowedTerm ? 'preferred name' : 'cui or notation'
+        } for this term in ${acronym}. You can upload the term in .csv form`;
+        enqueueSnackbar(message, {
+          variant: 'error'
+        });
+      }
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   const getUploadedTerms = data => {
