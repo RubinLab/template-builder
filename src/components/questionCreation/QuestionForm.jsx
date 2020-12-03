@@ -17,8 +17,6 @@ import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Select from '@material-ui/core/Select';
 import Checkbox from '@material-ui/core/Checkbox';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Backdrop from '@material-ui/core/Backdrop';
 import Drawer from '@material-ui/core/Drawer';
 import Button from '@material-ui/core/Button';
 import SearchResults from './SearchResults.jsx';
@@ -75,10 +73,6 @@ const materialUseStyles = makeStyles(theme => ({
   inputField: {
     marginRight: theme.spacing(2)
   },
-  backdrop: {
-    zIndex: theme.zIndex.drawer + 1,
-    color: '#fff'
-  },
   answerTypeMenu: {
     marginRight: theme.spacing(2)
   },
@@ -111,7 +105,6 @@ const QuestionForm = props => {
   const [disabled, setDisabled] = useState(false);
   const [showConfidence, setshowConfidence] = useState(false);
   const [answerType, setAnswerType] = useState('');
-  const [showBackdrop, setShowBackdrop] = useState(false);
   const [ontologyLibs, setOntologyLibs] = useState(null);
   const [openSearch, setOpenSearch] = useState(false);
 
@@ -146,13 +139,11 @@ const QuestionForm = props => {
     } else if (props.ontology) {
       filteredOntology = [props.ontology];
     }
-    setShowBackdrop(true);
     if (trimmedSearchTerm) {
       getCollectionResults(trimmedSearchTerm, filteredOntology)
         .then(res => {
           setSearchResults(res.data);
           setShowSearchResults(true);
-          setShowBackdrop(false);
         })
         .catch(err => console.error(err));
     }
@@ -222,14 +213,13 @@ const QuestionForm = props => {
   const handleTermSelection = async (termIndex, title) => {
     try {
       const term = searchResults.collection[termIndex];
-      console.log('term', term);
       const acronym = searchResults.collection[termIndex].links.ontology
         .split('/')
         .pop();
       const url = searchResults.collection[termIndex][`@id`];
       const details = await getDetail(acronym, url);
       const allowedTerm = returnSelection(acronym, details.data);
-      if (allowedTerm || !allowedTerm.codeMeaning) {
+      if (allowedTerm || (allowedTerm && !allowedTerm.codeMeaning)) {
         const id = createID();
         const newTerm = {
           [id]: {
@@ -248,9 +238,10 @@ const QuestionForm = props => {
         setOntologyLibs([]);
         setSearchTerm('');
       } else {
+        setShowSearchResults(false);
         const message = `Couldnt find ${
           allowedTerm ? 'preferred name' : 'cui or notation'
-        } for this term in ${acronym}. You can upload the term in .csv form`;
+        } for this term in ${acronym}. You can upload the term with a .csv file!`;
         enqueueSnackbar(message, {
           variant: 'error'
         });
@@ -538,9 +529,6 @@ const QuestionForm = props => {
           }}
         />
       </div>
-      <Backdrop className={classes.backdrop} open={showBackdrop}>
-        <CircularProgress color="inherit" />
-      </Backdrop>
       <Drawer
         className={classes.resultsDrawer}
         variant="temporary"
