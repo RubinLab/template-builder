@@ -142,8 +142,18 @@ const QuestionForm = props => {
     if (trimmedSearchTerm) {
       getCollectionResults(trimmedSearchTerm, filteredOntology)
         .then(res => {
-          setSearchResults(res.data);
-          setShowSearchResults(true);
+          if (res.data.collection.length === 0) {
+            enqueueSnackbar(
+              `There isn't any result for "${trimmedSearchTerm.toUpperCase()}"!. You can search the term in ePAD lexicon.`,
+              {
+                autoHideDuration: 5000,
+                variant: 'warning'
+              }
+            );
+          } else {
+            setSearchResults(res.data);
+            setShowSearchResults(true);
+          }
         })
         .catch(err => console.error(err));
     }
@@ -212,7 +222,6 @@ const QuestionForm = props => {
 
   const handleTermSelection = async (termIndex, title) => {
     try {
-      const term = searchResults.collection[termIndex];
       const acronym = searchResults.collection[termIndex].links.ontology
         .split('/')
         .pop();
