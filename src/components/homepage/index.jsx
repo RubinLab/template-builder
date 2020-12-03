@@ -430,20 +430,18 @@ export default function HomePage({
                   }}
                 />
                 <FormControl className={classes.formControl}>
-                  <>
-                    <InputLabel id="templateLevel">Type of Template</InputLabel>
-                    <Select
-                      className={classes.textField}
-                      labelId="templateLevel"
-                      id="demo-controlled-open-select"
-                      value={templateType || ''}
-                      onChange={e => setTemplateType(e.target.value)}
-                    >
-                      <MenuItem value={'study'}>Study</MenuItem>
-                      <MenuItem value={'series'}>Series</MenuItem>
-                      <MenuItem value={'image'}>Image</MenuItem>
-                    </Select>
-                  </>
+                  <InputLabel id="templateLevel">Type of Template</InputLabel>
+                  <Select
+                    className={classes.textField}
+                    labelId="templateLevel"
+                    id="demo-controlled-open-select"
+                    value={templateType || ''}
+                    onChange={e => setTemplateType(e.target.value)}
+                  >
+                    <MenuItem value={'study'}>Study</MenuItem>
+                    <MenuItem value={'series'}>Series</MenuItem>
+                    <MenuItem value={'image'}>Image</MenuItem>
+                  </Select>
                   <TextField
                     className={classes.textField}
                     id="standard-basic"
@@ -485,23 +483,21 @@ export default function HomePage({
                   />
                 </FormControl>
                 <FormControl className={classes.formControl}>
-                  <>
-                    <InputLabel id="ontology">Default Ontology</InputLabel>
-                    <Select
-                      className={classes.textField}
-                      labelId="ontology"
-                      id="demo-controlled-open-select"
-                      value={ontology || ''}
-                      onChange={e => setOntology(e.target.value)}
-                    >
-                      {Object.keys(ontologies).map(el => (
-                        <MenuItem
-                          value={el}
-                          key={el}
-                        >{`${el} - ${ontologies[el]}`}</MenuItem>
-                      ))}
-                    </Select>
-                  </>
+                  <InputLabel id="ontology">Default Ontology</InputLabel>
+                  <Select
+                    className={classes.textField}
+                    labelId="ontology"
+                    id="demo-controlled-open-select"
+                    value={ontology || ''}
+                    onChange={e => setOntology(e.target.value)}
+                  >
+                    {Object.keys(ontologies).map(el => (
+                      <MenuItem
+                        value={el}
+                        key={el}
+                      >{`${el} - ${ontologies[el]}`}</MenuItem>
+                    ))}
+                  </Select>
                   <TextField
                     disabled
                     fullWidth={true}

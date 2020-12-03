@@ -21,22 +21,13 @@ import AccordionDetails from '@material-ui/core/AccordionDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import SaveIcon from '@material-ui/icons/Save';
 import { useSnackbar } from 'notistack';
+import { ontologies } from '../../utils/helper';
 
 const papaparseOptions = {
   header: true,
   dynamicTyping: true,
   skipEmptyLines: true
   //   transformHeader: header => header.toLowerCase().replace(/\W/g, '_')
-};
-
-const ontologies = {
-  ICD10: {
-    name: `International Classification of Diseases, Version 10`,
-    acronym: `ICD10`
-  },
-  RADLEX: { name: `Radiology Lexicon`, acronym: `RADLEX` },
-  NCIT: { name: `National Cancer Institute Thesaurus`, acronym: `NCIT` },
-  SNOMEDCT: { name: `SNOMED CT`, acronym: `SNOMEDCT` }
 };
 
 function TabPanel(props) {

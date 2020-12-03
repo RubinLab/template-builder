@@ -17,13 +17,10 @@ import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Select from '@material-ui/core/Select';
 import Checkbox from '@material-ui/core/Checkbox';
-// import IconButton from '@material-ui/core/IconButton';
 import CircularProgress from '@material-ui/core/CircularProgress';
-// import Autocomplete from '@material-ui/lab/Autocomplete';
 import Backdrop from '@material-ui/core/Backdrop';
 import Drawer from '@material-ui/core/Drawer';
 import Button from '@material-ui/core/Button';
-import formurlencoded from 'form-urlencoded';
 import SearchResults from './SearchResults.jsx';
 import AnswerList from './answersList.jsx';
 import TermSearch from './TermSearch.jsx';
@@ -230,10 +227,7 @@ const QuestionForm = props => {
         .split('/')
         .pop();
       const url = searchResults.collection[termIndex][`@id`];
-      const encodedURL = formurlencoded({ url })
-        .split('=')
-        .pop();
-      const details = await getDetail(acronym, encodedURL);
+      const details = await getDetail(acronym, url);
       const allowedTerm = returnSelection(acronym, details.data);
       if (allowedTerm || !allowedTerm.codeMeaning) {
         const id = createID();
