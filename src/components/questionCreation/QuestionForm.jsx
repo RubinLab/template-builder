@@ -122,10 +122,18 @@ const QuestionForm = props => {
   const { enqueueSnackbar } = useSnackbar();
 
   const handleClickOutsideOfDrawer = e => {
+    const { className } = e.target;
     if (
       searchResultsRef &&
       searchResultsRef.current &&
       searchResultsRef.current.contains(e.target)
+    ) {
+      return;
+    }
+    if (
+      className &&
+      typeof className === 'string' &&
+      className.includes('MuiDrawer-paper')
     ) {
       return;
     }
@@ -139,15 +147,7 @@ const QuestionForm = props => {
     };
   }, []);
 
-  const handleBioportalSearch = async () => {
-    let searchedTerms = JSON.parse(sessionStorage.getItem('searchedTerms'));
-    const trimmedSearchTerm = searchTerm.trim();
-    if (searchedTerms && !searchedTerms.includes(trimmedSearchTerm)) {
-      searchedTerms = [...searchedTerms, trimmedSearchTerm];
-    } else if (!searchedTerms) {
-      searchedTerms = [trimmedSearchTerm];
-    }
-    sessionStorage.setItem('searchedTerms', JSON.stringify(searchedTerms));
+  const filterOntologyList = () => {
     let filteredOntology = [];
     if (
       ontologyLibs &&
@@ -158,6 +158,20 @@ const QuestionForm = props => {
     } else if (props.ontology) {
       filteredOntology = [props.ontology];
     }
+    return filteredOntology;
+  };
+
+  const handleBioportalSearch = async () => {
+    let searchedTerms = JSON.parse(sessionStorage.getItem('searchedTerms'));
+    const trimmedSearchTerm = searchTerm.trim();
+    if (searchedTerms && !searchedTerms.includes(trimmedSearchTerm)) {
+      searchedTerms = [...searchedTerms, trimmedSearchTerm];
+    } else if (!searchedTerms) {
+      searchedTerms = [trimmedSearchTerm];
+    }
+    sessionStorage.setItem('searchedTerms', JSON.stringify(searchedTerms));
+    const filteredOntology = filterOntologyList();
+
     if (trimmedSearchTerm) {
       getCollectionResults(trimmedSearchTerm, filteredOntology)
         .then(res => {
@@ -189,7 +203,8 @@ const QuestionForm = props => {
   };
 
   const getNewSearchResult = pageNo => {
-    getCollectionResults(searchTerm, ontologyLibs, pageNo)
+    const filteredOntology = filterOntologyList();
+    getCollectionResults(searchTerm, filteredOntology, pageNo)
       .then(res => {
         setSearchResults(res.data);
       })
@@ -343,7 +358,7 @@ const QuestionForm = props => {
   };
 
   return (
-    <div className={classes.root} onClick={toggleDrawer}>
+    <div className={classes.root}>
       {(characteristic === 'anatomic' || characteristic === undefined) && (
         <div>
           <FormControl className={classes.formControl}>
