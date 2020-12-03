@@ -20,7 +20,6 @@ import QuestionList from '../question/QuestionList.jsx';
 import QuestionCreation from '../questionCreation/index.jsx';
 // import TemplatePreview from './templatePreview.jsx';
 import { createID } from '../../utils/helper';
-import { getOntologyData } from '../../services/apiServices';
 import schema from '../../utils/AIMTemplate_v2rvStanford_schema.json';
 
 const materialUseStyles = makeStyles(theme => ({
@@ -88,6 +87,13 @@ const materialUseStyles = makeStyles(theme => ({
 
 const messages = { deleteLink: 'Are you sure you want to delete the link?' };
 
+const ontologies = {
+  ICD10: `International Classification of Diseases, Version 10`,
+  RADLEX: `Radiology Lexicon`,
+  NCIT: `National Cancer Institute Thesaurus`,
+  SNOMEDCT: `SNOMED CT`
+};
+
 export default function HomePage({
   showDialog,
   handleAddQuestion,
@@ -101,6 +107,7 @@ export default function HomePage({
   const [author, setAuthor] = useState('');
   const [description, setDescription] = useState('');
   const [version, setVersion] = useState('');
+  const [ontology, setOntology] = useState('');
   const [questions, setQuestions] = useState([]);
   const [questionID, setquestionID] = useState('');
   const [linkTextMap, setlinkTextMap] = useState({});
@@ -254,22 +261,7 @@ export default function HomePage({
     }
   }, [showDialog]);
 
-  const getOntologyMap = () => {
-    getOntologyData()
-      .then(res => {
-        const map = {};
-        const { data } = res;
-        data.forEach(el => {
-          const { acronym, name } = el;
-          map[acronym] = { acronym, name };
-        });
-        sessionStorage.setItem('ontologyMap', JSON.stringify(map));
-      })
-      .catch(err => console.error(err));
-  };
-
   useEffect(() => {
-    getOntologyMap();
     setTempContUID(createID());
   }, []);
 
@@ -443,7 +435,7 @@ export default function HomePage({
                     className={classes.textField}
                     labelId="templateLevel"
                     id="demo-controlled-open-select"
-                    value={templateType}
+                    value={templateType || ''}
                     onChange={e => setTemplateType(e.target.value)}
                   >
                     <MenuItem value={'study'}>Study</MenuItem>
@@ -489,6 +481,23 @@ export default function HomePage({
                       setVersion(e.target.value);
                     }}
                   />
+                </FormControl>
+                <FormControl className={classes.formControl}>
+                  <InputLabel id="ontology">Default Ontology</InputLabel>
+                  <Select
+                    className={classes.textField}
+                    labelId="ontology"
+                    id="demo-controlled-open-select"
+                    value={ontology || ''}
+                    onChange={e => setOntology(e.target.value)}
+                  >
+                    {Object.keys(ontologies).map(el => (
+                      <MenuItem
+                        value={el}
+                        key={el}
+                      >{`${el} - ${ontologies[el]}`}</MenuItem>
+                    ))}
+                  </Select>
                   <TextField
                     disabled
                     fullWidth={true}
@@ -559,6 +568,7 @@ export default function HomePage({
           questionID={questionID}
           authors={author}
           index={questions.length}
+          ontology={ontology}
         />
       )}
       <Snackbar

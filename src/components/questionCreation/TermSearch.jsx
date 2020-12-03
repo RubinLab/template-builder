@@ -21,8 +21,7 @@ import AccordionDetails from '@material-ui/core/AccordionDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import SaveIcon from '@material-ui/icons/Save';
 import { useSnackbar } from 'notistack';
-
-const ontologyMap = JSON.parse(sessionStorage.getItem('ontologyMap'));
+import { ontologies } from '../../utils/helper';
 
 const papaparseOptions = {
   header: true,
@@ -108,6 +107,11 @@ const useStyles = makeStyles(theme => ({
     '&:hover': {
       background: '#CCBC8E'
     }
+  },
+  textField: {
+    marginTop: theme.spacing(1),
+    minWidth: 300,
+    width: 400
   }
 }));
 
@@ -122,7 +126,8 @@ const TermSearch = props => {
     handleOntologyInput,
     searchTerm,
     getUploadedTerms,
-    handleClose
+    handleClose,
+    ontology
   } = props;
 
   const handleChange = (event, newValue) => {
@@ -198,6 +203,16 @@ const TermSearch = props => {
     );
   };
 
+  const selectedOntologies = () => {
+    let selectValue = [];
+    if (ontologyLibs && ontologyLibs.length > 0) {
+      selectValue = ontologyLibs;
+    } else if (ontology) {
+      selectValue = [ontologies[ontology]];
+    }
+    return selectValue;
+  };
+
   const bioPortalSearch = () => {
     return (
       <div className={classes.searchGroup}>
@@ -219,7 +234,7 @@ const TermSearch = props => {
           <Autocomplete
             multiple
             size="small"
-            options={ontologyMap ? Object.values(ontologyMap) : []}
+            options={ontologies ? Object.values(ontologies) : []}
             renderOption={option => (
               <React.Fragment>
                 {option.name} ({option.acronym})
@@ -229,14 +244,18 @@ const TermSearch = props => {
             onChange={(_, data) => handleOntologyInput(null, data)}
             onInputChange={handleOntologyInput}
             style={{ width: 300 }}
-            value={ontologyLibs || []}
+            value={selectedOntologies()}
             renderInput={params => (
               <TextField
                 {...params}
                 className={classes.searchInput}
                 placeholder={
-                  !ontologyLibs || ontologyLibs.length === 0
-                    ? 'Choose Ontology'
+                  selectedOntologies().length < 3
+                    ? `Choose ${
+                        ontology || selectedOntologies().length > 0
+                          ? 'more'
+                          : 'an'
+                      } ontology`
                     : ''
                 }
               />
@@ -359,5 +378,6 @@ TermSearch.propTypes = {
   handleOntologyInput: PropTypes.func,
   searchTerm: PropTypes.string,
   getUploadedTerms: PropTypes.func,
-  handleClose: PropTypes.func
+  handleClose: PropTypes.func,
+  ontology: PropTypes.string
 };

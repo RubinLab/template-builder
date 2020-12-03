@@ -42,4 +42,14 @@ function createTemplateQuestion(ques, authors, index, characteristic) {
   return component;
 }
 
-export { createTemplateQuestion, createID };
+const ontologies = {
+  ICD10: {
+    name: `International Classification of Diseases, Version 10`,
+    acronym: `ICD10`
+  },
+  RADLEX: { name: `Radiology Lexicon`, acronym: `RADLEX` },
+  NCIT: { name: `National Cancer Institute Thesaurus`, acronym: `NCIT` },
+  SNOMEDCT: { name: `SNOMED CT`, acronym: `SNOMEDCT` }
+};
+
+export { createTemplateQuestion, createID, ontologies };
