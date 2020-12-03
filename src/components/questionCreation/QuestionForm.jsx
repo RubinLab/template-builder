@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Accessibility from '@material-ui/icons/Accessibility';
@@ -107,6 +107,7 @@ const QuestionForm = props => {
   const [answerType, setAnswerType] = useState('');
   const [ontologyLibs, setOntologyLibs] = useState(null);
   const [openSearch, setOpenSearch] = useState(false);
+  const searchResultsRef = useRef();
 
   const formInput = {
     questionType,
@@ -119,6 +120,24 @@ const QuestionForm = props => {
   };
 
   const { enqueueSnackbar } = useSnackbar();
+
+  const handleClickOutsideOfDrawer = e => {
+    if (
+      searchResultsRef &&
+      searchResultsRef.current &&
+      searchResultsRef.current.contains(e.target)
+    ) {
+      return;
+    }
+    setShowSearchResults(false);
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutsideOfDrawer);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutsideOfDrawer);
+    };
+  }, []);
 
   const handleBioportalSearch = async () => {
     let searchedTerms = JSON.parse(sessionStorage.getItem('searchedTerms'));
@@ -316,8 +335,15 @@ const QuestionForm = props => {
       }
     }
   };
+
+  const toggleDrawer = event => {
+    if (event.key === 'Escape') {
+      setShowSearchResults(false);
+    }
+  };
+
   return (
-    <div className={classes.root}>
+    <div className={classes.root} onClick={toggleDrawer}>
       {(characteristic === 'anatomic' || characteristic === undefined) && (
         <div>
           <FormControl className={classes.formControl}>
@@ -412,51 +438,6 @@ const QuestionForm = props => {
             Search Terms
           </Button>
         </FormControl>
-        {/* <div className={classes.answerGroup}>
-          <Autocomplete
-            options={JSON.parse(sessionStorage.getItem('searchedTerms')) || []}
-            value={searchTerm}
-            onChange={(_, data) => handleSearchInput(null, data)}
-            onInputChange={handleSearchInput}
-            style={{ width: 300 }}
-            renderInput={params => (
-              <TextField
-                {...params}
-                className={classes.searchInput}
-                placeholder="Search terms"
-              />
-            )}
-          />
-          <Autocomplete
-            multiple
-            size="small"
-            options={ontologyMap ? Object.values(ontologyMap) : []}
-            renderOption={option => (
-              <React.Fragment>
-                {option.name} ({option.acronym})
-              </React.Fragment>
-            )}
-            getOptionLabel={option => option.acronym || ''}
-            onChange={(_, data) => handleOntologyInput(null, data)}
-            onInputChange={handleOntologyInput}
-            style={{ width: 300 }}
-            value={ontologyLibs || []}
-            renderInput={params => (
-              <TextField
-                {...params}
-                className={classes.searchInput}
-                placeholder={
-                  !ontologyLibs || ontologyLibs.length === 0
-                    ? 'Choose Ontology'
-                    : ''
-                }
-              />
-            )}
-          />
-          <IconButton className={classes.searchButton} onClick={handleSearch}>
-            <Search />
-          </IconButton>
-        </div> */}
       </div>
       {selectedTerms && (
         <div>
@@ -546,14 +527,17 @@ const QuestionForm = props => {
         classes={{
           paper: classes.drawerPaper
         }}
+        onClose={toggleDrawer}
       >
-        <SearchResults
-          results={searchResults}
-          handleSelection={handleTermSelection}
-          handleClose={() => setShowSearchResults(false)}
-          term={searchTerm}
-          handleNewPage={getNewSearchResult}
-        />
+        <div ref={searchResultsRef}>
+          <SearchResults
+            results={searchResults}
+            handleSelection={handleTermSelection}
+            handleClose={() => setShowSearchResults(false)}
+            term={searchTerm}
+            handleNewPage={getNewSearchResult}
+          />
+        </div>
       </Drawer>
     </div>
   );
