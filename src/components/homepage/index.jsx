@@ -19,7 +19,11 @@ import Button from '@material-ui/core/Button';
 import QuestionList from '../question/QuestionList.jsx';
 import QuestionCreation from '../questionCreation/index.jsx';
 // import TemplatePreview from './templatePreview.jsx';
-import { createID, getIndecesFromAnswerID } from '../../utils/helper';
+import {
+  createID,
+  getIndecesFromAnswerID,
+  formAnswerIDFromIndeces
+} from '../../utils/helper';
 import schema from '../../utils/AIMTemplate_v2rvStanford_schema.json';
 
 const materialUseStyles = makeStyles(theme => ({
@@ -313,9 +317,13 @@ export default function HomePage({
       });
       return;
     }
-    let answerID = `${questionIndex}-${answerIndex}-${answer.codeValue}`;
-    answerID = charIndex ? `${answerID}/${charIndex}` : answerID;
-    answerID = scaleIndex ? `${answerID}/${scaleIndex}` : answerID;
+    let answerID = formAnswerIDFromIndeces(
+      questionIndex,
+      answerIndex,
+      answer.codeValue,
+      charIndex,
+      scaleIndex
+    );
     newLinkedIdMap.linkedAnswer = {
       id: answerID,
       questionId,
