@@ -317,7 +317,7 @@ export default function HomePage({
       });
       return;
     }
-    let answerID = formAnswerIDFromIndeces(
+    const answerID = formAnswerIDFromIndeces(
       questionIndex,
       answerIndex,
       answer.codeValue,
