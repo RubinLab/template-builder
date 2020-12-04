@@ -15,11 +15,11 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Snackbar from '@material-ui/core/Snackbar';
 import Button from '@material-ui/core/Button';
-import AlertDialog from '../common/AlertDialog.jsx';
+// import AlertDialog from '../common/AlertDialog.jsx';
 import QuestionList from '../question/QuestionList.jsx';
 import QuestionCreation from '../questionCreation/index.jsx';
 // import TemplatePreview from './templatePreview.jsx';
-import { createID } from '../../utils/helper';
+import { createID, getIndecesFromAnswerID } from '../../utils/helper';
 import schema from '../../utils/AIMTemplate_v2rvStanford_schema.json';
 
 const materialUseStyles = makeStyles(theme => ({
@@ -85,7 +85,7 @@ const materialUseStyles = makeStyles(theme => ({
   }
 }));
 
-const messages = { deleteLink: 'Are you sure you want to delete the link?' };
+// const messages = { deleteLink: 'Are you sure you want to delete the link?' };
 
 const ontologies = {
   ICD10: `International Classification of Diseases, Version 10`,
@@ -115,8 +115,7 @@ export default function HomePage({
     linkedAnswer: null,
     linkedQuestion: null
   });
-  const [deletingAnswerLink, setDeletingAnswerLink] = useState(null);
-  const [open, setOpen] = useState(false);
+  // const [open, setOpen] = useState(false);
   const [completeTemplate, setCompTemplate] = useState({});
   const [validationErrors, setValErrors] = useState([]);
   const [tempContUID, setTempContUID] = useState('');
@@ -193,41 +192,37 @@ export default function HomePage({
     validateTemplate(cont);
   };
 
-  const handleDeleteLinkModal = (
-    answerLinkID,
-    quesID,
-    answerIndex,
-    questionIndex
-  ) => {
-    setDeletingAnswerLink({
-      answerLinkID,
-      quesID,
-      answerIndex,
-      questionIndex
-    });
-    setOpen(!open);
-  };
+  // TODO
+  // creating a link between an answer and question is
+  // a too easy task for showing a warning message
+  // show this warning for question deletion instead
 
-  const deleteLinkFromJson = () => {
-    // TODO find the answer and delete the nextId
+  const deleteLinkFromJson = answerID => {
     try {
-      const { answerLinkID, quesID, questionIndex } = deletingAnswerLink;
-      const newQuestions = [...questions];
-      if (
-        newQuestions[questionIndex] &&
-        newQuestions[questionIndex].id === quesID
-      ) {
-        delete newQuestions[questionIndex].selectedTerms[answerLinkID].nextId;
-      } else {
-        // eslint-disable-next-line no-restricted-syntax
-        for (const ques of newQuestions) {
-          if (ques.id === quesID) {
-            delete ques.selectedTerms[answerLinkID];
-          }
-        }
-      }
+      const {
+        questionIndex,
+        answerIndex,
+        charIndex,
+        scaleIndex
+      } = getIndecesFromAnswerID(answerID);
 
-      handleDeleteLinkModal();
+      const newQestions = _.cloneDeep(questions);
+      // TODO - learn if char observation or anatomic add flag to the answer id
+      if (scaleIndex) {
+        delete newQestions[questionIndex][charIndex][scaleIndex][answerIndex]
+          .nextid;
+        // TODO - learn if char observation or anatomic add flag to the answer id
+      } else if (charIndex)
+        delete newQestions[questionIndex][charIndex][answerIndex].nextid;
+      else delete newQestions[questionIndex].AllowedTerm[answerIndex].nextid;
+
+      // delete popup text
+      const newLinkTextMap = { ...linkTextMap };
+      delete newLinkTextMap[answerID];
+      setlinkTextMap(newLinkTextMap);
+
+      // reform the template
+      formCompleteTemplate(newQestions);
     } catch (err) {
       console.error(err);
     }
@@ -268,14 +263,12 @@ export default function HomePage({
   const createLink = newLinkedIdMap => {
     const { linkedAnswer, linkedQuestion } = newLinkedIdMap;
     if (linkedAnswer && linkedQuestion) {
-      const indeces = linkedAnswer.id.split('-');
-      const charIndeces = linkedAnswer.id.split('/');
-      const questionIndex = parseInt(indeces[0], 10);
-      const answerIndex = parseInt(indeces[1], 10);
-      const charIndex =
-        charIndeces.length > 1 ? parseInt(charIndeces[1], 10) : null;
-      const scaleIndex =
-        charIndeces.length > 2 ? parseInt(charIndeces[2], 10) : null;
+      const {
+        questionIndex,
+        answerIndex,
+        charIndex,
+        scaleIndex
+      } = getIndecesFromAnswerID(linkedAnswer.id);
 
       // TODO - learn if char observation or anatomic add flag to the answer id
       if (scaleIndex) {
@@ -334,14 +327,13 @@ export default function HomePage({
   const handleQuestionLink = (undo, question) => {
     // get question index - and answer Index from the selected answer id
     // get question ID from hre and add nextid to that index
+
+    // TODO
+    // add question index check
+    // question should come after the answer
     const newLinkTextMap = { ...linkTextMap };
     const newLinkedIdMap = { ...linkedIdMap };
     if (undo || linkedIdMap[question.id]) {
-      // if (newLinkedIdMap.linkedQuestion) {
-      //   delete newLinkTextMap[newLinkedIdMap.linkedQuestion.id];
-      // }
-      // if (newLinkTextMap[question.id]) delete newLinkTextMap[question.id];
-      // setlinkTextMap(newLinkTextMap);
       newLinkedIdMap.linkedQuestion = null;
       setLinkedIdMap(newLinkedIdMap);
       return;
@@ -556,7 +548,7 @@ export default function HomePage({
                     handleQuestionLink={handleQuestionLink}
                     linkTextMap={linkTextMap}
                     linkedIdMap={linkedIdMap}
-                    handleDeleteLink={handleDeleteLinkModal}
+                    handleDeleteLink={deleteLinkFromJson}
                     creation={false}
                     getList={list => {
                       setQuestions(list);
@@ -618,12 +610,12 @@ export default function HomePage({
           </React.Fragment>
         }
       />
-      <AlertDialog
+      {/* <AlertDialog
         message={messages.deleteLink}
         onOK={deleteLinkFromJson}
         onCancel={deleteLinkFromJson}
         open={open}
-      />
+      /> */}
     </>
   );
 }

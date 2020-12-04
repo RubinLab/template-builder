@@ -6,6 +6,7 @@ import IconButton from '@material-ui/core/IconButton';
 import InsertLinkIcon from '@material-ui/icons/InsertLink';
 import DeleteForever from '@material-ui/icons/DeleteForever';
 import Menu from '@material-ui/core/Menu';
+import { formAnswerIDFromIndeces } from '../../utils/helper';
 
 const useStyles = makeStyles(theme => ({
   popupContent: {
@@ -51,9 +52,13 @@ export default function AnswerLinkButton({
   };
   const showInfo = Boolean(anchorEl);
   let answerLink = null;
-  let answerID = `${questionIndex}-${answerIndex}-${term.codeValue}`;
-  answerID = charIndex ? `${answerID}/${charIndex}` : answerID;
-  answerID = scaleIndex ? `${answerID}/${scaleIndex}` : answerID;
+  const answerID = formAnswerIDFromIndeces(
+    questionIndex,
+    answerIndex,
+    term.codeValue,
+    charIndex,
+    scaleIndex
+  );
   if (linkTextMap && linkTextMap[answerID] && !linkedIdMap.linkedAnswer) {
     answerLink = (
       <IconButton onMouseEnter={handleOpen} className={classes.answerIcon}>
@@ -73,7 +78,7 @@ export default function AnswerLinkButton({
             >{`Next: ${linkTextMap[answerID]}`}</div>
             <IconButton
               className={classes.listItemIcon}
-              onClick={handleDeleteLink}
+              onClick={() => handleDeleteLink(answerID)}
             >
               <DeleteForever />
             </IconButton>
