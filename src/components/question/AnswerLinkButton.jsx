@@ -13,14 +13,20 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   contentText: {
-    paddingRight: theme.spacing(3),
+    paddingRight: theme.spacing(3)
   },
   listItemIcon: {
-    padding: theme.spacing(0.5),
+    padding: theme.spacing(0.5)
   },
+  disabledLink: {
+    color: '#a70432'
+  },
+  answerIcon: {
+    padding: theme.spacing(0.3)
+  }
 }));
 
 export default function AnswerLinkButton({
@@ -32,6 +38,8 @@ export default function AnswerLinkButton({
   term,
   question,
   handleDeleteLink,
+  charIndex,
+  scaleIndex
 }) {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -43,10 +51,16 @@ export default function AnswerLinkButton({
   };
   const showInfo = Boolean(anchorEl);
   let answerLink = null;
-  if (linkTextMap && linkTextMap[term.id]) {
+  let answerID = `${questionIndex}-${answerIndex}-${term.codeValue}`;
+  answerID = charIndex ? `${answerID}/${charIndex}` : answerID;
+  answerID = scaleIndex ? `${answerID}/${scaleIndex}` : answerID;
+  if (linkTextMap && linkTextMap[answerID] && !linkedIdMap.linkedAnswer) {
     answerLink = (
-      <>
-        <LinkOff id={`disableLink-${answerIndex}`} onMouseEnter={handleOpen} />
+      <IconButton onMouseEnter={handleOpen} className={classes.answerIcon}>
+        <LinkOff
+          id={`disableLink-${answerIndex}`}
+          className={classes.disabledLink}
+        />
         <Menu
           id={`disableLink-${answerIndex}`}
           open={showInfo}
@@ -54,9 +68,9 @@ export default function AnswerLinkButton({
           onClose={handleClose}
         >
           <div className={classes.popupContent}>
-            <div className={classes.contentText}>{`Next: ${
-              linkTextMap[term.id]
-            }`}</div>
+            <div
+              className={classes.contentText}
+            >{`Next: ${linkTextMap[answerID]}`}</div>
             <IconButton
               className={classes.listItemIcon}
               onClick={handleDeleteLink}
@@ -65,20 +79,23 @@ export default function AnswerLinkButton({
             </IconButton>
           </div>
         </Menu>
-      </>
+      </IconButton>
     );
   }
 
-  if (!linkedIdMap.linkedAnswer && !linkTextMap[term.id]) {
+  if (!linkedIdMap.linkedAnswer && !linkTextMap[answerID]) {
     answerLink = (
       <IconButton
+        className={classes.answerIcon}
         onClick={() =>
           handleAnswerLink(
             false,
             term,
             question.id,
+            answerIndex,
             questionIndex,
-            question.question
+            question.label,
+            charIndex
           )
         }
       >
@@ -94,8 +111,10 @@ AnswerLinkButton.propTypes = {
   linkTextMap: PropTypes.object,
   linkedIdMap: PropTypes.object,
   questionIndex: PropTypes.number,
+  charIndex: PropTypes.number,
   answerIndex: PropTypes.number,
   question: PropTypes.object,
   term: PropTypes.object,
   handleDeleteLink: PropTypes.func,
+  scaleIndex: PropTypes.number
 };

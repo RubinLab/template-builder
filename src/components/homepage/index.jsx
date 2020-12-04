@@ -268,8 +268,28 @@ export default function HomePage({
   const createLink = newLinkedIdMap => {
     const { linkedAnswer, linkedQuestion } = newLinkedIdMap;
     if (linkedAnswer && linkedQuestion) {
+      const indeces = linkedAnswer.id.split('-');
+      const charIndeces = linkedAnswer.id.split('/');
+      const questionIndex = parseInt(indeces[0], 10);
+      const answerIndex = parseInt(indeces[1], 10);
+      const charIndex =
+        charIndeces.length > 1 ? parseInt(charIndeces[1], 10) : null;
+      const scaleIndex =
+        charIndeces.length > 2 ? parseInt(charIndeces[2], 10) : null;
+
+      // TODO - learn if char observation or anatomic add flag to the answer id
+      if (scaleIndex) {
+        questions[questionIndex][charIndex][scaleIndex][answerIndex].nextid =
+          linkedQuestion.id;
+        // TODO - learn if char observation or anatomic add flag to the answer id
+      } else if (charIndex)
+        questions[questionIndex][charIndex][answerIndex].nextid =
+          linkedQuestion.id;
+      else
+        questions[questionIndex].AllowedTerm[answerIndex].nextid =
+          linkedQuestion.id;
+
       // TODO
-      // find the answer and add nextID
       // after that clear linkedIdMap
       setLinkedIdMap({ linkedAnswer: null, linkedQuestion: null });
     }
@@ -279,8 +299,11 @@ export default function HomePage({
     undo,
     answer,
     questionId,
+    answerIndex,
     questionIndex,
-    questionText
+    questionText,
+    charIndex,
+    scaleIndex
   ) => {
     const newLinkTextMap = { ...linkTextMap };
     const newLinkedIdMap = { ...linkedIdMap };
@@ -297,35 +320,40 @@ export default function HomePage({
       });
       return;
     }
+    let answerID = `${questionIndex}-${answerIndex}-${answer.codeValue}`;
+    answerID = charIndex ? `${answerID}/${charIndex}` : answerID;
+    answerID = scaleIndex ? `${answerID}/${scaleIndex}` : answerID;
     newLinkedIdMap.linkedAnswer = {
-      id: answer.id,
+      id: answerID,
       questionId,
       questionText,
-      answerText: answer.allowedTerm.codeMeaning
+      answerText: answer.codeMeaning
     };
     setLinkedIdMap(newLinkedIdMap);
   };
   const handleQuestionLink = (undo, question) => {
+    // get question index - and answer Index from the selected answer id
+    // get question ID from hre and add nextid to that index
     const newLinkTextMap = { ...linkTextMap };
     const newLinkedIdMap = { ...linkedIdMap };
     if (undo || linkedIdMap[question.id]) {
-      if (newLinkedIdMap.linkedQuestion) {
-        delete newLinkTextMap[newLinkedIdMap.linkedQuestion.id];
-      }
-      if (newLinkTextMap[question.id]) delete newLinkTextMap[question.id];
-      setlinkTextMap(newLinkTextMap);
+      // if (newLinkedIdMap.linkedQuestion) {
+      //   delete newLinkTextMap[newLinkedIdMap.linkedQuestion.id];
+      // }
+      // if (newLinkTextMap[question.id]) delete newLinkTextMap[question.id];
+      // setlinkTextMap(newLinkTextMap);
       newLinkedIdMap.linkedQuestion = null;
       setLinkedIdMap(newLinkedIdMap);
       return;
     }
     newLinkedIdMap.linkedQuestion = {
       id: question.id,
-      questionText: question.question
+      questionText: question.label
     };
     setLinkedIdMap(newLinkedIdMap);
-    const { answerText, questionText, id } = linkedIdMap.linkedAnswer;
-    newLinkTextMap[question.id] = `${answerText} of ${questionText}`;
-    newLinkTextMap[id] = question.question;
+    const { id } = linkedIdMap.linkedAnswer;
+    // newLinkTextMap[question.id] = `${answerText} of ${questionText}`;
+    newLinkTextMap[id] = question.label;
     setlinkTextMap(newLinkTextMap);
     createLink(newLinkedIdMap);
   };
