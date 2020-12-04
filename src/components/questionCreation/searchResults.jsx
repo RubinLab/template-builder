@@ -68,7 +68,11 @@ const SearchResults = props => {
             <Checkbox
               size="small"
               className={classes.listItemCheckbox}
-              onClick={() => handleSelection(k, ontologyMap[acronym])}
+              onClick={() => {
+                window.setTimeout(() => {
+                  handleSelection(k, ontologyMap[acronym]);
+                }, 250);
+              }}
             />
             <Link
               component="button"
