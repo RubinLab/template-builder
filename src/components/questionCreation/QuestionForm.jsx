@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Accessibility from '@material-ui/icons/Accessibility';
@@ -17,6 +17,8 @@ import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Select from '@material-ui/core/Select';
 import Checkbox from '@material-ui/core/Checkbox';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Backdrop from '@material-ui/core/Backdrop';
 import Drawer from '@material-ui/core/Drawer';
 import Button from '@material-ui/core/Button';
 import SearchResults from './SearchResults.jsx';
@@ -73,6 +75,10 @@ const materialUseStyles = makeStyles(theme => ({
   inputField: {
     marginRight: theme.spacing(2)
   },
+  backdrop: {
+    zIndex: theme.zIndex.drawer + 1,
+    color: '#fff'
+  },
   answerTypeMenu: {
     marginRight: theme.spacing(2)
   },
@@ -105,9 +111,9 @@ const QuestionForm = props => {
   const [disabled, setDisabled] = useState(false);
   const [showConfidence, setshowConfidence] = useState(false);
   const [answerType, setAnswerType] = useState('');
+  const [showBackdrop, setShowBackdrop] = useState(false);
   const [ontologyLibs, setOntologyLibs] = useState(null);
   const [openSearch, setOpenSearch] = useState(false);
-  const searchResultsRef = useRef();
 
   const formInput = {
     questionType,
@@ -121,33 +127,15 @@ const QuestionForm = props => {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const handleClickOutsideOfDrawer = e => {
-    const { className } = e.target;
-    if (
-      searchResultsRef &&
-      searchResultsRef.current &&
-      searchResultsRef.current.contains(e.target)
-    ) {
-      return;
+  const handleBioportalSearch = async () => {
+    let searchedTerms = JSON.parse(sessionStorage.getItem('searchedTerms'));
+    const trimmedSearchTerm = searchTerm.trim();
+    if (searchedTerms && !searchedTerms.includes(trimmedSearchTerm)) {
+      searchedTerms = [...searchedTerms, trimmedSearchTerm];
+    } else if (!searchedTerms) {
+      searchedTerms = [trimmedSearchTerm];
     }
-    if (
-      className &&
-      typeof className === 'string' &&
-      className.includes('MuiDrawer-paper')
-    ) {
-      return;
-    }
-    setShowSearchResults(false);
-  };
-
-  useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutsideOfDrawer);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutsideOfDrawer);
-    };
-  }, []);
-
-  const filterOntologyList = () => {
+    sessionStorage.setItem('searchedTerms', JSON.stringify(searchedTerms));
     let filteredOntology = [];
     if (
       ontologyLibs &&
@@ -158,35 +146,13 @@ const QuestionForm = props => {
     } else if (props.ontology) {
       filteredOntology = [props.ontology];
     }
-    return filteredOntology;
-  };
-
-  const handleBioportalSearch = async () => {
-    let searchedTerms = JSON.parse(sessionStorage.getItem('searchedTerms'));
-    const trimmedSearchTerm = searchTerm.trim();
-    if (searchedTerms && !searchedTerms.includes(trimmedSearchTerm)) {
-      searchedTerms = [...searchedTerms, trimmedSearchTerm];
-    } else if (!searchedTerms) {
-      searchedTerms = [trimmedSearchTerm];
-    }
-    sessionStorage.setItem('searchedTerms', JSON.stringify(searchedTerms));
-    const filteredOntology = filterOntologyList();
-
+    setShowBackdrop(true);
     if (trimmedSearchTerm) {
       getCollectionResults(trimmedSearchTerm, filteredOntology)
         .then(res => {
-          if (res.data.collection.length === 0) {
-            enqueueSnackbar(
-              `There isn't any result for "${trimmedSearchTerm.toUpperCase()}"!. You can search the term in ePAD lexicon.`,
-              {
-                autoHideDuration: 5000,
-                variant: 'warning'
-              }
-            );
-          } else {
-            setSearchResults(res.data);
-            setShowSearchResults(true);
-          }
+          setSearchResults(res.data);
+          setShowSearchResults(true);
+          setShowBackdrop(false);
         })
         .catch(err => console.error(err));
     }
@@ -203,8 +169,7 @@ const QuestionForm = props => {
   };
 
   const getNewSearchResult = pageNo => {
-    const filteredOntology = filterOntologyList();
-    getCollectionResults(searchTerm, filteredOntology, pageNo)
+    getCollectionResults(searchTerm, ontologyLibs, pageNo)
       .then(res => {
         setSearchResults(res.data);
       })
@@ -256,13 +221,15 @@ const QuestionForm = props => {
 
   const handleTermSelection = async (termIndex, title) => {
     try {
+      const term = searchResults.collection[termIndex];
+      console.log('term', term);
       const acronym = searchResults.collection[termIndex].links.ontology
         .split('/')
         .pop();
       const url = searchResults.collection[termIndex][`@id`];
       const details = await getDetail(acronym, url);
       const allowedTerm = returnSelection(acronym, details.data);
-      if (allowedTerm || (allowedTerm && !allowedTerm.codeMeaning)) {
+      if (allowedTerm || !allowedTerm.codeMeaning) {
         const id = createID();
         const newTerm = {
           [id]: {
@@ -281,10 +248,9 @@ const QuestionForm = props => {
         setOntologyLibs([]);
         setSearchTerm('');
       } else {
-        setShowSearchResults(false);
         const message = `Couldnt find ${
           allowedTerm ? 'preferred name' : 'cui or notation'
-        } for this term in ${acronym}. You can upload the term with a .csv file!`;
+        } for this term in ${acronym}. You can upload the term in .csv form`;
         enqueueSnackbar(message, {
           variant: 'error'
         });
@@ -350,13 +316,6 @@ const QuestionForm = props => {
       }
     }
   };
-
-  const toggleDrawer = event => {
-    if (event.key === 'Escape') {
-      setShowSearchResults(false);
-    }
-  };
-
   return (
     <div className={classes.root}>
       {(characteristic === 'anatomic' || characteristic === undefined) && (
@@ -453,6 +412,51 @@ const QuestionForm = props => {
             Search Terms
           </Button>
         </FormControl>
+        {/* <div className={classes.answerGroup}>
+          <Autocomplete
+            options={JSON.parse(sessionStorage.getItem('searchedTerms')) || []}
+            value={searchTerm}
+            onChange={(_, data) => handleSearchInput(null, data)}
+            onInputChange={handleSearchInput}
+            style={{ width: 300 }}
+            renderInput={params => (
+              <TextField
+                {...params}
+                className={classes.searchInput}
+                placeholder="Search terms"
+              />
+            )}
+          />
+          <Autocomplete
+            multiple
+            size="small"
+            options={ontologyMap ? Object.values(ontologyMap) : []}
+            renderOption={option => (
+              <React.Fragment>
+                {option.name} ({option.acronym})
+              </React.Fragment>
+            )}
+            getOptionLabel={option => option.acronym || ''}
+            onChange={(_, data) => handleOntologyInput(null, data)}
+            onInputChange={handleOntologyInput}
+            style={{ width: 300 }}
+            value={ontologyLibs || []}
+            renderInput={params => (
+              <TextField
+                {...params}
+                className={classes.searchInput}
+                placeholder={
+                  !ontologyLibs || ontologyLibs.length === 0
+                    ? 'Choose Ontology'
+                    : ''
+                }
+              />
+            )}
+          />
+          <IconButton className={classes.searchButton} onClick={handleSearch}>
+            <Search />
+          </IconButton>
+        </div> */}
       </div>
       {selectedTerms && (
         <div>
@@ -534,6 +538,9 @@ const QuestionForm = props => {
           }}
         />
       </div>
+      <Backdrop className={classes.backdrop} open={showBackdrop}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
       <Drawer
         className={classes.resultsDrawer}
         variant="temporary"
@@ -542,17 +549,14 @@ const QuestionForm = props => {
         classes={{
           paper: classes.drawerPaper
         }}
-        onClose={toggleDrawer}
       >
-        <div ref={searchResultsRef}>
-          <SearchResults
-            results={searchResults}
-            handleSelection={handleTermSelection}
-            handleClose={() => setShowSearchResults(false)}
-            term={searchTerm}
-            handleNewPage={getNewSearchResult}
-          />
-        </div>
+        <SearchResults
+          results={searchResults}
+          handleSelection={handleTermSelection}
+          handleClose={() => setShowSearchResults(false)}
+          term={searchTerm}
+          handleNewPage={getNewSearchResult}
+        />
       </Drawer>
     </div>
   );
