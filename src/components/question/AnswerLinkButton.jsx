@@ -13,14 +13,14 @@ const useStyles = makeStyles(theme => ({
     display: 'flex',
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   contentText: {
-    paddingRight: theme.spacing(3),
+    paddingRight: theme.spacing(3)
   },
   listItemIcon: {
-    padding: theme.spacing(0.5),
-  },
+    padding: theme.spacing(0.5)
+  }
 }));
 
 export default function AnswerLinkButton({
@@ -31,7 +31,7 @@ export default function AnswerLinkButton({
   answerIndex,
   term,
   question,
-  handleDeleteLink,
+  handleDeleteLink
 }) {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -97,5 +97,5 @@ AnswerLinkButton.propTypes = {
   answerIndex: PropTypes.number,
   question: PropTypes.object,
   term: PropTypes.object,
-  handleDeleteLink: PropTypes.func,
+  handleDeleteLink: PropTypes.func
 };
