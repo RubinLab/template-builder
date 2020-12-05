@@ -19,7 +19,7 @@ import Select from '@material-ui/core/Select';
 import Checkbox from '@material-ui/core/Checkbox';
 import Drawer from '@material-ui/core/Drawer';
 import Button from '@material-ui/core/Button';
-import SearchResults from './SearchResults.jsx';
+import SearchResults from './searchResults.jsx';
 import AnswerList from './answersList.jsx';
 import TermSearch from './TermSearch.jsx';
 import { getCollectionResults, getDetail } from '../../services/apiServices';
@@ -92,7 +92,7 @@ const materialUseStyles = makeStyles(theme => ({
 
 const QuestionForm = props => {
   const classes = materialUseStyles();
-  const { postQuestion, characteristic } = props;
+  const { postQuestion, characteristic, ontology, edit } = props;
   const [searchResults, setSearchResults] = useState({});
   const [question, setQuestion] = useState('');
   const [explanatoryText, setExplanatoryText] = useState();
@@ -147,6 +147,8 @@ const QuestionForm = props => {
     };
   }, []);
 
+  console.log(edit);
+
   const filterOntologyList = () => {
     let filteredOntology = [];
     if (
@@ -155,8 +157,8 @@ const QuestionForm = props => {
       ontologyLibs.length > 0
     ) {
       filteredOntology = ontologyLibs.map(el => el.acronym);
-    } else if (props.ontology) {
-      filteredOntology = [props.ontology];
+    } else if (ontology) {
+      filteredOntology = [ontology];
     }
     return filteredOntology;
   };
@@ -225,18 +227,18 @@ const QuestionForm = props => {
     };
   });
 
-  const selectCodeValue = (ontology, item) => {
+  const selectCodeValue = (ontologyName, item) => {
     const { cui, notation } = item;
     let codeValue = null;
-    if (ontology === 'ICD10' || ontology === 'SNOMEDCT') {
+    if (ontologyName === 'ICD10' || ontologyName === 'SNOMEDCT') {
       if (cui && cui.length > 0) {
         codeValue = cui.shift();
       } else if (notation) {
         codeValue = notation;
       }
-    } else if (ontology === 'RADLEX') {
+    } else if (ontologyName === 'RADLEX') {
       codeValue = item.prefixIRI;
-    } else if (ontology === 'NCIT') {
+    } else if (ontologyName === 'NCIT') {
       codeValue = item.prefixIRI.split(':').pop();
     }
     return codeValue;
@@ -416,7 +418,7 @@ const QuestionForm = props => {
             searchTerm={searchTerm}
             getUploadedTerms={getUploadedTerms}
             handleClose={() => setOpenSearch(false)}
-            ontology={props.ontology}
+            ontology={ontology}
           />
         )}
         <FormControl className={classes.formControl}>
@@ -563,5 +565,6 @@ export default QuestionForm;
 QuestionForm.propTypes = {
   postQuestion: PropTypes.func,
   characteristic: PropTypes.string,
-  ontology: PropTypes.string
+  ontology: PropTypes.string,
+  edit: PropTypes.object
 };

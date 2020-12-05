@@ -46,7 +46,8 @@ export default function QuestionCreation(props) {
     questionID,
     authors,
     index,
-    ontology
+    ontology,
+    edit
   } = props;
   const [showDetailCreation, setShowDetailCreation] = useState(false);
   const [details, setDetails] = useState({
@@ -177,7 +178,11 @@ export default function QuestionCreation(props) {
           <DialogContentText>
             {`Fill the form and save to add a new question to the template ${templateName}`}
           </DialogContentText>
-          <QuestionForm postQuestion={setQuestion} ontology={ontology} />
+          <QuestionForm
+            postQuestion={setQuestion}
+            ontology={ontology}
+            edit={edit}
+          />
 
           {(question.questionType === 'observation' ||
             question.questionType === 'anatomic') && (
@@ -232,5 +237,6 @@ QuestionCreation.propTypes = {
   questionID: PropTypes.string,
   authors: PropTypes.string,
   index: PropTypes.number,
-  ontology: PropTypes.string
+  ontology: PropTypes.string,
+  edit: PropTypes.object
 };

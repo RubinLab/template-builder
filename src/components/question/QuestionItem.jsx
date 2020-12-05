@@ -90,12 +90,14 @@ export default function QuestionItem(props) {
           }
           className={classes.listItemText}
         />
-        <IconButton
-          onClick={() => handleEdit()}
-          className={classes.listItemIcon}
-        >
-          <EditIcon />
-        </IconButton>
+        {(level === 0 || creation) && (
+          <IconButton
+            onClick={() => handleEdit()}
+            className={classes.listItemIcon}
+          >
+            <EditIcon />
+          </IconButton>
+        )}
         <IconButton
           onClick={() => handleDelete(combinedIndex, question.id)}
           className={classes.listItemIcon}

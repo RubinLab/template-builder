@@ -121,7 +121,7 @@ export default function HomePage({
   const [validationErrors, setValErrors] = useState([]);
   const [tempContUID, setTempContUID] = useState('');
   const [requiredError, setRequiredError] = useState(false);
-
+  const [editIndex, setEditIndex] = useState(null);
   // TODO
   // CLARIFY how and whre to get data like version codemeaning, codevalue etc.
   // clarify the difference between template and the container
@@ -330,7 +330,10 @@ export default function HomePage({
     createLink(newLinkedIdMap);
   };
 
-  const handleEdit = () => {};
+  // const handleEdit = questionIndex => {
+  //   console.log('edit clicked');
+  //   // opened the questionCreation and fill the form
+  // };
 
   const handleDelete = (combinedIndex, id) => {
     const newQestions = _.cloneDeep(questions);
@@ -521,7 +524,7 @@ export default function HomePage({
                     Questions
                   </Typography>
                   <QuestionList
-                    handleEdit={handleEdit}
+                    handleEdit={i => setEditIndex(i)}
                     handleDelete={handleDelete}
                     questions={questions}
                     handleAnswerLink={handleAnswerLink}
@@ -559,7 +562,7 @@ export default function HomePage({
           </Card>
         </Grid>
       </Grid>
-      {showDialog && !requiredError && (
+      {((showDialog && !requiredError) || editIndex) && (
         <QuestionCreation
           open={showDialog}
           templateName={templateName}
@@ -569,6 +572,7 @@ export default function HomePage({
           authors={author}
           index={questions.length}
           ontology={ontology}
+          edit={questions[editIndex]}
         />
       )}
       <Snackbar
