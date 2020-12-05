@@ -48,5 +48,5 @@ AlertDialog.propTypes = {
   title: PropTypes.string,
   onOK: PropTypes.func,
   onCancel: PropTypes.func,
-  open: PropTypes.bool,
+  open: PropTypes.bool
 };
