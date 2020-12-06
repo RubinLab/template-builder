@@ -335,6 +335,9 @@ export default function HomePage({
   //   // opened the questionCreation and fill the form
   // };
 
+  // TODO
+  // Implement persisting the questionID on EditQuestion
+
   const handleDelete = (combinedIndex, id) => {
     const newQestions = _.cloneDeep(questions);
     const indeces = combinedIndex.split('-');
@@ -401,6 +404,7 @@ export default function HomePage({
     setQuestions(newQestions);
     formCompleteTemplate(newQestions);
   };
+  const showQuestionCreationModal = showDialog && !requiredError;
 
   return (
     <>
@@ -524,7 +528,11 @@ export default function HomePage({
                     Questions
                   </Typography>
                   <QuestionList
-                    handleEdit={i => setEditIndex(i)}
+                    handleEdit={(e, i) => {
+                      console.log(`edit clicked`, i);
+                      handleAddQuestion(true);
+                      setEditIndex(i);
+                    }}
                     handleDelete={handleDelete}
                     questions={questions}
                     handleAnswerLink={handleAnswerLink}
@@ -562,7 +570,7 @@ export default function HomePage({
           </Card>
         </Grid>
       </Grid>
-      {((showDialog && !requiredError) || editIndex) && (
+      {showQuestionCreationModal && (
         <QuestionCreation
           open={showDialog}
           templateName={templateName}

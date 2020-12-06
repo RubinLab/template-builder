@@ -92,7 +92,7 @@ export default function QuestionItem(props) {
         />
         {(level === 0 || creation) && (
           <IconButton
-            onClick={() => handleEdit()}
+            onClick={e => handleEdit(e, index)}
             className={classes.listItemIcon}
           >
             <EditIcon />

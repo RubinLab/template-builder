@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useSnackbar } from 'notistack';
 import _ from 'lodash';
@@ -57,6 +57,39 @@ export default function QuestionCreation(props) {
   const [question, setQuestion] = useState({});
 
   const { enqueueSnackbar } = useSnackbar();
+
+  const getDetailsFromEdit = () => {
+    const detailsInEdit = {
+      anatomic: [],
+      observation: []
+    };
+    const anatomic = edit.AnatomicEntity;
+    if (anatomic) {
+      if (anatomic.AnatomicEntityCharacteristic) {
+        anatomic.AnatomicEntityCharacteristic.forEach(el => {
+          detailsInEdit.anatomic.push(el);
+        });
+      }
+      if (anatomic.ImagingObservationCharacteristic) {
+        anatomic.ImagingObservationCharacteristic.forEach(el => {
+          detailsInEdit.observation.push(el);
+        });
+      }
+    } else if (
+      edit.ObservationEntity &&
+      edit.ObservationEntity.ImagingObservationCharacteristic
+    ) {
+      edit.ObservationEntity.ImagingObservationCharacteristic.forEach(el => {
+        detailsInEdit.observation.push(el);
+      });
+    }
+
+    setDetails(detailsInEdit);
+  };
+
+  useEffect(() => {
+    getDetailsFromEdit();
+  }, [edit]);
 
   const validateQuestionAttributes = (ques, questionType, char) => {
     const errors = [];

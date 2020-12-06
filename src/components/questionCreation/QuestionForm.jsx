@@ -23,7 +23,7 @@ import SearchResults from './searchResults.jsx';
 import AnswerList from './answersList.jsx';
 import TermSearch from './TermSearch.jsx';
 import { getCollectionResults, getDetail } from '../../services/apiServices';
-import { createID } from '../../utils/helper';
+import { createID, shapeSelectedTermData } from '../../utils/helper';
 
 const materialUseStyles = makeStyles(theme => ({
   root: { direction: 'row', marginLeft: theme.spacing(1) },
@@ -148,6 +148,29 @@ const QuestionForm = props => {
   }, []);
 
   console.log(edit);
+
+  const filFormInputOnEdit = () => {
+    setQuestion(edit.label);
+    setExplanatoryText(edit.explanatoryText);
+    setMinCard(edit.minCardinality);
+    setMaxCard(edit.maxCardinality);
+    if (edit.AllowedTerm.length > 0) {
+      const selectedTermsfromEdit = shapeSelectedTermData(edit.AllowedTerm);
+      setTermSelection(selectedTermsfromEdit);
+    }
+    if (edit.AnatomicEntity) {
+      setQuestionType('anatomic');
+    } else {
+      setQuestionType('observation');
+    }
+    // get characteristics
+  };
+
+  useEffect(() => {
+    if (edit) {
+      filFormInputOnEdit();
+    }
+  }, [edit]);
 
   const filterOntologyList = () => {
     let filteredOntology = [];
@@ -368,7 +391,7 @@ const QuestionForm = props => {
             <Select
               labelId="questionType"
               id="questionType-controlled-open-select"
-              value={questionType}
+              defaultValue={questionType}
               onChange={handleQuestionType}
             >
               <MenuItem value={'anatomic'}>
@@ -395,6 +418,7 @@ const QuestionForm = props => {
           label="Question"
           multiline={true}
           onChange={handleQuestion}
+          defaultValue={question}
         />
       </div>
       <div>
@@ -402,6 +426,7 @@ const QuestionForm = props => {
           className={classes.textField}
           label="Explanation (optional)"
           multiline={true}
+          defaultValue={explanatoryText}
           onChange={e => {
             setExplanatoryText(e.target.value);
           }}

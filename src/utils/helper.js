@@ -42,6 +42,18 @@ function createTemplateQuestion(ques, authors, index, characteristic) {
   return component;
 }
 
+const shapeSelectedTermData = data => {
+  const shapedData = {};
+  data.forEach((el, i) => {
+    shapedData[`${el.codeValue}-${i}`] = {
+      allowedTerm: el,
+      title: el.codingSchemeDesignator,
+      id: el.codeValue
+    };
+  });
+  return shapedData;
+};
+
 const ontologies = {
   ICD10: {
     name: `International Classification of Diseases, Version 10`,
@@ -52,4 +64,4 @@ const ontologies = {
   SNOMEDCT: { name: `SNOMED CT`, acronym: `SNOMEDCT` }
 };
 
-export { createTemplateQuestion, createID, ontologies };
+export { createTemplateQuestion, createID, ontologies, shapeSelectedTermData };
