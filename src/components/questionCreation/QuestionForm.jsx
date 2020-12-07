@@ -100,9 +100,8 @@ const QuestionForm = props => {
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTerms, setTermSelection] = useState(null);
-  const [minCard, setMinCard] = useState(null);
-  const [maxCard, setMaxCard] = useState(null);
-  const [disabled, setDisabled] = useState(false);
+  const [minCard, setMinCard] = useState('');
+  const [maxCard, setMaxCard] = useState('');
   const [showConfidence, setshowConfidence] = useState(false);
   const [answerType, setAnswerType] = useState('');
   const [ontologyLibs, setOntologyLibs] = useState(null);
@@ -154,6 +153,14 @@ const QuestionForm = props => {
     setExplanatoryText(edit.explanatoryText);
     setMinCard(edit.minCardinality);
     setMaxCard(edit.maxCardinality);
+    if (edit.maxCardinality === 1 && edit.minCardinality === 1) {
+      setAnswerType('single');
+    } else if (
+      typeof edit.maxCardinality === 'number' &&
+      typeof edit.minCardinality === 'number'
+    ) {
+      setAnswerType('multi');
+    }
     if (edit.AllowedTerm.length > 0) {
       const selectedTermsfromEdit = shapeSelectedTermData(edit.AllowedTerm);
       setTermSelection(selectedTermsfromEdit);
@@ -163,7 +170,7 @@ const QuestionForm = props => {
     } else {
       setQuestionType('observation');
     }
-    // get characteristics
+    postQuestion(formInput);
   };
 
   useEffect(() => {
@@ -326,10 +333,9 @@ const QuestionForm = props => {
     setOpenSearch(false);
   };
 
-  const assignDefaultVals = (min, max, disabledBool) => {
+  const assignDefaultVals = (min, max) => {
     setMinCard(min);
     setMaxCard(max);
-    setDisabled(disabledBool);
     postQuestion({ ...formInput, minCard: min, maxCard: max });
   };
 
@@ -382,6 +388,9 @@ const QuestionForm = props => {
     }
   };
 
+  console.log(' --->questiontype', questionType);
+
+  const disabled = answerType === 'single';
   return (
     <div className={classes.root}>
       {(characteristic === 'anatomic' || characteristic === undefined) && (
@@ -391,7 +400,7 @@ const QuestionForm = props => {
             <Select
               labelId="questionType"
               id="questionType-controlled-open-select"
-              defaultValue={questionType}
+              value={questionType}
               onChange={handleQuestionType}
             >
               <MenuItem value={'anatomic'}>

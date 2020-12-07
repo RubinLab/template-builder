@@ -59,32 +59,33 @@ export default function QuestionCreation(props) {
   const { enqueueSnackbar } = useSnackbar();
 
   const getDetailsFromEdit = () => {
-    const detailsInEdit = {
-      anatomic: [],
-      observation: []
-    };
-    const anatomic = edit.AnatomicEntity;
-    if (anatomic) {
-      if (anatomic.AnatomicEntityCharacteristic) {
-        anatomic.AnatomicEntityCharacteristic.forEach(el => {
-          detailsInEdit.anatomic.push(el);
-        });
-      }
-      if (anatomic.ImagingObservationCharacteristic) {
-        anatomic.ImagingObservationCharacteristic.forEach(el => {
+    if (edit) {
+      const detailsInEdit = {
+        anatomic: [],
+        observation: []
+      };
+      const anatomic = edit.AnatomicEntity;
+      if (anatomic) {
+        if (anatomic.AnatomicEntityCharacteristic) {
+          anatomic.AnatomicEntityCharacteristic.forEach(el => {
+            detailsInEdit.anatomic.push(el);
+          });
+        }
+        if (anatomic.ImagingObservationCharacteristic) {
+          anatomic.ImagingObservationCharacteristic.forEach(el => {
+            detailsInEdit.observation.push(el);
+          });
+        }
+      } else if (
+        edit.ObservationEntity &&
+        edit.ObservationEntity.ImagingObservationCharacteristic
+      ) {
+        edit.ObservationEntity.ImagingObservationCharacteristic.forEach(el => {
           detailsInEdit.observation.push(el);
         });
       }
-    } else if (
-      edit.ObservationEntity &&
-      edit.ObservationEntity.ImagingObservationCharacteristic
-    ) {
-      edit.ObservationEntity.ImagingObservationCharacteristic.forEach(el => {
-        detailsInEdit.observation.push(el);
-      });
+      setDetails(detailsInEdit);
     }
-
-    setDetails(detailsInEdit);
   };
 
   useEffect(() => {
@@ -149,6 +150,7 @@ export default function QuestionCreation(props) {
 
   const handleSave = () => {
     let updatedQuestion = { ...question };
+    console.log(question);
     updatedQuestion.id = questionID;
     updatedQuestion = createTemplateQuestion(updatedQuestion, authors, index);
     if (

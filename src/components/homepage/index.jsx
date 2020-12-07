@@ -234,7 +234,13 @@ export default function HomePage({
   };
 
   const handleSaveQuestion = questionInput => {
-    const newQuestionList = questions.concat(questionInput);
+    const newQuestionList = [...questions];
+    if (typeof editIndex === 'number') {
+      newQuestionList[editIndex] = questionInput;
+      setEditIndex(null);
+    } else {
+      newQuestionList.push(questionInput);
+    }
     setQuestions(newQuestionList);
     formCompleteTemplate(newQuestionList);
   };
@@ -574,7 +580,10 @@ export default function HomePage({
         <QuestionCreation
           open={showDialog}
           templateName={templateName}
-          handleClose={handleAddQuestion}
+          handleClose={() => {
+            setEditIndex(null);
+            handleAddQuestion();
+          }}
           handleSaveQuestion={handleSaveQuestion}
           questionID={questionID}
           authors={author}
