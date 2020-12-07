@@ -436,6 +436,7 @@ const QuestionForm = props => {
           defaultValue={explanatoryText}
           onChange={e => {
             setExplanatoryText(e.target.value);
+            postQuestion({ ...formInput, explanatoryText: e.target.value });
           }}
         />
       </div>
@@ -565,6 +566,7 @@ const QuestionForm = props => {
           labelPlacement="end"
           onChange={e => {
             setshowConfidence(e.target.value);
+            postQuestion({ ...formInput, showConfidence: e.target.value });
           }}
         />
       </div>
