@@ -92,7 +92,7 @@ const materialUseStyles = makeStyles(theme => ({
 
 const QuestionForm = props => {
   const classes = materialUseStyles();
-  const { postQuestion, characteristic, ontology, edit } = props;
+  const { postQuestion, characteristic, ontology, edit, detailEdit } = props;
   const [searchResults, setSearchResults] = useState({});
   const [question, setQuestion] = useState('');
   const [explanatoryText, setExplanatoryText] = useState();
@@ -165,7 +165,7 @@ const QuestionForm = props => {
       const selectedTermsfromEdit = shapeSelectedTermData(edit.AllowedTerm);
       setTermSelection(selectedTermsfromEdit);
     }
-    if (edit.AnatomicEntity) {
+    if (edit.AnatomicEntity || detailEdit[0] === 'anatomic') {
       setQuestionType('anatomic');
     } else {
       setQuestionType('observation');
@@ -600,5 +600,6 @@ QuestionForm.propTypes = {
   postQuestion: PropTypes.func,
   characteristic: PropTypes.string,
   ontology: PropTypes.string,
-  edit: PropTypes.object
+  edit: PropTypes.object,
+  detailEdit: PropTypes.array
 };

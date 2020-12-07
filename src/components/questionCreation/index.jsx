@@ -55,6 +55,7 @@ export default function QuestionCreation(props) {
     observation: []
   });
   const [question, setQuestion] = useState({});
+  const [editPath, setEditPath] = useState(['', null]);
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -86,6 +87,12 @@ export default function QuestionCreation(props) {
       }
       setDetails(detailsInEdit);
     }
+  };
+
+  const handleEdit = i => {
+    if (details.anatomic.length > 0 && details.anatomic.length > i) {
+      setEditPath(['anatomic', i]);
+    } else setEditPath(['observation', i - details.anatomic.length]);
   };
 
   useEffect(() => {
@@ -131,21 +138,30 @@ export default function QuestionCreation(props) {
   };
 
   const handleSaveDetail = detail => {
-    const id = createID();
-    let newDetail = { ...detail };
-    newDetail.id = id;
-    newDetail.questionID = questionID;
-    const detailsIndex = details.anatomic.length + details.observation.length;
-    newDetail = createTemplateQuestion(newDetail, authors, detailsIndex, true);
-    const valid = validateQuestionAttributes(newDetail, true, true);
-    if (valid) {
-      const newDetails = { ...details };
-      if (question.questionType === 'anatomic')
-        newDetails[detail.questionType].push(newDetail);
-      else newDetails.observation.push(newDetail);
-      setDetails(newDetails);
-      setShowDetailCreation(false);
+    const newDetails = { ...details };
+    if (editPath[0]) {
+      newDetails[editPath[0]][editPath[1]] = detail;
+    } else {
+      const id = createID();
+      let newDetail = { ...detail };
+      newDetail.id = id;
+      newDetail.questionID = questionID;
+      const detailsIndex = details.anatomic.length + details.observation.length;
+      newDetail = createTemplateQuestion(
+        newDetail,
+        authors,
+        detailsIndex,
+        true
+      );
+      const valid = validateQuestionAttributes(newDetail, true, true);
+      if (valid) {
+        if (question.questionType === 'anatomic')
+          newDetails[detail.questionType].push(newDetail);
+        else newDetails.observation.push(newDetail);
+      }
     }
+    setDetails(newDetails);
+    setShowDetailCreation(false);
   };
 
   const handleSave = () => {
@@ -196,6 +212,11 @@ export default function QuestionCreation(props) {
     setDetails(newDetails);
   };
 
+  const showCharCreateButton =
+    edit ||
+    question.questionType === 'anatomic' ||
+    question.questionType === 'observation';
+
   return (
     <React.Fragment>
       <Dialog
@@ -219,8 +240,7 @@ export default function QuestionCreation(props) {
             edit={edit}
           />
 
-          {(question.questionType === 'observation' ||
-            question.questionType === 'anatomic') && (
+          {showCharCreateButton && (
             <Button
               variant="outlined"
               className={classes.button}
@@ -237,17 +257,26 @@ export default function QuestionCreation(props) {
               handleDelete={handleDelete}
               characteristics={details}
               getDetails={newDetails => setDetails(newDetails)}
+              handleEdit={(e, i) => {
+                setShowDetailCreation(true);
+                handleEdit(i);
+              }}
             />
           )}
           {showDetailCreation && (
             <DetailCreation
               open={showDetailCreation}
-              handleClose={setShowDetailCreation}
+              handleClose={bool => {
+                setShowDetailCreation(bool);
+                setEditPath(['', null]);
+              }}
               handleSave={handleSaveDetail}
               setQuestion={setQuestion}
               authors={authors}
               characteristics={question.questionType}
               ontology={ontology}
+              edit={editPath[0] ? details[editPath[0]][editPath[1]] : null}
+              detailEdit={editPath}
             />
           )}
         </DialogContent>

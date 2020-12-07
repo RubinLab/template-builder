@@ -535,7 +535,6 @@ export default function HomePage({
                   </Typography>
                   <QuestionList
                     handleEdit={(e, i) => {
-                      console.log(`edit clicked`, i);
                       handleAddQuestion(true);
                       setEditIndex(i);
                     }}
