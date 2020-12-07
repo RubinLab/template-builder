@@ -273,7 +273,7 @@ export default function QuestionCreation(props) {
               handleSave={handleSaveDetail}
               setQuestion={setQuestion}
               authors={authors}
-              characteristics={question.questionType}
+              characteristic={question.questionType || editPath[0]}
               ontology={ontology}
               edit={editPath[0] ? details[editPath[0]][editPath[1]] : null}
               detailEdit={editPath}

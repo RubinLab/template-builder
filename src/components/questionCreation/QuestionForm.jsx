@@ -388,8 +388,6 @@ const QuestionForm = props => {
     }
   };
 
-  console.log(' --->questiontype', questionType);
-
   const disabled = answerType === 'single';
   return (
     <div className={classes.root}>
