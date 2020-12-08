@@ -139,11 +139,22 @@ export default function QuestionCreation(props) {
 
   const handleSaveDetail = detail => {
     const newDetails = { ...details };
+    let newDetail;
+    let id;
+    let valid;
     if (editPath[0]) {
-      newDetails[editPath[0]][editPath[1]] = detail;
+      id = newDetails[editPath[0]][editPath[1]].id;
+      newDetail = createTemplateQuestion(
+        { ...detail, id },
+        authors,
+        editPath[1],
+        true
+      );
+      valid = validateQuestionAttributes(newDetail, true, true);
+      if (valid) newDetails[editPath[0]][editPath[1]] = newDetail;
     } else {
-      const id = createID();
-      let newDetail = { ...detail };
+      id = createID();
+      newDetail = { ...detail };
       newDetail.id = id;
       newDetail.questionID = questionID;
       const detailsIndex = details.anatomic.length + details.observation.length;
@@ -153,7 +164,7 @@ export default function QuestionCreation(props) {
         detailsIndex,
         true
       );
-      const valid = validateQuestionAttributes(newDetail, true, true);
+      valid = validateQuestionAttributes(newDetail, true, true);
       if (valid) {
         if (question.questionType === 'anatomic')
           newDetails[detail.questionType].push(newDetail);
@@ -166,7 +177,6 @@ export default function QuestionCreation(props) {
 
   const handleSave = () => {
     let updatedQuestion = { ...question };
-    console.log(question);
     updatedQuestion.id = questionID;
     updatedQuestion = createTemplateQuestion(updatedQuestion, authors, index);
     if (

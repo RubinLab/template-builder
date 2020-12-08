@@ -161,11 +161,11 @@ const QuestionForm = props => {
     ) {
       setAnswerType('multi');
     }
-    if (edit.AllowedTerm.length > 0) {
+    if (edit && edit.AllowedTerm.length > 0) {
       const selectedTermsfromEdit = shapeSelectedTermData(edit.AllowedTerm);
       setTermSelection(selectedTermsfromEdit);
     }
-    if (edit.AnatomicEntity || detailEdit[0] === 'anatomic') {
+    if (edit.AnatomicEntity || (detailEdit && detailEdit[0] === 'anatomic')) {
       setQuestionType('anatomic');
     } else {
       setQuestionType('observation');

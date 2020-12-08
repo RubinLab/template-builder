@@ -246,7 +246,10 @@ export default function HomePage({
   };
 
   const handleQuestionID = () => {
-    const id = createID();
+    let id;
+    if (typeof editIndex === 'number') {
+      id = questions[editIndex].id;
+    } else id = createID();
     setquestionID(id);
   };
   const checkRequiredFields = addQuestionClicked => {
