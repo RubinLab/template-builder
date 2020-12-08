@@ -339,14 +339,6 @@ export default function HomePage({
     createLink(newLinkedIdMap);
   };
 
-  // const handleEdit = questionIndex => {
-  //   console.log('edit clicked');
-  //   // opened the questionCreation and fill the form
-  // };
-
-  // TODO
-  // Implement persisting the questionID on EditQuestion
-
   const handleDelete = (combinedIndex, id) => {
     const newQestions = _.cloneDeep(questions);
     const indeces = combinedIndex.split('-');
