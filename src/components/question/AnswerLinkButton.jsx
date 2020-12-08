@@ -6,6 +6,7 @@ import IconButton from '@material-ui/core/IconButton';
 import InsertLinkIcon from '@material-ui/icons/InsertLink';
 import DeleteForever from '@material-ui/icons/DeleteForever';
 import Menu from '@material-ui/core/Menu';
+import { formAnswerIDFromIndeces } from '../../utils/helper';
 
 const useStyles = makeStyles(theme => ({
   popupContent: {
@@ -20,6 +21,12 @@ const useStyles = makeStyles(theme => ({
   },
   listItemIcon: {
     padding: theme.spacing(0.5)
+  },
+  disabledLink: {
+    color: '#a70432'
+  },
+  answerIcon: {
+    padding: theme.spacing(0.3)
   }
 }));
 
@@ -31,7 +38,9 @@ export default function AnswerLinkButton({
   answerIndex,
   term,
   question,
-  handleDeleteLink
+  handleDeleteLink,
+  charIndex,
+  scaleIndex
 }) {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -43,10 +52,20 @@ export default function AnswerLinkButton({
   };
   const showInfo = Boolean(anchorEl);
   let answerLink = null;
-  if (linkTextMap && linkTextMap[term.id]) {
+  const answerID = formAnswerIDFromIndeces(
+    questionIndex,
+    answerIndex,
+    term.codeValue,
+    charIndex,
+    scaleIndex
+  );
+  if (linkTextMap && linkTextMap[answerID] && !linkedIdMap.linkedAnswer) {
     answerLink = (
-      <>
-        <LinkOff id={`disableLink-${answerIndex}`} onMouseEnter={handleOpen} />
+      <IconButton onMouseEnter={handleOpen} className={classes.answerIcon}>
+        <LinkOff
+          id={`disableLink-${answerIndex}`}
+          className={classes.disabledLink}
+        />
         <Menu
           id={`disableLink-${answerIndex}`}
           open={showInfo}
@@ -54,31 +73,34 @@ export default function AnswerLinkButton({
           onClose={handleClose}
         >
           <div className={classes.popupContent}>
-            <div className={classes.contentText}>{`Next: ${
-              linkTextMap[term.id]
-            }`}</div>
+            <div
+              className={classes.contentText}
+            >{`Next: ${linkTextMap[answerID]}`}</div>
             <IconButton
               className={classes.listItemIcon}
-              onClick={handleDeleteLink}
+              onClick={() => handleDeleteLink(answerID)}
             >
               <DeleteForever />
             </IconButton>
           </div>
         </Menu>
-      </>
+      </IconButton>
     );
   }
 
-  if (!linkedIdMap.linkedAnswer && !linkTextMap[term.id]) {
+  if (!linkedIdMap.linkedAnswer && !linkTextMap[answerID]) {
     answerLink = (
       <IconButton
+        className={classes.answerIcon}
         onClick={() =>
           handleAnswerLink(
             false,
             term,
             question.id,
+            answerIndex,
             questionIndex,
-            question.question
+            question.label,
+            charIndex
           )
         }
       >
@@ -94,8 +116,10 @@ AnswerLinkButton.propTypes = {
   linkTextMap: PropTypes.object,
   linkedIdMap: PropTypes.object,
   questionIndex: PropTypes.number,
+  charIndex: PropTypes.number,
   answerIndex: PropTypes.number,
   question: PropTypes.object,
   term: PropTypes.object,
-  handleDeleteLink: PropTypes.func
+  handleDeleteLink: PropTypes.func,
+  scaleIndex: PropTypes.number
 };

@@ -65,4 +65,41 @@ const ontologies = {
   SNOMEDCT: { name: `SNOMED CT`, acronym: `SNOMEDCT` }
 };
 
-export { createTemplateQuestion, createID, ontologies, shapeSelectedTermData };
+function formAnswerIDFromIndeces(
+  questionIndex,
+  answerIndex,
+  codeValue,
+  charIndex,
+  scaleIndex
+) {
+  let answerID = `${questionIndex}-${answerIndex}-${codeValue}`;
+  answerID = charIndex ? `${answerID}/${charIndex}` : answerID;
+  answerID = scaleIndex ? `${answerID}/${scaleIndex}` : answerID;
+  return answerID;
+}
+
+function getIndecesFromAnswerID(answerID) {
+  const indeces = answerID.split('-');
+  const charIndeces = answerID.split('/');
+  const questionIndex = parseInt(indeces[0], 10);
+  const answerIndex = parseInt(indeces[1], 10);
+  const charIndex =
+    charIndeces.length > 1 ? parseInt(charIndeces[1], 10) : null;
+  const scaleIndex =
+    charIndeces.length > 2 ? parseInt(charIndeces[2], 10) : null;
+  return {
+    questionIndex,
+    answerIndex,
+    charIndex,
+    scaleIndex
+  };
+}
+
+export {
+  createTemplateQuestion,
+  createID,
+  ontologies,
+  formAnswerIDFromIndeces,
+  getIndecesFromAnswerID,
+  shapeSelectedTermData
+};
