@@ -50,6 +50,11 @@ const useStyles = makeStyles(theme => ({
   },
   listItemIcon: {
     padding: theme.spacing(0.5)
+  },
+  listItem: {
+    paddingTop: theme.spacing(0.2),
+    paddingBottom: theme.spacing(0.2),
+    borderBottom: '1px dotted #E3E0D8'
   }
 }));
 
@@ -123,7 +128,7 @@ export default function QuestionItem(props) {
                   key={`${term.codeMeaning}-${i}`}
                 >
                   <ListItemText primary={term.codeMeaning} />
-                  {creation && (
+                  {!creation && (
                     <AnswerLinkButton
                       handleAnswerLink={handleAnswerLink}
                       linkTextMap={linkTextMap}
