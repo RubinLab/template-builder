@@ -237,12 +237,12 @@ export default function HomePage({
     const newQuestionList = [...questions];
     if (typeof editIndex === 'number') {
       newQuestionList[editIndex] = questionInput;
-      setEditIndex(null);
     } else {
       newQuestionList.push(questionInput);
     }
     setQuestions(newQuestionList);
     formCompleteTemplate(newQuestionList);
+    setEditIndex(null);
   };
 
   const handleQuestionID = () => {
