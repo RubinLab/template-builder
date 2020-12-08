@@ -21,7 +21,7 @@ import AccordionDetails from '@material-ui/core/AccordionDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import SaveIcon from '@material-ui/icons/Save';
 import { useSnackbar } from 'notistack';
-import { ontologies } from '../../utils/helper';
+import { ontologies, shapeSelectedTermData } from '../../utils/helper';
 
 const papaparseOptions = {
   header: true,
@@ -173,14 +173,7 @@ const TermSearch = props => {
 
   const handleUpload = data => {
     if (checkAllowedTermsAttributes(data[0])) {
-      const shapedData = {};
-      data.forEach(el => {
-        shapedData[el.codeValue] = {
-          allowedTerm: el,
-          title: el.codingSchemeDesignator,
-          id: el.codeValue
-        };
-      });
+      const shapedData = shapeSelectedTermData(data);
       getUploadedTerms(shapedData);
     }
   };

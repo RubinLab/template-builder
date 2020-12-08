@@ -42,6 +42,19 @@ function createTemplateQuestion(ques, authors, index, characteristic) {
   return component;
 }
 
+const shapeSelectedTermData = data => {
+  const shapedData = {};
+  data.forEach(el => {
+    const id = createID();
+    shapedData[id] = {
+      allowedTerm: el,
+      title: el.codingSchemeDesignator,
+      id
+    };
+  });
+  return shapedData;
+};
+
 const ontologies = {
   ICD10: {
     name: `International Classification of Diseases, Version 10`,
@@ -87,5 +100,6 @@ export {
   createID,
   ontologies,
   formAnswerIDFromIndeces,
-  getIndecesFromAnswerID
+  getIndecesFromAnswerID,
+  shapeSelectedTermData
 };

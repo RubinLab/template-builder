@@ -19,11 +19,11 @@ import Select from '@material-ui/core/Select';
 import Checkbox from '@material-ui/core/Checkbox';
 import Drawer from '@material-ui/core/Drawer';
 import Button from '@material-ui/core/Button';
-import SearchResults from './SearchResults.jsx';
+import SearchResults from './searchResults.jsx';
 import AnswerList from './answersList.jsx';
 import TermSearch from './TermSearch.jsx';
 import { getCollectionResults, getDetail } from '../../services/apiServices';
-import { createID } from '../../utils/helper';
+import { createID, shapeSelectedTermData } from '../../utils/helper';
 
 const materialUseStyles = makeStyles(theme => ({
   root: { direction: 'row', marginLeft: theme.spacing(1) },
@@ -92,7 +92,7 @@ const materialUseStyles = makeStyles(theme => ({
 
 const QuestionForm = props => {
   const classes = materialUseStyles();
-  const { postQuestion, characteristic } = props;
+  const { postQuestion, characteristic, ontology, edit, detailEdit } = props;
   const [searchResults, setSearchResults] = useState({});
   const [question, setQuestion] = useState('');
   const [explanatoryText, setExplanatoryText] = useState();
@@ -100,9 +100,8 @@ const QuestionForm = props => {
   const [showSearchResults, setShowSearchResults] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTerms, setTermSelection] = useState(null);
-  const [minCard, setMinCard] = useState(null);
-  const [maxCard, setMaxCard] = useState(null);
-  const [disabled, setDisabled] = useState(false);
+  const [minCard, setMinCard] = useState('');
+  const [maxCard, setMaxCard] = useState('');
   const [showConfidence, setshowConfidence] = useState(false);
   const [answerType, setAnswerType] = useState('');
   const [ontologyLibs, setOntologyLibs] = useState(null);
@@ -147,6 +146,37 @@ const QuestionForm = props => {
     };
   }, []);
 
+  const filFormInputOnEdit = () => {
+    setQuestion(edit.label);
+    setExplanatoryText(edit.explanatoryText);
+    setMinCard(edit.minCardinality);
+    setMaxCard(edit.maxCardinality);
+    if (edit.maxCardinality === 1 && edit.minCardinality === 1) {
+      setAnswerType('single');
+    } else if (
+      typeof edit.maxCardinality === 'number' &&
+      typeof edit.minCardinality === 'number'
+    ) {
+      setAnswerType('multi');
+    }
+    if (edit && edit.AllowedTerm.length > 0) {
+      const selectedTermsfromEdit = shapeSelectedTermData(edit.AllowedTerm);
+      setTermSelection(selectedTermsfromEdit);
+    }
+    if (edit.AnatomicEntity || (detailEdit && detailEdit[0] === 'anatomic')) {
+      setQuestionType('anatomic');
+    } else {
+      setQuestionType('observation');
+    }
+    postQuestion(formInput);
+  };
+
+  useEffect(() => {
+    if (edit) {
+      filFormInputOnEdit();
+    }
+  }, [edit]);
+
   const filterOntologyList = () => {
     let filteredOntology = [];
     if (
@@ -155,8 +185,8 @@ const QuestionForm = props => {
       ontologyLibs.length > 0
     ) {
       filteredOntology = ontologyLibs.map(el => el.acronym);
-    } else if (props.ontology) {
-      filteredOntology = [props.ontology];
+    } else if (ontology) {
+      filteredOntology = [ontology];
     }
     return filteredOntology;
   };
@@ -225,18 +255,18 @@ const QuestionForm = props => {
     };
   });
 
-  const selectCodeValue = (ontology, item) => {
+  const selectCodeValue = (ontologyName, item) => {
     const { cui, notation } = item;
     let codeValue = null;
-    if (ontology === 'ICD10' || ontology === 'SNOMEDCT') {
+    if (ontologyName === 'ICD10' || ontologyName === 'SNOMEDCT') {
       if (cui && cui.length > 0) {
         codeValue = cui.shift();
       } else if (notation) {
         codeValue = notation;
       }
-    } else if (ontology === 'RADLEX') {
+    } else if (ontologyName === 'RADLEX') {
       codeValue = item.prefixIRI;
-    } else if (ontology === 'NCIT') {
+    } else if (ontologyName === 'NCIT') {
       codeValue = item.prefixIRI.split(':').pop();
     }
     return codeValue;
@@ -301,10 +331,9 @@ const QuestionForm = props => {
     setOpenSearch(false);
   };
 
-  const assignDefaultVals = (min, max, disabledBool) => {
+  const assignDefaultVals = (min, max) => {
     setMinCard(min);
     setMaxCard(max);
-    setDisabled(disabledBool);
     postQuestion({ ...formInput, minCard: min, maxCard: max });
   };
 
@@ -335,9 +364,9 @@ const QuestionForm = props => {
     postQuestion({ ...formInput, question: e.target.value });
   };
 
-  const handleDeleteSelectedTerm = key => {
+  const handleDeleteSelectedTerm = item => {
     const currentSelectedTerms = { ...selectedTerms };
-    delete currentSelectedTerms[key];
+    delete currentSelectedTerms[item.id];
     setTermSelection(currentSelectedTerms);
   };
 
@@ -357,6 +386,7 @@ const QuestionForm = props => {
     }
   };
 
+  const disabled = answerType === 'single';
   return (
     <div className={classes.root}>
       {(characteristic === 'anatomic' || characteristic === undefined) && (
@@ -393,6 +423,7 @@ const QuestionForm = props => {
           label="Question"
           multiline={true}
           onChange={handleQuestion}
+          defaultValue={question}
         />
       </div>
       <div>
@@ -400,8 +431,10 @@ const QuestionForm = props => {
           className={classes.textField}
           label="Explanation (optional)"
           multiline={true}
+          defaultValue={explanatoryText}
           onChange={e => {
             setExplanatoryText(e.target.value);
+            postQuestion({ ...formInput, explanatoryText: e.target.value });
           }}
         />
       </div>
@@ -416,7 +449,7 @@ const QuestionForm = props => {
             searchTerm={searchTerm}
             getUploadedTerms={getUploadedTerms}
             handleClose={() => setOpenSearch(false)}
-            ontology={props.ontology}
+            ontology={ontology}
           />
         )}
         <FormControl className={classes.formControl}>
@@ -531,6 +564,7 @@ const QuestionForm = props => {
           labelPlacement="end"
           onChange={e => {
             setshowConfidence(e.target.value);
+            postQuestion({ ...formInput, showConfidence: e.target.value });
           }}
         />
       </div>
@@ -563,5 +597,7 @@ export default QuestionForm;
 QuestionForm.propTypes = {
   postQuestion: PropTypes.func,
   characteristic: PropTypes.string,
-  ontology: PropTypes.string
+  ontology: PropTypes.string,
+  edit: PropTypes.object,
+  detailEdit: PropTypes.array
 };

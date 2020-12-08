@@ -124,7 +124,7 @@ export default function HomePage({
   const [validationErrors, setValErrors] = useState([]);
   const [tempContUID, setTempContUID] = useState('');
   const [requiredError, setRequiredError] = useState(false);
-
+  const [editIndex, setEditIndex] = useState(null);
   // TODO
   // CLARIFY how and whre to get data like version codemeaning, codevalue etc.
   // clarify the difference between template and the container
@@ -233,13 +233,22 @@ export default function HomePage({
   };
 
   const handleSaveQuestion = questionInput => {
-    const newQuestionList = questions.concat(questionInput);
+    const newQuestionList = [...questions];
+    if (typeof editIndex === 'number') {
+      newQuestionList[editIndex] = questionInput;
+    } else {
+      newQuestionList.push(questionInput);
+    }
     setQuestions(newQuestionList);
     formCompleteTemplate(newQuestionList);
+    setEditIndex(null);
   };
 
   const handleQuestionID = () => {
-    const id = createID();
+    let id;
+    if (typeof editIndex === 'number') {
+      id = questions[editIndex].id;
+    } else id = createID();
     setquestionID(id);
   };
   const checkRequiredFields = addQuestionClicked => {
@@ -358,8 +367,6 @@ export default function HomePage({
     createLink(newLinkedIdMap);
   };
 
-  const handleEdit = () => {};
-
   const handleDelete = (combinedIndex, id) => {
     const newQestions = _.cloneDeep(questions);
     const indeces = combinedIndex.split('-');
@@ -426,6 +433,7 @@ export default function HomePage({
     setQuestions(newQestions);
     formCompleteTemplate(newQestions);
   };
+  const showQuestionCreationModal = showDialog && !requiredError;
 
   return (
     <>
@@ -549,7 +557,10 @@ export default function HomePage({
                     Questions
                   </Typography>
                   <QuestionList
-                    handleEdit={handleEdit}
+                    handleEdit={(e, i) => {
+                      handleAddQuestion(true);
+                      setEditIndex(i);
+                    }}
                     handleDelete={handleDelete}
                     questions={questions}
                     handleAnswerLink={handleAnswerLink}
@@ -587,16 +598,20 @@ export default function HomePage({
           </Card>
         </Grid>
       </Grid>
-      {showDialog && !requiredError && (
+      {showQuestionCreationModal && (
         <QuestionCreation
           open={showDialog}
           templateName={templateName}
-          handleClose={handleAddQuestion}
+          handleClose={() => {
+            setEditIndex(null);
+            handleAddQuestion();
+          }}
           handleSaveQuestion={handleSaveQuestion}
           questionID={questionID}
           authors={author}
           index={questions.length}
           ontology={ontology}
+          edit={questions[editIndex]}
         />
       )}
       <Snackbar
