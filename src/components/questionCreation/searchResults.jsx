@@ -10,6 +10,7 @@ import Typography from '@material-ui/core/Typography';
 import Checkbox from '@material-ui/core/Checkbox';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Backdrop from '@material-ui/core/Backdrop';
+import { ontologies } from '../../utils/helper';
 
 const useStyles = makeStyles(theme => ({
   listHeader: {
@@ -55,7 +56,6 @@ const SearchResults = props => {
   const [listItems, setListItems] = useState([]);
   const [showBackdrop, setShowBackdrop] = useState(false);
   const resultList = results.collection || [];
-  const ontologyMap = JSON.parse(sessionStorage.getItem('ontologyMap'));
 
   const populateList = () => {
     const nodeList = [];
@@ -68,7 +68,7 @@ const SearchResults = props => {
             <Checkbox
               size="small"
               className={classes.listItemCheckbox}
-              onClick={() => handleSelection(k, ontologyMap[acronym])}
+              onClick={() => handleSelection(k, ontologies[acronym])}
             />
             <Link
               component="button"
@@ -78,7 +78,7 @@ const SearchResults = props => {
                 window.open(results.collection[k].links.ui, '_blank', '');
               }}
             >
-              {`${results.collection[k].prefLabel} - ${ontologyMap[acronym].name} (${ontologyMap[acronym].acronym})`}
+              {`${results.collection[k].prefLabel} - ${ontologies[acronym].name} (${ontologies[acronym].acronym})`}
             </Link>
           </div>
           <ListItemText

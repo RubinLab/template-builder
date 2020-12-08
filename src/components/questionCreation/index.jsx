@@ -152,6 +152,7 @@ export default function QuestionCreation(props) {
       );
       valid = validateQuestionAttributes(newDetail, true, true);
       if (valid) newDetails[editPath[0]][editPath[1]] = newDetail;
+      setEditPath(['', null]);
     } else {
       id = createID();
       newDetail = { ...detail };

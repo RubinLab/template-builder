@@ -146,8 +146,6 @@ const QuestionForm = props => {
     };
   }, []);
 
-  console.log(edit);
-
   const filFormInputOnEdit = () => {
     setQuestion(edit.label);
     setExplanatoryText(edit.explanatoryText);
@@ -366,9 +364,9 @@ const QuestionForm = props => {
     postQuestion({ ...formInput, question: e.target.value });
   };
 
-  const handleDeleteSelectedTerm = key => {
+  const handleDeleteSelectedTerm = item => {
     const currentSelectedTerms = { ...selectedTerms };
-    delete currentSelectedTerms[key];
+    delete currentSelectedTerms[item.id];
     setTermSelection(currentSelectedTerms);
   };
 

@@ -44,11 +44,12 @@ function createTemplateQuestion(ques, authors, index, characteristic) {
 
 const shapeSelectedTermData = data => {
   const shapedData = {};
-  data.forEach((el, i) => {
-    shapedData[`${el.codeValue}-${i}`] = {
+  data.forEach(el => {
+    const id = createID();
+    shapedData[id] = {
       allowedTerm: el,
       title: el.codingSchemeDesignator,
-      id: el.codeValue
+      id
     };
   });
   return shapedData;
