@@ -125,6 +125,9 @@ const useStyles = makeStyles(theme => ({
   epadTitle: {
     color: '#3f51b5',
     fontWeight: '500'
+  },
+  explanation: {
+    marginTop: theme.spacing(2)
   }
 }));
 
@@ -200,7 +203,7 @@ const TermSearch = props => {
           onFileLoaded={handleUpload}
           parserOptions={papaparseOptions}
         />
-        <p>
+        <p className={classes.explanation}>
           Upload CSV file with the columns of
           <span className={classes.attributes}> codeMeaning, codeValue</span>,
           and

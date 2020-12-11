@@ -191,7 +191,7 @@ const QuestionForm = props => {
             getTermFromEPAD(term)
               .then(res => {
                 if (res.data.length > 0) {
-                  setSearchResults(res.data);
+                  setSearchResults({ collection: res.data, epad: true });
                   setShowSearchResults(true);
                 } else {
                   setSearchStatus(populateAlternativeSearch('suggestAddEpad'));
@@ -410,39 +410,49 @@ const QuestionForm = props => {
 
   const handleTermSelection = async (termIndex, title) => {
     try {
-      const acronym = searchResults.collection[termIndex].links.ontology
-        .split('/')
-        .pop();
-      const url = searchResults.collection[termIndex][`@id`];
-      const details = await getDetail(acronym, url);
-      const allowedTerm = returnSelection(acronym, details.data);
-      if (allowedTerm || (allowedTerm && !allowedTerm.codeMeaning)) {
-        const id = createID();
-        const newTerm = {
-          [id]: {
-            allowedTerm,
-            title,
-            id
-          }
-        };
-        const newSelected = selectedTerms
-          ? { ...selectedTerms, ...newTerm }
-          : newTerm;
-        postQuestion({ ...formInput, selectedTerms: newSelected });
-        setTermSelection(newSelected);
-        setShowSearchResults(false);
-        setOpenSearch(false);
-        setOntologyLibs([]);
-        setSearchTerm('');
+      let newSelected = selectedTerms ? { ...selectedTerms } : {};
+      const id = createID();
+      if (title !== '99EPAD') {
+        const acronym = searchResults.collection[termIndex].links.ontology
+          .split('/')
+          .pop();
+        const url = searchResults.collection[termIndex][`@id`];
+        const details = await getDetail(acronym, url);
+        const allowedTerm = returnSelection(acronym, details.data);
+        if (allowedTerm || (allowedTerm && !allowedTerm.codeMeaning)) {
+          const newTerm = {
+            [id]: {
+              allowedTerm,
+              title,
+              id
+            }
+          };
+          newSelected = { ...selectedTerms, ...newTerm };
+        } else {
+          setShowSearchResults(false);
+          const message = `Couldnt find ${
+            allowedTerm ? 'preferred name' : 'cui or notation'
+          } for this term in ${acronym}. You can upload the term with a .csv file!`;
+          enqueueSnackbar(message, {
+            variant: 'error'
+          });
+        }
       } else {
-        setShowSearchResults(false);
-        const message = `Couldnt find ${
-          allowedTerm ? 'preferred name' : 'cui or notation'
-        } for this term in ${acronym}. You can upload the term with a .csv file!`;
-        enqueueSnackbar(message, {
-          variant: 'error'
-        });
+        const allowedTerm = {
+          codeValue: searchResults.collection[termIndex].codevaluee,
+          codeMeaning: searchResults.collection[termIndex].codemeaning,
+          codingSchemeDesignator:
+            searchResults.collection[termIndex].schemadesignator
+        };
+        const newTerm = { [id]: { allowedTerm, title, id } };
+        newSelected = { ...selectedTerms, ...newTerm };
       }
+      postQuestion({ ...formInput, selectedTerms: newSelected });
+      setTermSelection(newSelected);
+      setShowSearchResults(false);
+      setOpenSearch(false);
+      setOntologyLibs([]);
+      setSearchTerm('');
       setSearchStatus({
         explanation: null,
         message: null,

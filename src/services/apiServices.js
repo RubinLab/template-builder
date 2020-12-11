@@ -55,7 +55,7 @@ const getSelectedDetails = (ontology, url) => {
 };
 
 const getTermFromEPAD = term => {
-  return axios.get(`${EPAD_URL}/ontology?CODE_MEANING=${term}`);
+  return axios.get(`${EPAD_URL}/ontology?codemeaning=${term}`);
 };
 
 export { getCollectionResults, getSelectedDetails, getDetail, getTermFromEPAD };

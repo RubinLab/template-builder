@@ -60,25 +60,35 @@ const SearchResults = props => {
   const populateList = () => {
     const nodeList = [];
     for (let k = 0; k < results.collection.length; k += 1) {
-      const acronym = results.collection[k].links.ontology.split('/').pop();
+      const acronym = results.epad
+        ? '99EPAD'
+        : results.collection[k].links.ontology.split('/').pop();
       const { definition } = results.collection[k];
+      const link = results.epad
+        ? `${results.collection[k].codemeaning} - ${results.collection[k].schemadesignator}`
+        : `${results.collection[k].prefLabel} - ${ontologies[acronym].name} (${ontologies[acronym].acronym})`;
+      const title = results.epad ? '99EPAD' : ontologies[acronym];
       nodeList.push(
         <ListItem key={`result${k}`} className={classes.listItemContainer}>
           <div className={classes.listItemTextContainer}>
             <Checkbox
               size="small"
               className={classes.listItemCheckbox}
-              onClick={() => handleSelection(k, ontologies[acronym])}
+              onClick={() => handleSelection(k, title)}
             />
             <Link
               component="button"
               variant="body2"
               className={classes.listItemTitle}
-              onClick={() => {
-                window.open(results.collection[k].links.ui, '_blank', '');
-              }}
+              onClick={
+                results.epad
+                  ? null
+                  : () => {
+                      window.open(results.collection[k].links.ui, '_blank', '');
+                    }
+              }
             >
-              {`${results.collection[k].prefLabel} - ${ontologies[acronym].name} (${ontologies[acronym].acronym})`}
+              {link}
             </Link>
           </div>
           <ListItemText
