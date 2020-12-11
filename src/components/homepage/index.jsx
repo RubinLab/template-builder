@@ -18,7 +18,7 @@ import Button from '@material-ui/core/Button';
 // import AlertDialog from '../common/AlertDialog.jsx';
 import QuestionList from '../question/QuestionList.jsx';
 import QuestionCreation from '../questionCreation/index.jsx';
-// import TemplatePreview from './templatePreview.jsx';
+import TemplatePreview from './templatePreview.jsx';
 import {
   createID,
   getIndecesFromAnswerID,
@@ -79,7 +79,8 @@ const materialUseStyles = makeStyles(theme => ({
   },
 
   templateGrid: {
-    paddingTop: theme.spacing(2)
+    paddingTop: theme.spacing(2),
+    maxWidth: '400px'
   },
   templateCard: {
     paddingTop: theme.spacing(2),
@@ -539,7 +540,7 @@ export default function HomePage({
                     fullWidth={true}
                     id="standard-read-only-input"
                     className={classes.textFieldUID}
-                    label="Tmplate Container UID"
+                    label="Template Container UID"
                     value={tempContUID}
                   />
                   <TextField
@@ -588,10 +589,10 @@ export default function HomePage({
                     Template Preview
                   </Typography>
                   {console.log(completeTemplate)}
-                  {/* <TemplatePreview
+                  <TemplatePreview
                     template={completeTemplate}
-                    noOfQuestions={questionsArr.length}
-                  /> */}
+                    noOfQuestions={questions.length}
+                  />
                 </CardContent>
               </>
             )}

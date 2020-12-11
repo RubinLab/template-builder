@@ -1,23 +1,4 @@
-/* eslint-disable no-shadow */
-/* eslint-disable no-param-reassign */
-/* eslint-disable dot-notation */
-/* eslint-disable no-underscore-dangle */
-/* eslint-disable no-restricted-syntax */
-/* eslint-disable prefer-const */
-/* eslint-disable no-lonely-if */
-/* eslint-disable new-cap */
-/* eslint-disable object-shorthand */
-/* eslint-disable eqeqeq */
-/* eslint-disable prefer-destructuring */
-/* eslint-disable no-plusplus */
-/* eslint-disable no-redeclare */
-/* eslint-disable block-scoped-var */
-/* eslint-disable prefer-template */
-/* eslint-disable operator-assignment */
-/* eslint-disable no-unused-vars */
-/* eslint-disable vars-on-top */
-/* eslint-disable spaced-comment */
-/* eslint-disable no-var */
+/* eslint-disable */
 
 import $ from 'jquery/dist/jquery.js';
 import './semantic/semantic.css';
@@ -27,7 +8,7 @@ import './semantic/semantic.js';
 export var AimEditor = function(
   userWindow,
   varformCheckHandler,
-  varRenderButtonHandler,
+  varRenderButtonHandler
 ) {
   //this.mapObjCodeValueParent = new Map();
   //this.mapHtmlObjects = new Map(); not used
@@ -81,17 +62,17 @@ export var AimEditor = function(
 
   this.mapShapesSchemaToTemplate = new Map();
   this.mapShapesSchemaToTemplate.set('TwoDimensionPolyline', {
-    formshape: 'Polygon',
+    formshape: 'Polygon'
   });
   this.mapShapesSchemaToTemplate.set('TwoDimensionMultiPoint', [
     { formshape: 'Line' },
-    { formshape: 'Perpendicular' },
+    { formshape: 'Perpendicular' }
   ]);
   this.mapShapesSchemaToTemplate.set('TwoDimensionPoint', {
-    formshape: 'Point',
+    formshape: 'Point'
   });
   this.mapShapesSchemaToTemplate.set('TwoDimensionCircle', {
-    formshape: 'Cirle',
+    formshape: 'Cirle'
   });
 
   this.templateShapeArray = []; //each array element is a json object {"shape":'Point', "domid" : '2.25.33554445511225454'});
@@ -464,9 +445,9 @@ export var AimEditor = function(
           json.TemplateContainer.Template[0].codingSchemeDesignator,
         'iso:displayName': {
           'xmlns:iso': 'uri:iso.org:21090',
-          value: json.TemplateContainer.Template[0].codeMeaning,
-        },
-      },
+          value: json.TemplateContainer.Template[0].codeMeaning
+        }
+      }
     ];
 
     document.getElementById('accordion1').appendChild(annotationNameLabelDiv);
@@ -485,7 +466,7 @@ export var AimEditor = function(
 
       var ComponentDivId = cmplabel.replace(
         /[`~!@#$%^&*()_|+\-=?;:'",.<>/ /\{\}\[\]\\\/]/gi,
-        '',
+        ''
       );
 
       var componentDivLabel = document.createTextNode(cmplabel);
@@ -532,7 +513,7 @@ export var AimEditor = function(
           component,
           incontentDiv,
           this.maptag,
-          'component',
+          'component'
         );
       }
       var components = [];
@@ -542,11 +523,11 @@ export var AimEditor = function(
         id: component.id,
         label: component.label,
         itemNumber: component.itemNumber,
-        subTag: [],
+        subTag: []
       };
 
       components.push({
-        component: compObj,
+        component: compObj
       });
 
       var keyorder = Object.keys(component);
@@ -570,7 +551,7 @@ export var AimEditor = function(
             component[keyorder[counter]],
             incontentDiv,
             compObj.subTag,
-            'Component',
+            'Component'
           );
         }
       }
@@ -589,7 +570,7 @@ export var AimEditor = function(
     object,
     parentDiv,
     mapTagArray,
-    parentTagTypeFromJson,
+    parentTagTypeFromJson
   ) {};
 
   this.Calculation = function(
@@ -597,14 +578,14 @@ export var AimEditor = function(
     object,
     parentDiv,
     mapTagArray,
-    parentTagTypeFromJson,
+    parentTagTypeFromJson
   ) {};
   this.CalculationType = function(
     parent,
     object,
     parentDiv,
     mapTagArray,
-    parentTagTypeFromJson,
+    parentTagTypeFromJson
   ) {};
 
   this.Inference = function(
@@ -612,7 +593,7 @@ export var AimEditor = function(
     object,
     parentDiv,
     mapTagArray,
-    parentTagTypeFromJson,
+    parentTagTypeFromJson
   ) {};
 
   this.textFreeInput = function(
@@ -620,7 +601,7 @@ export var AimEditor = function(
     object,
     parentDiv,
     mapTagArray,
-    parentTagTypeFromJson,
+    parentTagTypeFromJson
   ) {
     //var textareaDomObject = document.createElement("textarea");
     //parentDiv.appendChild(textareaDomObject);
@@ -637,7 +618,7 @@ export var AimEditor = function(
     validTermButtonClass,
     ATparent,
     ATobject,
-    ATallowedTermObj,
+    ATallowedTermObj
   ) {
     var arrayLength = -1;
     let isArray = 0;
@@ -681,11 +662,11 @@ export var AimEditor = function(
         },
         id: subEObject.id,
         subTag: [],
-        select: '0',
+        select: '0'
       };
 
       ValidTerm.push({
-        ValidTerm: ValidTermObj,
+        ValidTerm: ValidTermObj
       });
 
       var control = '';
@@ -707,7 +688,7 @@ export var AimEditor = function(
             allowTermText + ' ' + subEObject.codeMeaning,
             ATallowedTermObj,
             ValidTermObj,
-            ATparent,
+            ATparent
           );
           parentDiv.appendChild(ar.getelementHtml());
         } else {
@@ -721,7 +702,7 @@ export var AimEditor = function(
             allowTermText + ' ' + subEObject.codeMeaning,
             ATallowedTermObj,
             ValidTermObj,
-            ATparent,
+            ATparent
           );
 
           selectHolder = paramContentDiv.getElementsByTagName('select')[0];
@@ -737,7 +718,7 @@ export var AimEditor = function(
           allowTermText + ' ' + subEObject.codeMeaning,
           ATallowedTermObj,
           ValidTermObj,
-          ATparent,
+          ATparent
         );
         parentDiv.appendChild(ar.getelementHtml());
       }
@@ -749,16 +730,16 @@ export var AimEditor = function(
     object,
     parentDiv,
     mapTagArray,
-    parentTagTypeFromJson,
+    parentTagTypeFromJson
   ) {
     var GeometricShape = [];
     let Obj = {
       type: 'GeometricShape',
       shape: object.GeometricShape,
-      subTag: [],
+      subTag: []
     };
     mapTagArray.push({
-      GeometricShape: Obj,
+      GeometricShape: Obj
     });
 
     var GSDiv = document.createElement('div');
@@ -774,7 +755,7 @@ export var AimEditor = function(
     // console.log("shape " + JSON.stringify(object.id));
     self.templateShapeArray.push({
       shape: object.GeometricShape,
-      domid: object.id,
+      domid: object.id
     });
     //document.getElementById( object.id).className = "green check circle outline icon";
   };
@@ -784,7 +765,7 @@ export var AimEditor = function(
     object,
     parentDiv,
     mapTagArray,
-    parentTagTypeFromJson,
+    parentTagTypeFromJson
   ) {
     //console.log("allowed term object", parent);
     var athis = this;
@@ -801,7 +782,7 @@ export var AimEditor = function(
     var txt = parent.label;
     var maindiv = txt.replace(
       /[`~!@#$%^&*()_|+\-=?;:'",.<>/ /\{\}\[\]\\\/]/gi,
-      '',
+      ''
     );
     var lblTxt = document.createTextNode(parent.label);
     var uiAccordionDiv = document.createElement('div');
@@ -866,7 +847,7 @@ export var AimEditor = function(
       max: parent.maxCardinality,
       label: parent.label,
       actualSelected: 0,
-      ok: varOk,
+      ok: varOk
     };
 
     self.mapCardinalitiesToCheckId.set(parent.id, compObj);
@@ -935,19 +916,19 @@ export var AimEditor = function(
           return this.primitiveObj;
         },
         select: '0',
-        subTag: [],
+        subTag: []
       };
 
       let unionPrntAlwtermObj = {
         parant: parent,
-        allowterm: allowedTermObj,
+        allowterm: allowedTermObj
       };
       // this.mapAllowedTermCollectionByCodeValue.set(
       //   allowedTermObj.codeValue,
       //   unionPrntAlwtermObj
       // ); not used
       AllowedTerm.push({
-        AllowedTerm: allowedTermObj,
+        AllowedTerm: allowedTermObj
       });
 
       //add global array
@@ -964,7 +945,7 @@ export var AimEditor = function(
             'ui ',
             false,
             subEObject.codeMeaning,
-            allowedTermObj,
+            allowedTermObj
           );
 
           selectDiv.multiple = 'true';
@@ -981,7 +962,7 @@ export var AimEditor = function(
             'checkbox mylbl',
             subEObject.codeMeaning,
             subEObject.codeMeaning,
-            allowedTermObj,
+            allowedTermObj
           );
           if (!subEObject.hasOwnProperty('ValidTerm'))
             contentDiv.appendChild(ar.getelementHtml());
@@ -999,7 +980,7 @@ export var AimEditor = function(
             'ui ',
             false,
             subEObject.codeMeaning,
-            allowedTermObj,
+            allowedTermObj
           );
 
           selectDiv.multiple = 'false';
@@ -1017,7 +998,7 @@ export var AimEditor = function(
             'radio checkbox mylbl',
             false,
             subEObject.codeMeaning,
-            allowedTermObj,
+            allowedTermObj
           );
 
           if (!subEObject.hasOwnProperty('ValidTerm'))
@@ -1041,7 +1022,7 @@ export var AimEditor = function(
               validTermButtonClass,
               parent,
               object,
-              allowedTermObj,
+              allowedTermObj
             );
           } else {
             self[key](
@@ -1049,7 +1030,7 @@ export var AimEditor = function(
               subEObject[key],
               contentDiv,
               allowedTermObj.subTag,
-              'AllowedTerm',
+              'AllowedTerm'
             );
           }
         }
@@ -1074,7 +1055,7 @@ export var AimEditor = function(
             selectDiv.options[k].dispatchEvent(evObja);
           }
         }
-      },
+      }
     });
   };
 
@@ -1083,7 +1064,7 @@ export var AimEditor = function(
     object,
     parentDiv,
     mapTagArray,
-    parentTagTypeFromJson,
+    parentTagTypeFromJson
   ) {
     var _self = this;
     self.checkAnnotatorConfidence(parentDiv, object);
@@ -1107,11 +1088,11 @@ export var AimEditor = function(
 
       let ImagingObservationObj = {
         type: 'ImagingObservation',
-        subTag: [],
+        subTag: []
       };
 
       ImagingObservation.push({
-        ImagingObservation: ImagingObservationObj,
+        ImagingObservation: ImagingObservationObj
       });
 
       var obj = object['ImagingObservation'];
@@ -1122,10 +1103,10 @@ export var AimEditor = function(
         ImagingObservation[ImagingObservation.length - 1].ImagingObservation
           .subTag,
         ImagingObservation[ImagingObservation.length - 1].ImagingObservation
-          .type,
+          .type
       );
       mapTagArray.push({
-        ImagingObservation: ImagingObservation,
+        ImagingObservation: ImagingObservation
       });
     }
   };
@@ -1135,7 +1116,7 @@ export var AimEditor = function(
     object,
     parentDiv,
     mapTagArray,
-    parentTagTypeFromJson,
+    parentTagTypeFromJson
   ) {
     var _self = this;
 
@@ -1167,11 +1148,11 @@ export var AimEditor = function(
         maxCardinality: subEObject.maxCardinality,
         id: subEObject.id,
         subTag: [],
-        selected: 0,
+        selected: 0
       };
 
       ImagingObservationCharacteristic.push({
-        ImagingObservationCharacteristic: ImagingObservationCharacteristicObj,
+        ImagingObservationCharacteristic: ImagingObservationCharacteristicObj
       });
 
       for (var key in subEObject) {
@@ -1182,7 +1163,7 @@ export var AimEditor = function(
             subEObject[key],
             parentDiv,
             ImagingObservationCharacteristicObj.subTag,
-            ImagingObservationCharacteristicObj.type,
+            ImagingObservationCharacteristicObj.type
           );
         }
       }
@@ -1191,7 +1172,7 @@ export var AimEditor = function(
     }
 
     mapTagArray.push({
-      ImagingObservationCharacteristic: ImagingObservationCharacteristic,
+      ImagingObservationCharacteristic: ImagingObservationCharacteristic
     });
   };
 
@@ -1201,7 +1182,7 @@ export var AimEditor = function(
     parentDiv,
     mapTagArray,
     parentTagTypeFromJson,
-    subOrderLabel,
+    subOrderLabel
   ) {
     var arrayLength = -1;
     let isArray = 0;
@@ -1249,10 +1230,10 @@ export var AimEditor = function(
         maxCardinality: subEObject.maxCardinality,
         id: subEObject.explanatoryText,
         subTag: [],
-        selected: 0,
+        selected: 0
       };
       CharacteristicQuantification.push({
-        CharacteristicQuantification: CharacteristicQuantificationObj,
+        CharacteristicQuantification: CharacteristicQuantificationObj
       });
 
       for (var key in subEObject) {
@@ -1267,13 +1248,13 @@ export var AimEditor = function(
             CharacteristicQuantification[
               CharacteristicQuantification.length - 1
             ].CharacteristicQuantification.type,
-            suborder,
+            suborder
           );
         }
       }
       self.checkAnnotatorConfidence(parentDiv, object);
       mapTagArray.push({
-        CharacteristicQuantification: CharacteristicQuantification,
+        CharacteristicQuantification: CharacteristicQuantification
       });
     }
   };
@@ -1283,7 +1264,7 @@ export var AimEditor = function(
     object,
     parentDiv,
     mapTagArray,
-    parentTagTypeFromJson,
+    parentTagTypeFromJson
   ) {
     var arrayLength = -1;
     let isArray = 0;
@@ -1321,7 +1302,7 @@ export var AimEditor = function(
     object,
     parentDiv,
     mapTagArray,
-    parentTagTypeFromJson,
+    parentTagTypeFromJson
   ) {
     var arrayLength = -1;
     let isArray = 0;
@@ -1354,7 +1335,7 @@ export var AimEditor = function(
     object,
     parentDiv,
     mapTagArray,
-    parentTagTypeFromJson,
+    parentTagTypeFromJson
   ) {
     var arrayLength = -1;
     let isArray = 0;
@@ -1385,7 +1366,7 @@ export var AimEditor = function(
     parentDiv,
     mapTagArray,
     parentTagTypeFromJson,
-    subOrderLabel,
+    subOrderLabel
   ) {
     var _subOrderLabel = String.fromCharCode(subOrderLabel);
 
@@ -1420,7 +1401,7 @@ export var AimEditor = function(
             scaleHolderDiv,
             mapTagArray,
             null,
-            'Select' + parent.name,
+            'Select' + parent.name
           );
         }
       }
@@ -1435,7 +1416,7 @@ export var AimEditor = function(
     parentDiv,
     mapTagArray,
     parentTagTypeFromJson,
-    subOrderLabel,
+    subOrderLabel
   ) {
     var arrayLength = -1;
     var quantileDiv = document.createElement('div');
@@ -1488,7 +1469,7 @@ export var AimEditor = function(
     object,
     parentDiv,
     mapTagArray,
-    parentTagTypeFromJson,
+    parentTagTypeFromJson
   ) {
     console.log('numerical parent :', 'Select' + parent.name);
     var arrayLength = -1;
@@ -1551,7 +1532,7 @@ export var AimEditor = function(
     object,
     parentDiv,
     mapTagArray,
-    parentTagTypeFromJson,
+    parentTagTypeFromJson
   ) {
     var arrayLength = -1;
     let isArray = 0;
@@ -1625,7 +1606,7 @@ export var AimEditor = function(
     object,
     parentDiv,
     mapTagArray,
-    parentTagTypeFromJson,
+    parentTagTypeFromJson
   ) {
     var arrayLength = -1;
     let isArray = 0;
@@ -1677,7 +1658,7 @@ export var AimEditor = function(
     parentDiv,
     mapTagArray,
     parentTagTypeFromJson,
-    subOrderLabel,
+    subOrderLabel
   ) {
     var _subOrderLabel = String.fromCharCode(subOrderLabel);
     var arrayLength = -1;
@@ -1729,7 +1710,7 @@ export var AimEditor = function(
     className,
     checked,
     lbl,
-    allowedTermObj,
+    allowedTermObj
   ) {
     var div = document.createElement('div');
     div.style.marginLeft = '20px';
@@ -1763,7 +1744,7 @@ export var AimEditor = function(
       allowedTermObj.select = '1';
       allowedTermObj.changeOnSelect(
         '1',
-        self.AfterClick(allowedTermObj.callParentObj()),
+        self.AfterClick(allowedTermObj.callParentObj())
       );
       var checkmarkObj = self.mapCardinalitiesToCheckId.get(prObject.id);
       checkmarkObj.ok = 'true';
@@ -1779,19 +1760,19 @@ export var AimEditor = function(
         self.DisableTillNext(
           prObject.id,
           allowedTermObj.nextId,
-          self.callDisable,
+          self.callDisable
         );
       } else if (
         typeof self.mapStatusAllowedTermBlocks.get(checkmarkObj.id) !==
         'undefined'
       ) {
         var statusCheckAllowTermObject = self.mapStatusAllowedTermBlocks.get(
-          checkmarkObj.id,
+          checkmarkObj.id
         );
         if (statusCheckAllowTermObject.status == 'disabled')
           self.EnableTillNext(
             statusCheckAllowTermObject.startid,
-            statusCheckAllowTermObject.endid,
+            statusCheckAllowTermObject.endid
           );
       }
 
@@ -1817,10 +1798,10 @@ export var AimEditor = function(
     lbl,
     allowedTermObj,
     validTermObj,
-    vtPrObject,
+    vtPrObject
   ) {
     let labelForUniqueness = self.removeEmptySpace(
-      validTermObj.primitiveObjATSparent.label,
+      validTermObj.primitiveObjATSparent.label
     );
     id = labelForUniqueness + '-' + id + allowedTermObj.codeValue;
 
@@ -1857,11 +1838,11 @@ export var AimEditor = function(
       allowedTermObj.select = '1';
       allowedTermObj.changeOnSelect(
         '1',
-        self.AfterClick(allowedTermObj.callParentObj()),
+        self.AfterClick(allowedTermObj.callParentObj())
       );
 
       var checkmarkObj = self.mapCardinalitiesToCheckId.get(
-        validTermObj.primitiveObjATSparent.id,
+        validTermObj.primitiveObjATSparent.id
       );
       checkmarkObj.ok = 'true';
       checkmarkObj.actualSelected++;
@@ -1875,19 +1856,19 @@ export var AimEditor = function(
         self.DisableTillNext(
           prObject.id,
           allowedTermObj.nextId,
-          self.callDisable,
+          self.callDisable
         );
       } else if (
         typeof self.mapStatusAllowedTermBlocks.get(checkmarkObj.id) !==
         'undefined'
       ) {
         var statusCheckAllowTermObject = self.mapStatusAllowedTermBlocks.get(
-          checkmarkObj.id,
+          checkmarkObj.id
         );
         if (statusCheckAllowTermObject.status == 'disabled')
           self.EnableTillNext(
             statusCheckAllowTermObject.startid,
-            statusCheckAllowTermObject.endid,
+            statusCheckAllowTermObject.endid
           );
       }
 
@@ -1910,7 +1891,7 @@ export var AimEditor = function(
     className,
     checked,
     lbl,
-    allowedTermObj,
+    allowedTermObj
   ) {
     //drop down select and add input box object
 
@@ -1925,7 +1906,7 @@ export var AimEditor = function(
     var square = document.createElement('div');
     square.className = 'ui mini Tiny blue label';
     var lab = document.createTextNode(
-      String.fromCharCode(self.subOrderLabelTracking) + '-',
+      String.fromCharCode(self.subOrderLabelTracking) + '-'
     );
     square.appendChild(lab);
 
@@ -1974,7 +1955,7 @@ export var AimEditor = function(
         self.DisableTillNext(
           prObject.id,
           allowedTermObj.nextId,
-          self.callDisable,
+          self.callDisable
         );
       } else if (
         typeof self.mapStatusAllowedTermBlocks.get(checkmarkObj.id) !==
@@ -1983,12 +1964,12 @@ export var AimEditor = function(
         this.selected == false
       ) {
         var statusCheckAllowTermObject = self.mapStatusAllowedTermBlocks.get(
-          checkmarkObj.id,
+          checkmarkObj.id
         );
         if (statusCheckAllowTermObject.status == 'disabled')
           self.EnableTillNext(
             statusCheckAllowTermObject.startid,
-            statusCheckAllowTermObject.endid,
+            statusCheckAllowTermObject.endid
           );
       }
 
@@ -2019,11 +2000,11 @@ export var AimEditor = function(
     lbl,
     allowedTermObj,
     validTermObj,
-    vtPrObject,
+    vtPrObject
   ) {
     //drop down multiple selectable list
     let labelForUniqueness = self.removeEmptySpace(
-      validTermObj.primitiveObjATSparent.label,
+      validTermObj.primitiveObjATSparent.label
     );
     id = labelForUniqueness + '-' + id + allowedTermObj.codeValue;
     var div = document.createElement('div');
@@ -2036,7 +2017,7 @@ export var AimEditor = function(
     square.className = 'ui mini Tiny blue label';
     self.subOrderLabelTracking = self.subOrderLabelTracking - 1;
     var lab = document.createTextNode(
-      String.fromCharCode(self.subOrderLabelTracking) + '-',
+      String.fromCharCode(self.subOrderLabelTracking) + '-'
     );
     square.appendChild(lab);
 
@@ -2094,7 +2075,7 @@ export var AimEditor = function(
     className,
     value,
     lbl,
-    allowedTermObj,
+    allowedTermObj
   ) {
     //this.id = id.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '');
 
@@ -2163,7 +2144,7 @@ export var AimEditor = function(
         self.DisableTillNext(
           prObject.id,
           allowedTermObj.nextId,
-          self.callDisable,
+          self.callDisable
         );
       } else if (
         typeof self.mapStatusAllowedTermBlocks.get(checkmarkObj.id) !==
@@ -2172,12 +2153,12 @@ export var AimEditor = function(
         checkbox.checked == false
       ) {
         var statusCheckAllowTermObject = self.mapStatusAllowedTermBlocks.get(
-          checkmarkObj.id,
+          checkmarkObj.id
         );
         if (statusCheckAllowTermObject.status == 'disabled')
           self.EnableTillNext(
             statusCheckAllowTermObject.startid,
-            statusCheckAllowTermObject.endid,
+            statusCheckAllowTermObject.endid
           );
       }
 
@@ -2204,10 +2185,10 @@ export var AimEditor = function(
     lbl,
     allowedTermObj,
     validTermObj,
-    vtPrObject,
+    vtPrObject
   ) {
     let labelForUniqueness = self.removeEmptySpace(
-      validTermObj.primitiveObjATSparent.label,
+      validTermObj.primitiveObjATSparent.label
     );
     id = labelForUniqueness + '-' + id + allowedTermObj.codeValue;
 
@@ -2288,12 +2269,12 @@ export var AimEditor = function(
           if (objectToCheckAnnConf.hasOwnProperty('label')) {
             var rangeid = objectToCheckAnnConf.label.replace(
               /[`~!@# $%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi,
-              '',
+              ''
             );
           } else if (objectToCheckAnnConf.hasOwnProperty('name')) {
             var rangeid = objectToCheckAnnConf.name.replace(
               /[`~!@# $%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi,
-              '',
+              ''
             );
           }
 
@@ -2344,7 +2325,7 @@ export var AimEditor = function(
           var annotConfShowValueInputDiv = document.createElement('div');
           annotConfShowValueInputDiv.setAttribute(
             'class',
-            'ui input disabled small',
+            'ui input disabled small'
           );
           let confidenceText = document.createTextNode('Confidence level');
           //loadButton.appendChild(loadButtonText);
@@ -2368,7 +2349,7 @@ export var AimEditor = function(
         let object = {
           startid: key,
           endid: nextid,
-          status: 'disabled',
+          status: 'disabled'
         };
         self.mapStatusAllowedTermBlocks.set(key, object);
       } else if (nextControl == 1) {
@@ -2394,7 +2375,7 @@ export var AimEditor = function(
         let object = {
           startid: key,
           endid: nextid,
-          status: 'active',
+          status: 'active'
         };
         self.mapStatusAllowedTermBlocks.set(key, object);
       } else if (nextControl == 1) {
@@ -2523,7 +2504,7 @@ export var AimEditor = function(
     parentObject,
     itself,
     Entitytype,
-    jsonInner,
+    jsonInner
   ) {};
 
   this.saveQuestionType = function(
@@ -2531,7 +2512,7 @@ export var AimEditor = function(
     parentObject,
     itself,
     Entitytype,
-    jsonInner,
+    jsonInner
   ) {};
 
   this.saveAlgorithmType = function(
@@ -2539,7 +2520,7 @@ export var AimEditor = function(
     parentObject,
     itself,
     Entitytype,
-    jsonInner,
+    jsonInner
   ) {};
 
   this.saveCalculationType = function(
@@ -2547,7 +2528,7 @@ export var AimEditor = function(
     parentObject,
     itself,
     Entitytype,
-    jsonInner,
+    jsonInner
   ) {};
 
   this.saveCalculation = function(
@@ -2555,7 +2536,7 @@ export var AimEditor = function(
     parentObject,
     itself,
     Entitytype,
-    jsonInner,
+    jsonInner
   ) {};
 
   this.saveInference = function(
@@ -2563,7 +2544,7 @@ export var AimEditor = function(
     parentObject,
     itself,
     Entitytype,
-    jsonInner,
+    jsonInner
   ) {};
 
   this.saveComponent = function(
@@ -2571,7 +2552,7 @@ export var AimEditor = function(
     parentObject,
     itself,
     Entitytype,
-    jsonInner,
+    jsonInner
   ) {};
 
   //****************** used components ***********************************
@@ -2602,8 +2583,8 @@ export var AimEditor = function(
       minValue: { value: '' },
       maxValue: { value: '' },
       valueLabel: {
-        value: '',
-      },
+        value: ''
+      }
     };
 
     var defaultSelectedValueLabel = '';
@@ -2625,7 +2606,7 @@ export var AimEditor = function(
 
       var prntObject = {
         type: 'Numerical',
-        value: instanceObject,
+        value: instanceObject
       };
       console.log('numerical instance object', instanceObject);
       if (i == 0) {
@@ -2650,20 +2631,20 @@ export var AimEditor = function(
         }
       }
       jsonCharacteristicQuantification.valueLabel = {
-        value: defaultSelectedValueLabel,
+        value: defaultSelectedValueLabel
       };
 
       jsonCharacteristicQuantification.operator = defaultSelectedOperator;
       jsonCharacteristicQuantification.minOperator = defaultSelectedMinOperator;
       jsonCharacteristicQuantification.maxOperator = defaultSelectedMaxOperator;
       jsonCharacteristicQuantification.ucumString = {
-        value: defaultSelectedUcumString,
+        value: defaultSelectedUcumString
       };
       jsonCharacteristicQuantification.minValue = {
-        value: defaultSelectedMinValue,
+        value: defaultSelectedMinValue
       };
       jsonCharacteristicQuantification.maxValue = {
-        value: defaultSelectedMaxValue,
+        value: defaultSelectedMaxValue
       };
     }
 
@@ -2674,7 +2655,7 @@ export var AimEditor = function(
     parentObject,
     itself,
     Entitytype,
-    jsonInner,
+    jsonInner
   ) {
     var prntObject = null;
 
@@ -2702,10 +2683,10 @@ export var AimEditor = function(
         codeSystemName: '',
         'iso:displayName': {
           'xmlns:iso': 'uri:iso.org:21090',
-          value: '',
+          value: ''
         },
-        codeSystemVersion: '',
-      },
+        codeSystemVersion: ''
+      }
     };
     var defaultCode = '';
     var defaultCodeSystem = '';
@@ -2723,7 +2704,7 @@ export var AimEditor = function(
 
       var prntObject = {
         type: 'NonQuantifiable',
-        value: instanceObject,
+        value: instanceObject
       };
 
       if (i == 0) {
@@ -2778,8 +2759,8 @@ export var AimEditor = function(
       bins: { value: '' },
       selectedBin: { value: '' },
       valueLabel: {
-        value: '',
-      },
+        value: ''
+      }
     };
 
     var defaultSelectedValueLabel = '';
@@ -2799,7 +2780,7 @@ export var AimEditor = function(
 
       var prntObject = {
         type: 'Numerical',
-        value: instanceObject,
+        value: instanceObject
       };
       console.log('numerical instance object', instanceObject);
       if (i == 0) {
@@ -2820,23 +2801,23 @@ export var AimEditor = function(
         }
       }
       jsonCharacteristicQuantification.valueLabel = {
-        value: defaultSelectedValueLabel,
+        value: defaultSelectedValueLabel
       };
 
       jsonCharacteristicQuantification.bins = {
-        value: defaultSelectedBins,
+        value: defaultSelectedBins
       };
       jsonCharacteristicQuantification.selectedBin = {
-        value: defaultSelectedSelectedBin,
+        value: defaultSelectedSelectedBin
       };
       jsonCharacteristicQuantification.minValue = {
-        value: defaultSelectedMinValue,
+        value: defaultSelectedMinValue
       };
       jsonCharacteristicQuantification.maxValue = {
-        value: defaultSelectedMaxValue,
+        value: defaultSelectedMaxValue
       };
       jsonCharacteristicQuantification.valueLabel = {
-        value: defaultSelectedValueLabel,
+        value: defaultSelectedValueLabel
       };
     }
 
@@ -2866,11 +2847,11 @@ export var AimEditor = function(
       label: { value: parentObject.value.name },
       ucumString: { value: '' },
       valueLabel: {
-        value: '',
+        value: ''
       },
       value: {
-        value: '',
-      },
+        value: ''
+      }
     };
     var defaultSelectedValue = '';
     var defaultSelectedValueLabel = '';
@@ -2888,7 +2869,7 @@ export var AimEditor = function(
 
       var prntObject = {
         type: 'Numerical',
-        value: instanceObject,
+        value: instanceObject
       };
       console.log('numerical instance object', instanceObject);
       if (i == 0) {
@@ -2907,12 +2888,12 @@ export var AimEditor = function(
         }
       }
       jsonCharacteristicQuantification.valueLabel = {
-        value: defaultSelectedValueLabel,
+        value: defaultSelectedValueLabel
       };
       jsonCharacteristicQuantification.value = { value: defaultSelectedValue };
       jsonCharacteristicQuantification.operator = defaultSelectedOperator;
       jsonCharacteristicQuantification.ucumString = {
-        value: defaultSelectedUcumString,
+        value: defaultSelectedUcumString
       };
     }
 
@@ -2962,7 +2943,7 @@ export var AimEditor = function(
 
       prntObject = {
         type: 'ScaleLevel',
-        value: instanceObject,
+        value: instanceObject
       };
     }
   };
@@ -2993,11 +2974,11 @@ export var AimEditor = function(
       annotatorConfidence: { value: anotconf },
       label: { value: parentObject.value.name },
       valueLabel: {
-        value: '',
+        value: ''
       },
       value: {
-        value: '',
-      },
+        value: ''
+      }
     };
     for (i = 0; i < arraySize; i++) {
       if (arrayCheck === true) {
@@ -3008,14 +2989,14 @@ export var AimEditor = function(
 
       let prntObject = {
         type: 'Scale',
-        value: instanceObject,
+        value: instanceObject
       };
 
       for (var key in instanceObject) {
         if (typeof instanceObject[key] === 'object') {
           let subObject = {
             type: key,
-            value: instanceObject[key],
+            value: instanceObject[key]
           };
 
           //parentHolder -> each component creates it's own copy of the array and passes to the next object
@@ -3026,7 +3007,7 @@ export var AimEditor = function(
             prntObject,
             subObject,
             Entitytype,
-            jsonCharacteristicQuantification,
+            jsonCharacteristicQuantification
           );
           jsonInner.push(jsonCharacteristicQuantification);
         }
@@ -3038,7 +3019,7 @@ export var AimEditor = function(
     parentObject,
     itself,
     Entitytype,
-    jsonInner,
+    jsonInner
   ) {
     var prntObject = null;
 
@@ -3068,14 +3049,14 @@ export var AimEditor = function(
       // console.log("%c CharacteristicQuantifications : "+JSON.stringify(instanceObject),'background:  #068b00; color: white; display: block;');
       let prntObject = {
         type: 'CharacteristicQuantification',
-        value: instanceObject,
+        value: instanceObject
       };
 
       for (var key in instanceObject) {
         if (typeof instanceObject[key] === 'object') {
           let subObject = {
             type: key,
-            value: instanceObject[key],
+            value: instanceObject[key]
           };
 
           //console.log("@@@@@@@@ car quant : "+key);
@@ -3088,7 +3069,7 @@ export var AimEditor = function(
             prntObject,
             subObject,
             Entitytype,
-            tempjson.CharacteristicQuantification,
+            tempjson.CharacteristicQuantification
           );
         }
       }
@@ -3096,7 +3077,7 @@ export var AimEditor = function(
 
     //if (Object.keys(jsoncharacteristicQuantification).length > 0)
     jsonInner.characteristicQuantificationCollection.push(
-      tempjson.CharacteristicQuantification,
+      tempjson.CharacteristicQuantification
     );
   };
 
@@ -3104,7 +3085,7 @@ export var AimEditor = function(
     parentObject,
     itself,
     Entitytype,
-    jsonInner,
+    jsonInner
   ) {
     // console.log("%c __ imaging observation header before: " + JSON.stringify(jsonInner),  'background:  #df9800; color: white; display: block;');
     if (!jsonInner.hasOwnProperty('imagingObservationEntityCollection'))
@@ -3114,7 +3095,7 @@ export var AimEditor = function(
       parentObject,
       itself.value['ImagingObservationCharacteristic'],
       Entitytype,
-      jsonInner.imagingObservationEntityCollection,
+      jsonInner.imagingObservationEntityCollection
     );
     //console.log("%c __ imaging observation header after: " + JSON.stringify(jsonInner),  'background: #df9800; color: white; display: block;');
   };
@@ -3123,7 +3104,7 @@ export var AimEditor = function(
     parentObject,
     itself,
     Entitytype,
-    jsonInner,
+    jsonInner
   ) {
     //console.log("%c saveImagingObservationCharacteristic - jsonInner before " + JSON.stringify(jsonInner) ,  'background: green; color: white; display: block;');
     let prntObject = null;
@@ -3151,7 +3132,7 @@ export var AimEditor = function(
 
       let prntObject = {
         type: 'ImagingObservationCharacteristic',
-        value: instanceObject,
+        value: instanceObject
       };
 
       let commentvalue = '';
@@ -3164,14 +3145,14 @@ export var AimEditor = function(
           if (typeof instanceObject[key] === 'object') {
             let subObject = {
               type: key,
-              value: instanceObject[key],
+              value: instanceObject[key]
             };
 
             self['save' + key](
               prntObject,
               subObject,
               Entitytype,
-              tempjson.imagingObservationCharacteristicCollection,
+              tempjson.imagingObservationCharacteristicCollection
             );
           }
         }
@@ -3202,7 +3183,7 @@ export var AimEditor = function(
     parentObject,
     itself,
     Entitytype,
-    jsonInner,
+    jsonInner
   ) {
     //console.log("%c __ anatomic entity header before: " + JSON.stringify(jsonInner),  'background:  #8b0087; color: white; display: block;');
     if (!jsonInner.hasOwnProperty('imagingPhysicalEntityCollection'))
@@ -3212,7 +3193,7 @@ export var AimEditor = function(
       parentObject,
       itself.value['AnatomicEntityCharacteristic'],
       Entitytype,
-      jsonInner.imagingPhysicalEntityCollection,
+      jsonInner.imagingPhysicalEntityCollection
     );
 
     //console.log("%c __ anatomic entity header after: " + JSON.stringify(jsonInner),  'background:  #8b0087; color: white; display: block;');
@@ -3222,7 +3203,7 @@ export var AimEditor = function(
     parentObject,
     itself,
     Entitytype,
-    jsonInner,
+    jsonInner
   ) {
     let prntObject = null;
 
@@ -3253,7 +3234,7 @@ export var AimEditor = function(
 
       let prntObject = {
         type: 'AnatomicEntityCharacteristic',
-        value: instanceObject,
+        value: instanceObject
       };
 
       let commentvalue = '';
@@ -3268,14 +3249,14 @@ export var AimEditor = function(
             //alert(key);
             let subObject = {
               type: key,
-              value: instanceObject[key],
+              value: instanceObject[key]
             };
 
             self['save' + key](
               prntObject,
               subObject,
               Entitytype,
-              tempjson.imagingPhysicalEntityCharacteristicCollection,
+              tempjson.imagingPhysicalEntityCharacteristicCollection
             );
           }
         }
@@ -3332,7 +3313,7 @@ export var AimEditor = function(
 
       let prntObject = {
         type: 'AllowedTerm',
-        value: instanceAllowedTerms,
+        value: instanceAllowedTerms
       };
 
       if (instanceAllowedTerms.hasOwnProperty('select')) {
@@ -3353,16 +3334,16 @@ export var AimEditor = function(
                 codeSystemVersion: instanceAllowedTerms.codingSchemeVersion,
                 'iso:displayName': {
                   value: instanceAllowedTerms.codeMeaning,
-                  'xmlns:iso': 'uri:iso.org:21090',
-                },
-              },
+                  'xmlns:iso': 'uri:iso.org:21090'
+                }
+              }
             ],
             annotatorConfidence: {
-              value: anotconf,
+              value: anotconf
             },
             label: {
-              value: parentObject.value.label,
-            },
+              value: parentObject.value.label
+            }
           };
           // console.log("-------" + parentObject.value.selectac);
 
@@ -3370,7 +3351,7 @@ export var AimEditor = function(
             if (typeof instanceAllowedTerms[key] == 'object') {
               var subObject = {
                 type: key,
-                value: instanceAllowedTerms[key],
+                value: instanceAllowedTerms[key]
               };
 
               //parentHolder -> each component creates it's own copy of the array and passes to the next object
@@ -3382,7 +3363,7 @@ export var AimEditor = function(
                 prntObject,
                 subObject,
                 Entitytype,
-                jsonAllowedTerm,
+                jsonAllowedTerm
               );
             }
           }
@@ -3444,7 +3425,7 @@ export var AimEditor = function(
 
       let prntObject = {
         type: 'ValidTerm',
-        value: instanceObject,
+        value: instanceObject
       };
       if (i == 0 && arraySize == 1) {
         console.log('valid term instance object', instanceObject);
@@ -3472,8 +3453,8 @@ export var AimEditor = function(
           codeSystemVersion: defaultCodingSchemeVersion,
           'iso:displayName': {
             value: defaultCodeMeaning,
-            'xmlns:iso': 'uri:iso.org:21090',
-          },
+            'xmlns:iso': 'uri:iso.org:21090'
+          }
         };
         console.log('json valid term before push', jsonValidTerm);
         if (Array.isArray(jsonInner.typeCode)) {
@@ -3514,7 +3495,7 @@ export var AimEditor = function(
 
       let componentObject = {
         type: 'Component',
-        value: instanceComponent,
+        value: instanceComponent
       };
 
       let Entitytype = null;
@@ -3545,7 +3526,7 @@ export var AimEditor = function(
         if (typeof instanceComponent[keyorder[counter]] == 'object') {
           let subObject = {
             type: keyorder[counter],
-            value: instanceComponent[keyorder[counter]],
+            value: instanceComponent[keyorder[counter]]
           };
 
           //parentHolder -> each component creates it's own copy of the array and passes to the next object
@@ -3558,7 +3539,7 @@ export var AimEditor = function(
               componentObject,
               subObject,
               Entitytype,
-              jsonInner,
+              jsonInner
             );
           } catch (err) {
             //Block of code to handle errors
@@ -3589,7 +3570,7 @@ export var AimEditor = function(
 
     jsonComponents = self.traverseComponentsToSave(
       self.jsonTemplateCopy,
-      jsonComponents,
+      jsonComponents
     );
     //console.log("____________whole comps :"+JSON.stringify(jsonComponents));
 
@@ -3639,7 +3620,7 @@ export var AimEditor = function(
 
                 if (n < directATlength - 1) {
                   eachInnerJson[nextComptype].push(
-                    eachInnerJson['allowedterms'][n],
+                    eachInnerJson['allowedterms'][n]
                   );
                 } else {
                   var innerkeys = Object.keys(eachInnerJson[nextComptype][0]);
@@ -3655,11 +3636,11 @@ export var AimEditor = function(
                       tempMergeJsons = eachInnerJson[nextComptype][0];
                       Object.assign(
                         tempMergeJsons,
-                        eachInnerJson['allowedterms'][directATlength - 1],
+                        eachInnerJson['allowedterms'][directATlength - 1]
                       );
                     } else {
                       eachInnerJson[nextComptype].push(
-                        eachInnerJson['allowedterms'][directATlength - 1],
+                        eachInnerJson['allowedterms'][directATlength - 1]
                       );
                     }
                   }
@@ -3726,7 +3707,7 @@ export var AimEditor = function(
             if (eachImPhy != '' && typeof eachImPhy != 'undefined') {
               var mergeJson = {};
               mergeJson = finaljson['imagingPhysicalEntityCollection'].concat(
-                eachImPhy,
+                eachImPhy
               );
               finaljson['imagingPhysicalEntityCollection'] = mergeJson;
               eachImPhy = '';
@@ -3814,7 +3795,7 @@ export var AimEditor = function(
               self.templateShapeArray[t].shape === jsonShapeObj[j].formshape
             ) {
               document.getElementById(
-                self.templateShapeArray[t].domid,
+                self.templateShapeArray[t].domid
               ).className = 'green check circle outline icon';
             }
           }
@@ -3824,7 +3805,7 @@ export var AimEditor = function(
         for (let t = 0; t < templateShapeArrayLength; t++) {
           if (self.templateShapeArray[t].shape === jsonShapeObj.formshape) {
             document.getElementById(
-              self.templateShapeArray[t].domid,
+              self.templateShapeArray[t].domid
             ).className = 'green check circle outline icon';
           }
         }
@@ -3842,7 +3823,7 @@ export var AimEditor = function(
       if (object.requireComment == true) {
         let annoCommentDomid = object.label.replace(
           /[`~!@# $%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi,
-          '',
+          ''
         );
 
         self.mapLabelSubComment.set(annoCommentDomid, annoCommentDomid);
@@ -3897,52 +3878,52 @@ export var AimEditor = function(
             console.log('eachCharactQuantfObj', eachCharactQuantfObj);
             console.log(
               'eachCharactQuantfObj',
-              eachCharactQuantfObj['xsi:type'],
+              eachCharactQuantfObj['xsi:type']
             );
             let chartQuantfType = eachCharactQuantfObj['xsi:type'];
             switch (chartQuantfType) {
               case 'Scale':
                 $(
-                  '#Select' + eachCharactQuantfObj.label.value,
+                  '#Select' + eachCharactQuantfObj.label.value
                 ).dropdown('set selected', [
-                  eachCharactQuantfObj.valueLabel.value,
+                  eachCharactQuantfObj.valueLabel.value
                 ]);
                 break;
               case 'NonQuantifiable':
                 console.log('NonQuantifiable', eachCharactQuantfObj);
                 $(
-                  '#Select' + eachCharactQuantfObj.label.value,
+                  '#Select' + eachCharactQuantfObj.label.value
                 ).dropdown('set selected', [
-                  eachCharactQuantfObj.typeCode.codeSystem,
+                  eachCharactQuantfObj.typeCode.codeSystem
                 ]);
                 break;
               case 'Numerical':
                 console.log('Numerical', eachCharactQuantfObj);
                 $(
-                  '#Select' + eachCharactQuantfObj.label.value,
+                  '#Select' + eachCharactQuantfObj.label.value
                 ).dropdown('set selected', [
                   self.mathOperators.get(eachCharactQuantfObj.operator) +
                     ' ' +
                     eachCharactQuantfObj.valueLabel.value +
                     ' ' +
-                    eachCharactQuantfObj.ucumString.value,
+                    eachCharactQuantfObj.ucumString.value
                 ]);
                 break;
               case 'Quantile':
                 console.log('Quantile', eachCharactQuantfObj);
                 $(
-                  '#Select' + eachCharactQuantfObj.label.value,
+                  '#Select' + eachCharactQuantfObj.label.value
                 ).dropdown('set selected', [
-                  eachCharactQuantfObj.valueLabel.value,
+                  eachCharactQuantfObj.valueLabel.value
                 ]);
 
                 break;
               case 'Interval':
                 console.log('Interval', eachCharactQuantfObj);
                 $(
-                  '#Select' + eachCharactQuantfObj.label.value,
+                  '#Select' + eachCharactQuantfObj.label.value
                 ).dropdown('set selected', [
-                  eachCharactQuantfObj.valueLabel.value,
+                  eachCharactQuantfObj.valueLabel.value
                 ]);
                 break;
               default:
@@ -3961,11 +3942,11 @@ export var AimEditor = function(
             ValidtermCode = value[0][1].code;
 
             var docElement = document.getElementById(
-              label + '-' + ValidtermCode + value[0][0].code,
+              label + '-' + ValidtermCode + value[0][0].code
             );
           } else {
             var docElement = document.getElementById(
-              label + '-' + value[0].code,
+              label + '-' + value[0].code
             );
           }
 
@@ -3977,7 +3958,7 @@ export var AimEditor = function(
 
               crop = crop.replace(
                 /[`~!@#$%^&*()_|+\-=?;:'",.<>/ /\{\}\[\]\\\/]/gi,
-                '',
+                ''
               );
 
               var prDiv = document.getElementById('Drop' + crop);
@@ -3998,7 +3979,7 @@ export var AimEditor = function(
 
               $(subDivs[0]).addClass('disabled');
               $(subDivs[0]).dropdown('set selected', [
-                splittedLabelMergeRest.trim(),
+                splittedLabelMergeRest.trim()
               ]);
               $(subDivs[0]).removeClass('disabled');
             } else {
@@ -4014,10 +3995,10 @@ export var AimEditor = function(
           if (jsonObj.hasOwnProperty('label')) {
             let annotatorConflabel = jsonObj['label']['value'].replace(
               /[`~!@# $%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi,
-              '',
+              ''
             );
             let returnAnnotConfDomId = self.mapLabelAnnotatorConfidence.get(
-              annotatorConflabel,
+              annotatorConflabel
             );
 
             if (typeof returnAnnotConfDomId != 'undefined') {
@@ -4029,7 +4010,7 @@ export var AimEditor = function(
               document.getElementById(showannoConfDomid).value =
                 value.value * 100;
               let annotconfJson = self.mapLabelAnnotConfJson.get(
-                annotatorConflabel,
+                annotatorConflabel
               );
               annotconfJson.selectac = value.value;
             }
@@ -4039,13 +4020,13 @@ export var AimEditor = function(
           if (jsonObj.hasOwnProperty('label')) {
             let commentLabel = jsonObj['label']['value'].replace(
               /[`~!@# $%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi,
-              '',
+              ''
             );
             let returnCommentLabel = self.mapLabelSubComment.get(commentLabel);
             if (typeof returnCommentLabel != 'undefined') {
               let commentJson = self.mapLabelCommentJson.get(commentLabel);
               document.getElementById(
-                'comment' + jsonObj['label']['value'],
+                'comment' + jsonObj['label']['value']
               ).value = value.value;
               commentJson.commentSelect = value.value;
             }
@@ -4060,7 +4041,7 @@ export var AimEditor = function(
           let label = jsonObj['label']['value'];
           let commentLabel = label.replace(
             /[`~!@# $%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi,
-            '',
+            ''
           );
           self.mapLabelUid.set(code, { uid: uid, label: label });
         }
@@ -4097,7 +4078,7 @@ export var AimEditor = function(
     //var ImageAnnotation = aimjson.imageAnnotations.ImageAnnotationCollection.imageAnnotations.ImageAnnotation;
 
     var templateIndex = self.mapTemplateCodeValueByIndex.get(
-      aimjson.typeCode[0].code,
+      aimjson.typeCode[0].code
     );
     if (typeof templateIndex === 'undefined') {
       return 1;
@@ -4156,11 +4137,11 @@ export var AimEditor = function(
         for (inobjcounter; inobjcounter < innerjsonlength; inobjcounter++) {
           if (jsonobj[key][inobjcounter].hasOwnProperty('label')) {
             let valueJson = self.mapLabelUid.get(
-              jsonobj[key][inobjcounter]['typeCode']['code'],
+              jsonobj[key][inobjcounter]['typeCode']['code']
             );
             if (typeof valueJson !== 'undefined') {
               jsonobj[key][inobjcounter].uniqueIdentifier = {
-                root: valueJson.uid,
+                root: valueJson.uid
               };
             } else {
               jsonobj[key][inobjcounter].uniqueIdentifier = { root: uid() };
@@ -4189,28 +4170,28 @@ export var AimEditor = function(
           for (let k = 0; k < tempSubJson.length; k++) {
             if (
               tempSubJson[k].hasOwnProperty(
-                'characteristicQuantificationCollection',
+                'characteristicQuantificationCollection'
               )
             ) {
               tempSubTwoJson =
                 tempSubJson[k]['characteristicQuantificationCollection'];
               delete tempSubJson[k].characteristicQuantificationCollection;
               tempSubJson[k].characteristicQuantificationCollection = {
-                CharacteristicQuantification: tempSubTwoJson[0],
+                CharacteristicQuantification: tempSubTwoJson[0]
               };
             }
           }
 
           delete tempJson[i].imagingPhysicalCharacteristicCollection;
           tempJson[i].imagingPhysicalCharacteristicCollection = {
-            imagingPhysicalCharacteristic: tempSubJson,
+            imagingPhysicalCharacteristic: tempSubJson
           };
         }
       }
 
       delete aimJson.imagingPhysicalEntityCollection;
       aimJson.imagingPhysicalEntityCollection = {
-        ImagingPhysicalEntity: tempJson,
+        ImagingPhysicalEntity: tempJson
       };
       //console.log("%c %%% _ temp json _ %%%% " + JSON.stringify(tempJson),'background: #453dc2; color: white; display: block;');
     }
@@ -4222,7 +4203,7 @@ export var AimEditor = function(
       for (let i = 0; i < tempJson.length; i++) {
         if (
           tempJson[i].hasOwnProperty(
-            'imagingObservationCharacteristicCollection',
+            'imagingObservationCharacteristicCollection'
           )
         ) {
           tempSubJson =
@@ -4231,28 +4212,28 @@ export var AimEditor = function(
           for (let k = 0; k < tempSubJson.length; k++) {
             if (
               tempSubJson[k].hasOwnProperty(
-                'characteristicQuantificationCollection',
+                'characteristicQuantificationCollection'
               )
             ) {
               tempSubTwoJson =
                 tempSubJson[k]['characteristicQuantificationCollection'];
               delete tempSubJson[k].characteristicQuantificationCollection;
               tempSubJson[k].characteristicQuantificationCollection = {
-                CharacteristicQuantification: tempSubTwoJson[0],
+                CharacteristicQuantification: tempSubTwoJson[0]
               };
             }
           }
 
           delete tempJson[i].imagingObservationCharacteristicCollection;
           tempJson[i].imagingObservationCharacteristicCollection = {
-            ImagingObservationCharacteristic: tempSubJson,
+            ImagingObservationCharacteristic: tempSubJson
           };
         }
       }
 
       delete aimJson.imagingObservationEntityCollection;
       aimJson.imagingObservationEntityCollection = {
-        ImagingObservationEntity: tempJson,
+        ImagingObservationEntity: tempJson
       };
       //console.log("%c %%% _ temp json _ %%%% " + JSON.stringify(tempJson),'background: #453dc2; color: white; display: block;');
     }

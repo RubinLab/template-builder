@@ -55,6 +55,12 @@ const useStyles = makeStyles(theme => ({
     paddingTop: theme.spacing(0.2),
     paddingBottom: theme.spacing(0.2),
     borderBottom: '1px dotted #E3E0D8'
+  },
+  answerList: {
+    minWidth: 'fit-content',
+    width: '400px',
+    height: '250px',
+    overflow: 'scroll'
   }
 }));
 
@@ -120,7 +126,7 @@ export default function QuestionItem(props) {
       </ListItem>
       {question.AllowedTerm && (
         <Collapse in={open} timeout="auto" unmountOnExit>
-          <List component="div">
+          <List component="div" className={classes.answerList}>
             {Object.values(question.AllowedTerm).map((term, i) => {
               return (
                 <ListItem
