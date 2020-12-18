@@ -102,7 +102,7 @@ const QuestionForm = props => {
   const [explanatoryText, setExplanatoryText] = useState();
   const [questionType, setQuestionType] = useState('');
   const [showSearchResults, _setShowSearchResults] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, _setSearchTerm] = useState('');
   const [selectedTerms, setTermSelection] = useState(null);
   const [minCard, setMinCard] = useState('');
   const [maxCard, setMaxCard] = useState('');
@@ -119,6 +119,17 @@ const QuestionForm = props => {
   const searchResultsRef = useRef();
 
   const showResultsRef = useRef(searchStatus);
+  const searchTermRef = useRef(searchTerm);
+
+  const setSearchTerm = (value, option) => {
+    if (value || value === '') {
+      searchTermRef.current = value;
+      _setSearchTerm(value);
+    } else {
+      searchTermRef.current = option;
+      _setSearchTerm(option);
+    }
+  };
 
   const setShowSearchResults = bool => {
     showResultsRef.current = bool;
@@ -165,7 +176,8 @@ const QuestionForm = props => {
     switch (status) {
       case 'showOther':
         return {
-          explanation: `Couldn't find ${trimmedTerm} in ${ontList} `,
+          explanation: `Couldn't find ${trimmedTerm ||
+            'the term'} in ${ontList || 'supported ontologies'} `,
           link: `Show ${
             data ? data.collection.length : 'all'
           } results from other ontologies!`,
@@ -203,7 +215,7 @@ const QuestionForm = props => {
         };
       case 'suggestAddEpad':
         return {
-          explanation: `Couldn't find the term in the ePAD Lexicon `,
+          explanation: `Couldn't find the term in ePAD Lexicon `,
           link: 'Add to ePAD Lexicon!',
           onClick: () => {
             setSearchStatus(populateAlternativeSearch('showEpadAdd'));
@@ -212,7 +224,7 @@ const QuestionForm = props => {
         };
       case 'showEpadAdd':
         return {
-          explanation: `Save the term to the ePad:`,
+          explanation: `Save the term to ePAD Lexicon`,
           onClick: addToEpad,
           status
         };
@@ -226,35 +238,52 @@ const QuestionForm = props => {
     }
   };
 
-  const handleClickOutsideOfDrawer = e => {
-    const { className } = e.target;
-    if (
-      searchResultsRef &&
-      searchResultsRef.current &&
-      searchResultsRef.current.contains(e.target)
-    ) {
-      return;
+  const handleClickOutsideOfDrawer = async e => {
+    try {
+      const { className } = e.target;
+      if (
+        searchResultsRef &&
+        searchResultsRef.current &&
+        searchResultsRef.current.contains(e.target)
+      ) {
+        return;
+      }
+      if (
+        className &&
+        typeof className === 'string' &&
+        className.includes('MuiDrawer-paper')
+      ) {
+        return;
+      }
+      if (
+        searchStatusRef.current.status === 'suggestSearchEpad' &&
+        showResultsRef.current
+      ) {
+        setSearchStatus(populateAlternativeSearch('suggestAddEpad'));
+      }
+      if (
+        searchStatusRef.current.status === 'showOther' &&
+        showResultsRef.current
+      ) {
+        setSearchStatus(populateAlternativeSearch('suggestSearchEpad'));
+      }
+
+      if (searchStatusRef.current.firstSearch && showResultsRef.current) {
+        const searchResult = await getCollectionResults(
+          searchTermRef.current.trim()
+        );
+        if (searchResult.data.collection.length > 0) {
+          setSearchStatus(
+            populateAlternativeSearch('showOther', searchResult.data)
+          );
+        } else {
+          setSearchStatus(populateAlternativeSearch('suggestSearchEpad'));
+        }
+      }
+      setShowSearchResults(false);
+    } catch (err) {
+      console.error(err);
     }
-    if (
-      className &&
-      typeof className === 'string' &&
-      className.includes('MuiDrawer-paper')
-    ) {
-      return;
-    }
-    if (
-      searchStatusRef.current.status === 'suggestSearchEpad' &&
-      showResultsRef.current
-    ) {
-      setSearchStatus(populateAlternativeSearch('suggestAddEpad'));
-    }
-    if (
-      searchStatusRef.current.status === 'showOther' &&
-      showResultsRef.current
-    ) {
-      setSearchStatus(populateAlternativeSearch('suggestSearchEpad'));
-    }
-    setShowSearchResults(false);
   };
 
   useEffect(() => {
@@ -337,7 +366,8 @@ const QuestionForm = props => {
             explanation: null,
             message: null,
             onClick: null,
-            status: null
+            status: null,
+            firstSearch: true
           });
         }
       }
@@ -353,7 +383,7 @@ const QuestionForm = props => {
 
   const handleSearchInput = (e, option) => {
     if (e) setSearchTerm(e.target.value);
-    else setSearchTerm(option);
+    else setSearchTerm(e, option);
   };
 
   const getNewSearchResult = pageNo => {
@@ -526,7 +556,7 @@ const QuestionForm = props => {
       if (searchStatus.status === 'suggestSearchEpad') {
         setSearchStatus(populateAlternativeSearch('suggestAddEpad'));
       }
-      if (searchStatus.status === 'showOther') {
+      if (searchStatus.status === 'showOther' || searchTerm) {
         setSearchStatus(populateAlternativeSearch('suggestSearchEpad'));
       }
     }

@@ -15,6 +15,11 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Snackbar from '@material-ui/core/Snackbar';
 import Button from '@material-ui/core/Button';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 // import AlertDialog from '../common/AlertDialog.jsx';
 import QuestionList from '../question/QuestionList.jsx';
 import QuestionCreation from '../questionCreation/index.jsx';
@@ -65,8 +70,9 @@ const materialUseStyles = makeStyles(theme => ({
     width: 400
   },
   templateContent: {
-    width: '45%',
-    minWidth: 300
+    // width: '45%',
+    minWidth: 300,
+    background: '#fafafa'
   },
   contentCard: {
     boxShadow: 'none',
@@ -75,6 +81,8 @@ const materialUseStyles = makeStyles(theme => ({
   },
   title: {
     marginTop: theme.spacing(3),
+    marginBottom: theme.spacing(2),
+    marginLeft: theme.spacing(1),
     color: '#8c1717'
   },
 
@@ -87,6 +95,17 @@ const materialUseStyles = makeStyles(theme => ({
     [theme.breakpoints.down('sm')]: {
       margin: 'auto'
     }
+  },
+  required: {
+    color: '#8C1718',
+    fontWeight: 'bold'
+  },
+  crumbs: {
+    color: 'black',
+    fontWeight: 'bold'
+  },
+  accordionHeader: {
+    background: '#E3E0D8'
   }
 }));
 
@@ -126,6 +145,7 @@ export default function HomePage({
   const [tempContUID, setTempContUID] = useState('');
   const [requiredError, setRequiredError] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
+  const [showForm, setShowForm] = useState(true);
   // TODO
   // CLARIFY how and whre to get data like version codemeaning, codevalue etc.
   // clarify the difference between template and the container
@@ -243,6 +263,7 @@ export default function HomePage({
     setQuestions(newQuestionList);
     formCompleteTemplate(newQuestionList);
     setEditIndex(null);
+    setShowForm(false);
   };
 
   const handleQuestionID = () => {
@@ -449,109 +470,147 @@ export default function HomePage({
         <Grid item={true}>
           <Card className={classes.contentCard}>
             <div className={classes.templateContent}>
-              <form className={classes.form} noValidate autoComplete="off">
-                <TextField
-                  error={requiredError && !templateName}
-                  helperText={
-                    requiredError && !templateName
-                      ? 'Fill before creating a question'
-                      : ''
-                  }
-                  required={true}
-                  className={classes.textField}
-                  id="standard-basic"
-                  label="Template Name"
-                  onChange={e => {
-                    checkRequiredFields();
-                    setTemplateName(e.target.value);
-                  }}
-                />
-                <FormControl className={classes.formControl}>
-                  <InputLabel id="templateLevel">Type of Template</InputLabel>
-                  <Select
-                    className={classes.textField}
-                    labelId="templateLevel"
-                    id="demo-controlled-open-select"
-                    value={templateType || ''}
-                    onChange={e => setTemplateType(e.target.value)}
-                  >
-                    <MenuItem value={'study'}>Study</MenuItem>
-                    <MenuItem value={'series'}>Series</MenuItem>
-                    <MenuItem value={'image'}>Image</MenuItem>
-                  </Select>
-                  <TextField
-                    className={classes.textField}
-                    id="standard-basic"
-                    label="Author"
-                    onChange={e => setAuthor(e.target.value)}
-                  />
-                  <TextField
-                    error={requiredError && !description}
-                    helperText={
-                      requiredError && !description
-                        ? 'Fill before creating a question'
-                        : ''
-                    }
-                    required={true}
-                    className={classes.textField}
-                    multiline
-                    id="standard-basic"
-                    label="Description"
-                    onChange={e => {
-                      checkRequiredFields();
-                      setDescription(e.target.value);
-                    }}
-                  />
-                  <TextField
-                    error={requiredError && !version}
-                    helperText={
-                      requiredError && !version
-                        ? 'Fill before creating a question'
-                        : ''
-                    }
-                    required={true}
-                    className={classes.textField}
-                    id="standard-basic"
-                    label="Version"
-                    onChange={e => {
-                      checkRequiredFields();
-                      setVersion(e.target.value);
-                    }}
-                  />
-                </FormControl>
-                <FormControl className={classes.formControl}>
-                  <InputLabel id="ontology">Default Ontology</InputLabel>
-                  <Select
-                    className={classes.textField}
-                    labelId="ontology"
-                    id="demo-controlled-open-select"
-                    value={ontology || ''}
-                    onChange={e => setOntology(e.target.value)}
-                  >
-                    {Object.keys(ontologies).map(el => (
-                      <MenuItem
-                        value={el}
-                        key={el}
-                      >{`${el} - ${ontologies[el]}`}</MenuItem>
-                    ))}
-                  </Select>
-                  <TextField
-                    disabled
-                    fullWidth={true}
-                    id="standard-read-only-input"
-                    className={classes.textFieldUID}
-                    label="Template Container UID"
-                    value={tempContUID}
-                  />
-                  <TextField
-                    disabled
-                    id="standard-read-only-input"
-                    className={classes.textField}
-                    label="Date"
-                    value={getDate()}
-                  />
-                </FormControl>
-              </form>
+              <Accordion
+                className={classes.templateContent}
+                expanded={showForm}
+              >
+                <AccordionSummary
+                  className={classes.accordionHeader}
+                  expandIcon={<ExpandMoreIcon />}
+                  onClick={() => setShowForm(!showForm)}
+                >
+                  <Breadcrumbs>
+                    <div
+                      className={
+                        templateName ? classes.crumbs : classes.required
+                      }
+                    >
+                      {templateName || 'Name required'}
+                    </div>
+                    <div
+                      className={
+                        templateType ? classes.crumbs : classes.required
+                      }
+                    >
+                      {templateType || 'Type required'}
+                    </div>
+                    <div
+                      className={version ? classes.crumbs : classes.required}
+                    >
+                      {version || 'Version required'}
+                    </div>
+                  </Breadcrumbs>
+                </AccordionSummary>
+
+                <AccordionDetails>
+                  <form className={classes.form} noValidate autoComplete="off">
+                    <TextField
+                      error={requiredError && !templateName}
+                      helperText={
+                        requiredError && !templateName
+                          ? 'Fill before creating a question'
+                          : ''
+                      }
+                      required={true}
+                      className={classes.textField}
+                      id="standard-basic"
+                      label="Template Name"
+                      onChange={e => {
+                        checkRequiredFields();
+                        setTemplateName(e.target.value);
+                      }}
+                    />
+                    <FormControl className={classes.formControl}>
+                      <InputLabel id="templateLevel">
+                        Type of Template
+                      </InputLabel>
+                      <Select
+                        className={classes.textField}
+                        labelId="templateLevel"
+                        id="demo-controlled-open-select"
+                        value={templateType || ''}
+                        onChange={e => setTemplateType(e.target.value)}
+                      >
+                        <MenuItem value={'study'}>Study</MenuItem>
+                        <MenuItem value={'series'}>Series</MenuItem>
+                        <MenuItem value={'image'}>Image</MenuItem>
+                      </Select>
+                      <TextField
+                        className={classes.textField}
+                        id="standard-basic"
+                        label="Author"
+                        onChange={e => setAuthor(e.target.value)}
+                      />
+                      <TextField
+                        error={requiredError && !description}
+                        helperText={
+                          requiredError && !description
+                            ? 'Fill before creating a question'
+                            : ''
+                        }
+                        required={true}
+                        className={classes.textField}
+                        multiline
+                        id="standard-basic"
+                        label="Description"
+                        onChange={e => {
+                          checkRequiredFields();
+                          setDescription(e.target.value);
+                        }}
+                      />
+                      <TextField
+                        error={requiredError && !version}
+                        helperText={
+                          requiredError && !version
+                            ? 'Fill before creating a question'
+                            : ''
+                        }
+                        required={true}
+                        className={classes.textField}
+                        id="standard-basic"
+                        label="Version"
+                        onChange={e => {
+                          checkRequiredFields();
+                          setVersion(e.target.value);
+                        }}
+                      />
+                    </FormControl>
+                    <FormControl className={classes.formControl}>
+                      <InputLabel id="ontology">Default Ontology</InputLabel>
+                      <Select
+                        className={classes.textField}
+                        labelId="ontology"
+                        id="demo-controlled-open-select"
+                        value={ontology || ''}
+                        onChange={e => setOntology(e.target.value)}
+                      >
+                        {Object.keys(ontologies).map(el => (
+                          <MenuItem
+                            value={el}
+                            key={el}
+                          >{`${el} - ${ontologies[el]}`}</MenuItem>
+                        ))}
+                      </Select>
+                      <TextField
+                        disabled
+                        fullWidth={true}
+                        id="standard-read-only-input"
+                        className={classes.textFieldUID}
+                        label="Template Container UID"
+                        value={tempContUID}
+                      />
+                      <TextField
+                        disabled
+                        id="standard-read-only-input"
+                        className={classes.textField}
+                        label="Date"
+                        value={getDate()}
+                      />
+                    </FormControl>
+                  </form>
+                </AccordionDetails>
+              </Accordion>
+
               {questions.length > 0 && (
                 <>
                   <Typography variant="h6" className={classes.title}>
