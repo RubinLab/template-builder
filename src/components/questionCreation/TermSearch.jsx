@@ -141,6 +141,7 @@ const TermSearch = props => {
     handleSearchInput,
     handleOntologyInput,
     searchTerm,
+    saveTerm,
     getUploadedTerms,
     handleClose,
     ontology,
@@ -281,10 +282,7 @@ const TermSearch = props => {
                 defaultValue={searchTerm}
               />
             </div>
-            <IconButton
-              className={classes.searchButton}
-              onClick={() => console.log('clicked')}
-            >
+            <IconButton className={classes.searchButton} onClick={saveTerm}>
               <SaveIcon />
             </IconButton>
           </div>
@@ -390,6 +388,7 @@ TermSearch.propTypes = {
   handleSearchInput: PropTypes.func,
   handleOntologyInput: PropTypes.func,
   searchTerm: PropTypes.string,
+  saveTerm: PropTypes.func,
   getUploadedTerms: PropTypes.func,
   handleClose: PropTypes.func,
   ontology: PropTypes.string,

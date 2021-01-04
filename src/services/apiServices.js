@@ -58,4 +58,14 @@ const getTermFromEPAD = term => {
   return axios.get(`${EPAD_URL}/ontology?codemeaning=${term}`);
 };
 
-export { getCollectionResults, getSelectedDetails, getDetail, getTermFromEPAD };
+const insertTermToEPAD = codemeaning => {
+  return axios.post(`${EPAD_URL}/ontology`, { codemeaning });
+};
+
+export {
+  getCollectionResults,
+  getSelectedDetails,
+  getDetail,
+  getTermFromEPAD,
+  insertTermToEPAD
+};

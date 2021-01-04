@@ -25,7 +25,8 @@ import TermSearch from './TermSearch.jsx';
 import {
   getCollectionResults,
   getDetail,
-  getTermFromEPAD
+  getTermFromEPAD,
+  insertTermToEPAD
 } from '../../services/apiServices';
 import { createID, shapeSelectedTermData } from '../../utils/helper';
 
@@ -121,6 +122,8 @@ const QuestionForm = props => {
   const showResultsRef = useRef(searchStatus);
   const searchTermRef = useRef(searchTerm);
 
+  const { enqueueSnackbar } = useSnackbar();
+
   const setSearchTerm = (value, option) => {
     if (value || value === '') {
       searchTermRef.current = value;
@@ -151,8 +154,6 @@ const QuestionForm = props => {
     maxCard,
     showConfidence
   };
-
-  const { enqueueSnackbar } = useSnackbar();
 
   const addToEpad = () => {};
 
@@ -236,6 +237,31 @@ const QuestionForm = props => {
           status: null
         };
     }
+  };
+
+  const saveTermToEPAD = () => {
+    const codeMeaning = searchTerm.trim();
+    insertTermToEPAD(codeMeaning)
+      .then(() => {
+        enqueueSnackbar(
+          `${codeMeaning} successfully saved to the EPAD lexicon`,
+          {
+            variant: 'success'
+          }
+        );
+      })
+      .catch(err => {
+        const errMessage =
+          err.response && err.response.data && err.response.data.message
+            ? err.response.data.message
+            : '';
+        enqueueSnackbar(
+          `Couln't save ${codeMeaning} to the EPAD lexicon! ${errMessage}`,
+          {
+            variant: 'error'
+          }
+        );
+      });
   };
 
   const handleClickOutsideOfDrawer = async e => {
@@ -622,6 +648,7 @@ const QuestionForm = props => {
             ontologyLibs={ontologyLibs}
             handleSearchInput={handleSearchInput}
             handleOntologyInput={handleOntologyInput}
+            saveTerm={saveTermToEPAD}
             searchTerm={searchTerm}
             getUploadedTerms={getUploadedTerms}
             handleClose={() => setOpenSearch(false)}
