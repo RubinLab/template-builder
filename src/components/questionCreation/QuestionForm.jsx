@@ -97,7 +97,14 @@ const materialUseStyles = makeStyles(theme => ({
 
 const QuestionForm = props => {
   const classes = materialUseStyles();
-  const { postQuestion, characteristic, ontology, edit, detailEdit } = props;
+  const {
+    postQuestion,
+    characteristic,
+    ontology,
+    edit,
+    detailEdit,
+    author
+  } = props;
   const [searchResults, setSearchResults] = useState({});
   const [question, setQuestion] = useState('');
   const [explanatoryText, setExplanatoryText] = useState();
@@ -224,9 +231,9 @@ const QuestionForm = props => {
     }
   };
 
-  const saveTermToEPAD = () => {
+  const saveTermToEPAD = description => {
     const codeMeaning = searchTerm.trim();
-    insertTermToEPAD(codeMeaning)
+    insertTermToEPAD(codeMeaning, description, author)
       .then(() => {
         enqueueSnackbar(
           `${codeMeaning} successfully saved to the EPAD lexicon`,
@@ -255,7 +262,10 @@ const QuestionForm = props => {
     );
     const epadResults = await searchEPAD(searchTermRef.current.trim());
 
-    if (searchResult.data.collection.length > 0 && epadResults.length > 0) {
+    if (
+      searchResult.data.collection.length > 0 &&
+      epadResults.collection.length > 0
+    ) {
       const combinedData = {
         ...searchResult.data,
         collection: [...epadResults.collection, ...searchResult.data.collection]
@@ -265,12 +275,14 @@ const QuestionForm = props => {
       setSearchStatus(
         populateAlternativeSearch('showOther', searchResult.data)
       );
-    } else {
+    } else if (epadResults.collection.length > 0) {
       setSearchStatus(
         populateAlternativeSearch('showOther', {
           collection: epadResults
         })
       );
+    } else {
+      setSearchStatus(populateAlternativeSearch('suggestAddEpad'));
     }
   };
 
@@ -299,7 +311,20 @@ const QuestionForm = props => {
       }
 
       if (searchStatusRef.current.firstSearch && showResultsRef.current) {
-        formCombinedSearchResult();
+        const filteredOntology = filterOntologyList();
+
+        if (filteredOntology.length !== 0 && filteredOntology.length !== 4) {
+          // if there is a filter make a search with no filter including epad
+          formCombinedSearchResult();
+        } else {
+          // if there isn't any filtter make the search only in epad
+          const epadResults = await searchEPAD(searchTermRef.current.trim());
+          if (epadResults.collection.length > 0)
+            setSearchStatus(
+              populateAlternativeSearch('showOther', epadResults)
+            );
+          else setSearchStatus(populateAlternativeSearch('suggestAddEpad'));
+        }
       }
       setShowSearchResults(false);
     } catch (err) {
@@ -371,9 +396,11 @@ const QuestionForm = props => {
           } else {
             // if there isn't any filtter make the search only in epad
             const epadResults = await searchEPAD(searchTermRef.current.trim());
-            setSearchStatus(
-              populateAlternativeSearch('showOther', epadResults)
-            );
+            if (epadResults.collection.length > 0)
+              setSearchStatus(
+                populateAlternativeSearch('showOther', epadResults)
+              );
+            else setSearchStatus(populateAlternativeSearch('suggestAddEpad'));
           }
         } else {
           setSearchResults(searchResult.data);
@@ -790,5 +817,6 @@ QuestionForm.propTypes = {
   characteristic: PropTypes.string,
   ontology: PropTypes.string,
   edit: PropTypes.object,
-  detailEdit: PropTypes.array
+  detailEdit: PropTypes.array,
+  author: PropTypes.string
 };

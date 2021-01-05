@@ -249,6 +249,7 @@ export default function QuestionCreation(props) {
             postQuestion={setQuestion}
             ontology={ontology}
             edit={edit}
+            author={authors}
           />
 
           {showCharCreateButton && (

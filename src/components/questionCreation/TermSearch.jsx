@@ -17,6 +17,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
 import Link from '@material-ui/core/Link';
 import SaveIcon from '@material-ui/icons/Save';
+import Container from '@material-ui/core/Container';
 import { useSnackbar } from 'notistack';
 import { ontologies, shapeSelectedTermData } from '../../utils/helper';
 
@@ -25,32 +26,6 @@ const papaparseOptions = {
   dynamicTyping: true,
   skipEmptyLines: true
   //   transformHeader: header => header.toLowerCase().replace(/\W/g, '_')
-};
-
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`scrollable-auto-tabpanel-${index}`}
-      aria-labelledby={`scrollable-auto-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box p={3}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
-    </div>
-  );
-}
-
-TabPanel.propTypes = {
-  children: PropTypes.node,
-  index: PropTypes.any.isRequired,
-  value: PropTypes.any.isRequired
 };
 
 function a11yProps(index) {
@@ -102,6 +77,7 @@ const useStyles = makeStyles(theme => ({
     width: 'fit-content',
     background: '#E3E0D8',
     height: 'fit-content',
+    marginLeft: theme.spacing(1),
     padding: theme.spacing(1),
     '&:hover': {
       background: '#CCBC8E'
@@ -128,12 +104,44 @@ const useStyles = makeStyles(theme => ({
   },
   explanation: {
     marginTop: theme.spacing(2)
+  },
+  wrap: {
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1)
   }
 }));
+
+function TabPanel(props) {
+  const classes = useStyles();
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`scrollable-auto-tabpanel-${index}`}
+      aria-labelledby={`scrollable-auto-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Container className={classes.wrap}>
+          <Box p={3}>{children}</Box>
+        </Container>
+      )}
+    </div>
+  );
+}
+
+TabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.any.isRequired,
+  value: PropTypes.any.isRequired
+};
 
 const TermSearch = props => {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
+  const [description, setDescription] = React.useState('');
   const { enqueueSnackbar } = useSnackbar();
   const {
     handleBioportalSearch,
@@ -242,29 +250,6 @@ const TermSearch = props => {
           </Link>
         </>
       );
-    } else if (status === 'showEpadSearch') {
-      node = (
-        <>
-          <Typography className={classes.epadTitle}>
-            {searchStatus.explanation}
-          </Typography>
-          <div className={classes.searchGroup}>
-            <div className={classes.inputGroup}>
-              <TextField
-                className={classes.searchInput}
-                // placeholder="Search term"
-                defaultValue={searchTerm}
-              />
-            </div>
-            <IconButton
-              className={classes.searchButton}
-              onClick={() => searchStatus.onClick(searchTerm.trim())}
-            >
-              <Search />
-            </IconButton>
-          </div>
-        </>
-      );
     } else if (status === 'showEpadAdd') {
       node = (
         <>
@@ -278,8 +263,16 @@ const TermSearch = props => {
                 // placeholder="Term"
                 defaultValue={searchTerm}
               />
+              <TextField
+                className={classes.searchInput}
+                placeholder="Description (optional)"
+                onChange={e => setDescription(e.target.value)}
+              />
             </div>
-            <IconButton className={classes.searchButton} onClick={saveTerm}>
+            <IconButton
+              className={classes.searchButton}
+              onClick={() => saveTerm(description)}
+            >
               <SaveIcon />
             </IconButton>
           </div>
