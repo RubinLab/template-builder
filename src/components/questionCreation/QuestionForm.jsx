@@ -22,7 +22,12 @@ import Button from '@material-ui/core/Button';
 import SearchResults from './searchResults.jsx';
 import AnswerList from './answersList.jsx';
 import TermSearch from './TermSearch.jsx';
-import { getCollectionResults, getDetail } from '../../services/apiServices';
+import {
+  getCollectionResults,
+  getDetail,
+  getTermFromEPAD,
+  insertTermToEPAD
+} from '../../services/apiServices';
 import { createID, shapeSelectedTermData } from '../../utils/helper';
 
 const materialUseStyles = makeStyles(theme => ({
@@ -92,13 +97,20 @@ const materialUseStyles = makeStyles(theme => ({
 
 const QuestionForm = props => {
   const classes = materialUseStyles();
-  const { postQuestion, characteristic, ontology, edit, detailEdit } = props;
+  const {
+    postQuestion,
+    characteristic,
+    ontology,
+    edit,
+    detailEdit,
+    author
+  } = props;
   const [searchResults, setSearchResults] = useState({});
   const [question, setQuestion] = useState('');
   const [explanatoryText, setExplanatoryText] = useState();
   const [questionType, setQuestionType] = useState('');
-  const [showSearchResults, setShowSearchResults] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [showSearchResults, _setShowSearchResults] = useState(false);
+  const [searchTerm, _setSearchTerm] = useState('');
   const [selectedTerms, setTermSelection] = useState(null);
   const [minCard, setMinCard] = useState('');
   const [maxCard, setMaxCard] = useState('');
@@ -106,7 +118,39 @@ const QuestionForm = props => {
   const [answerType, setAnswerType] = useState('');
   const [ontologyLibs, setOntologyLibs] = useState(null);
   const [openSearch, setOpenSearch] = useState(false);
+  const [searchStatus, _setSearchStatus] = useState({
+    explanation: null,
+    message: null,
+    onClick: null,
+    status: null
+  });
   const searchResultsRef = useRef();
+
+  const showResultsRef = useRef(searchStatus);
+  const searchTermRef = useRef(searchTerm);
+
+  const { enqueueSnackbar } = useSnackbar();
+
+  const setSearchTerm = (value, option) => {
+    if (value || value === '') {
+      searchTermRef.current = value;
+      _setSearchTerm(value);
+    } else {
+      searchTermRef.current = option;
+      _setSearchTerm(option);
+    }
+  };
+
+  const setShowSearchResults = bool => {
+    showResultsRef.current = bool;
+    _setShowSearchResults(bool);
+  };
+
+  const searchStatusRef = useRef(searchStatus);
+  const setSearchStatus = status => {
+    searchStatusRef.current = status;
+    _setSearchStatus(status);
+  };
 
   const formInput = {
     questionType,
@@ -118,25 +162,174 @@ const QuestionForm = props => {
     showConfidence
   };
 
-  const { enqueueSnackbar } = useSnackbar();
+  const addToEpad = () => {};
 
-  const handleClickOutsideOfDrawer = e => {
-    const { className } = e.target;
+  const filterOntologyList = () => {
+    let filteredOntology = [];
     if (
-      searchResultsRef &&
-      searchResultsRef.current &&
-      searchResultsRef.current.contains(e.target)
+      ontologyLibs &&
+      Array.isArray(ontologyLibs) &&
+      ontologyLibs.length > 0
     ) {
-      return;
+      filteredOntology = ontologyLibs.map(el => el.acronym);
+    } else if (ontology) {
+      filteredOntology = [ontology];
     }
+    return filteredOntology;
+  };
+
+  const searchEPAD = async term => {
+    try {
+      const { data: terms } = await getTermFromEPAD(term);
+      if (Array.isArray(terms) && terms.length) return { collection: terms };
+    } catch (err) {
+      console.error(err);
+      return { collection: [] };
+    }
+    return { collection: [] };
+  };
+
+  const populateAlternativeSearch = (status, data) => {
+    const trimmedTerm = searchTerm.trim();
+    const ontList = filterOntologyList().join(', ');
+    switch (status) {
+      case 'showOther':
+        return {
+          explanation: `Couldn't find ${trimmedTerm ||
+            'the term'} in ${ontList || 'supported ontologies'} `,
+          link: `Show ${
+            data ? data.collection.length : 'all'
+          } results from other ontologies!`,
+          onClick: () => {
+            setSearchResults(data);
+            setShowSearchResults(true);
+          },
+          status
+        };
+      case 'suggestAddEpad':
+        return {
+          explanation: `Couldn't find the term in ePAD Lexicon `,
+          link: 'Add to ePAD Lexicon!',
+          onClick: () => {
+            setSearchStatus(populateAlternativeSearch('showEpadAdd'));
+          },
+          status
+        };
+      case 'showEpadAdd':
+        return {
+          explanation: `Save the term to ePAD Lexicon`,
+          onClick: addToEpad,
+          status
+        };
+      default:
+        return {
+          explanation: null,
+          message: null,
+          onClick: null,
+          status: null
+        };
+    }
+  };
+
+  const saveTermToEPAD = description => {
+    const codeMeaning = searchTerm.trim();
+    insertTermToEPAD(codeMeaning, description, author)
+      .then(() => {
+        enqueueSnackbar(
+          `${codeMeaning} successfully saved to the EPAD lexicon`,
+          {
+            variant: 'success'
+          }
+        );
+      })
+      .catch(err => {
+        const errMessage =
+          err.response && err.response.data && err.response.data.message
+            ? err.response.data.message
+            : '';
+        enqueueSnackbar(
+          `Couln't save ${codeMeaning} to the EPAD lexicon! ${errMessage}`,
+          {
+            variant: 'error'
+          }
+        );
+      });
+  };
+
+  const formCombinedSearchResult = async () => {
+    const searchResult = await getCollectionResults(
+      searchTermRef.current.trim()
+    );
+    const epadResults = await searchEPAD(searchTermRef.current.trim());
+
     if (
-      className &&
-      typeof className === 'string' &&
-      className.includes('MuiDrawer-paper')
+      searchResult.data.collection.length > 0 &&
+      epadResults.collection.length > 0
     ) {
-      return;
+      const combinedData = {
+        ...searchResult.data,
+        collection: [...epadResults.collection, ...searchResult.data.collection]
+      };
+      setSearchStatus(populateAlternativeSearch('showOther', combinedData));
+    } else if (searchResult.data.collection.length > 0) {
+      setSearchStatus(
+        populateAlternativeSearch('showOther', searchResult.data)
+      );
+    } else if (epadResults.collection.length > 0) {
+      setSearchStatus(
+        populateAlternativeSearch('showOther', {
+          collection: epadResults
+        })
+      );
+    } else {
+      setSearchStatus(populateAlternativeSearch('suggestAddEpad'));
     }
-    setShowSearchResults(false);
+  };
+
+  const handleClickOutsideOfDrawer = async e => {
+    try {
+      const { className } = e.target;
+      if (
+        searchResultsRef &&
+        searchResultsRef.current &&
+        searchResultsRef.current.contains(e.target)
+      ) {
+        return;
+      }
+      if (
+        className &&
+        typeof className === 'string' &&
+        className.includes('MuiDrawer-paper')
+      ) {
+        return;
+      }
+      if (
+        searchStatusRef.current.status === 'showOther' &&
+        showResultsRef.current
+      ) {
+        setSearchStatus(populateAlternativeSearch('suggestAddEpad'));
+      }
+
+      if (searchStatusRef.current.firstSearch && showResultsRef.current) {
+        const filteredOntology = filterOntologyList();
+
+        if (filteredOntology.length !== 0 && filteredOntology.length !== 4) {
+          // if there is a filter make a search with no filter including epad
+          formCombinedSearchResult();
+        } else {
+          // if there isn't any filtter make the search only in epad
+          const epadResults = await searchEPAD(searchTermRef.current.trim());
+          if (epadResults.collection.length > 0)
+            setSearchStatus(
+              populateAlternativeSearch('showOther', epadResults)
+            );
+          else setSearchStatus(populateAlternativeSearch('suggestAddEpad'));
+        }
+      }
+      setShowSearchResults(false);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   useEffect(() => {
@@ -177,48 +370,52 @@ const QuestionForm = props => {
     }
   }, [edit]);
 
-  const filterOntologyList = () => {
-    let filteredOntology = [];
-    if (
-      ontologyLibs &&
-      Array.isArray(ontologyLibs) &&
-      ontologyLibs.length > 0
-    ) {
-      filteredOntology = ontologyLibs.map(el => el.acronym);
-    } else if (ontology) {
-      filteredOntology = [ontology];
-    }
-    return filteredOntology;
-  };
-
   const handleBioportalSearch = async () => {
-    let searchedTerms = JSON.parse(sessionStorage.getItem('searchedTerms'));
-    const trimmedSearchTerm = searchTerm.trim();
-    if (searchedTerms && !searchedTerms.includes(trimmedSearchTerm)) {
-      searchedTerms = [...searchedTerms, trimmedSearchTerm];
-    } else if (!searchedTerms) {
-      searchedTerms = [trimmedSearchTerm];
-    }
-    sessionStorage.setItem('searchedTerms', JSON.stringify(searchedTerms));
-    const filteredOntology = filterOntologyList();
+    try {
+      let searchedTerms = JSON.parse(sessionStorage.getItem('searchedTerms'));
+      const trimmedSearchTerm = searchTerm.trim();
+      if (searchedTerms && !searchedTerms.includes(trimmedSearchTerm)) {
+        searchedTerms = [...searchedTerms, trimmedSearchTerm];
+      } else if (!searchedTerms) {
+        searchedTerms = [trimmedSearchTerm];
+      }
+      sessionStorage.setItem('searchedTerms', JSON.stringify(searchedTerms));
+      const filteredOntology = filterOntologyList();
 
-    if (trimmedSearchTerm) {
-      getCollectionResults(trimmedSearchTerm, filteredOntology)
-        .then(res => {
-          if (res.data.collection.length === 0) {
-            enqueueSnackbar(
-              `There isn't any result for "${trimmedSearchTerm.toUpperCase()}"!. You can search the term in ePAD lexicon.`,
-              {
-                autoHideDuration: 5000,
-                variant: 'warning'
-              }
-            );
+      let searchResult;
+      if (trimmedSearchTerm) {
+        searchResult = await getCollectionResults(
+          trimmedSearchTerm,
+          filteredOntology
+        );
+        if (searchResult.data.collection.length === 0) {
+          // if thre isn't a result check if there is a filter in the search
+          if (filteredOntology.length !== 0 && filteredOntology.length !== 4) {
+            // if there is a filter make a search with no filter including epad
+            formCombinedSearchResult();
           } else {
-            setSearchResults(res.data);
-            setShowSearchResults(true);
+            // if there isn't any filtter make the search only in epad
+            const epadResults = await searchEPAD(searchTermRef.current.trim());
+            if (epadResults.collection.length > 0)
+              setSearchStatus(
+                populateAlternativeSearch('showOther', epadResults)
+              );
+            else setSearchStatus(populateAlternativeSearch('suggestAddEpad'));
           }
-        })
-        .catch(err => console.error(err));
+        } else {
+          setSearchResults(searchResult.data);
+          setShowSearchResults(true);
+          setSearchStatus({
+            explanation: null,
+            message: null,
+            onClick: null,
+            status: null,
+            firstSearch: true
+          });
+        }
+      }
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -229,7 +426,7 @@ const QuestionForm = props => {
 
   const handleSearchInput = (e, option) => {
     if (e) setSearchTerm(e.target.value);
-    else setSearchTerm(option);
+    else setSearchTerm(e, option);
   };
 
   const getNewSearchResult = pageNo => {
@@ -286,39 +483,55 @@ const QuestionForm = props => {
 
   const handleTermSelection = async (termIndex, title) => {
     try {
-      const acronym = searchResults.collection[termIndex].links.ontology
-        .split('/')
-        .pop();
-      const url = searchResults.collection[termIndex][`@id`];
-      const details = await getDetail(acronym, url);
-      const allowedTerm = returnSelection(acronym, details.data);
-      if (allowedTerm || (allowedTerm && !allowedTerm.codeMeaning)) {
-        const id = createID();
-        const newTerm = {
-          [id]: {
-            allowedTerm,
-            title,
-            id
-          }
-        };
-        const newSelected = selectedTerms
-          ? { ...selectedTerms, ...newTerm }
-          : newTerm;
-        postQuestion({ ...formInput, selectedTerms: newSelected });
-        setTermSelection(newSelected);
-        setShowSearchResults(false);
-        setOpenSearch(false);
-        setOntologyLibs([]);
-        setSearchTerm('');
+      let newSelected = selectedTerms ? { ...selectedTerms } : {};
+      const id = createID();
+      if (title !== '99EPAD') {
+        const acronym = searchResults.collection[termIndex].links.ontology
+          .split('/')
+          .pop();
+        const url = searchResults.collection[termIndex][`@id`];
+        const details = await getDetail(acronym, url);
+        const allowedTerm = returnSelection(acronym, details.data);
+        if (allowedTerm || (allowedTerm && !allowedTerm.codeMeaning)) {
+          const newTerm = {
+            [id]: {
+              allowedTerm,
+              title,
+              id
+            }
+          };
+          newSelected = { ...selectedTerms, ...newTerm };
+        } else {
+          setShowSearchResults(false);
+          const message = `Couldnt find ${
+            allowedTerm ? 'preferred name' : 'cui or notation'
+          } for this term in ${acronym}. You can upload the term with a .csv file!`;
+          enqueueSnackbar(message, {
+            variant: 'error'
+          });
+        }
       } else {
-        setShowSearchResults(false);
-        const message = `Couldnt find ${
-          allowedTerm ? 'preferred name' : 'cui or notation'
-        } for this term in ${acronym}. You can upload the term with a .csv file!`;
-        enqueueSnackbar(message, {
-          variant: 'error'
-        });
+        const allowedTerm = {
+          codeValue: searchResults.collection[termIndex].codevaluee,
+          codeMeaning: searchResults.collection[termIndex].codemeaning,
+          codingSchemeDesignator:
+            searchResults.collection[termIndex].schemadesignator
+        };
+        const newTerm = { [id]: { allowedTerm, title, id } };
+        newSelected = { ...selectedTerms, ...newTerm };
       }
+      postQuestion({ ...formInput, selectedTerms: newSelected });
+      setTermSelection(newSelected);
+      setShowSearchResults(false);
+      setOpenSearch(false);
+      setOntologyLibs([]);
+      setSearchTerm('');
+      setSearchStatus({
+        explanation: null,
+        message: null,
+        onClick: null,
+        status: null
+      });
     } catch (err) {
       console.error(err);
     }
@@ -383,6 +596,9 @@ const QuestionForm = props => {
   const toggleDrawer = event => {
     if (event.key === 'Escape') {
       setShowSearchResults(false);
+      if (searchStatus.status === 'showOther' || searchTerm) {
+        setSearchStatus(populateAlternativeSearch('suggestAddEpad'));
+      }
     }
   };
 
@@ -446,10 +662,12 @@ const QuestionForm = props => {
             ontologyLibs={ontologyLibs}
             handleSearchInput={handleSearchInput}
             handleOntologyInput={handleOntologyInput}
+            saveTerm={saveTermToEPAD}
             searchTerm={searchTerm}
             getUploadedTerms={getUploadedTerms}
             handleClose={() => setOpenSearch(false)}
             ontology={ontology}
+            searchStatus={searchStatus}
           />
         )}
         <FormControl className={classes.formControl}>
@@ -483,7 +701,7 @@ const QuestionForm = props => {
             className={classes.button}
             onClick={() => setOpenSearch(true)}
           >
-            Search Terms
+            Add Term
           </Button>
         </FormControl>
       </div>
@@ -599,5 +817,6 @@ QuestionForm.propTypes = {
   characteristic: PropTypes.string,
   ontology: PropTypes.string,
   edit: PropTypes.object,
-  detailEdit: PropTypes.array
+  detailEdit: PropTypes.array,
+  author: PropTypes.string
 };

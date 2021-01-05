@@ -15,11 +15,9 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
-import Accordion from '@material-ui/core/Accordion';
-import AccordionSummary from '@material-ui/core/AccordionSummary';
-import AccordionDetails from '@material-ui/core/AccordionDetails';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import Link from '@material-ui/core/Link';
 import SaveIcon from '@material-ui/icons/Save';
+import Container from '@material-ui/core/Container';
 import { useSnackbar } from 'notistack';
 import { ontologies, shapeSelectedTermData } from '../../utils/helper';
 
@@ -28,32 +26,6 @@ const papaparseOptions = {
   dynamicTyping: true,
   skipEmptyLines: true
   //   transformHeader: header => header.toLowerCase().replace(/\W/g, '_')
-};
-
-function TabPanel(props) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`scrollable-auto-tabpanel-${index}`}
-      aria-labelledby={`scrollable-auto-tab-${index}`}
-      {...other}
-    >
-      {value === index && (
-        <Box p={3}>
-          <Typography>{children}</Typography>
-        </Box>
-      )}
-    </div>
-  );
-}
-
-TabPanel.propTypes = {
-  children: PropTypes.node,
-  index: PropTypes.any.isRequired,
-  value: PropTypes.any.isRequired
 };
 
 function a11yProps(index) {
@@ -74,6 +46,8 @@ const useStyles = makeStyles(theme => ({
   root: {
     backgroundColor: theme.palette.background.paper,
     width: 500
+    // color: 'green'
+    // flexGrow: 1
   },
   attributes: {
     color: '#3f51b5'
@@ -103,6 +77,7 @@ const useStyles = makeStyles(theme => ({
     width: 'fit-content',
     background: '#E3E0D8',
     height: 'fit-content',
+    marginLeft: theme.spacing(1),
     padding: theme.spacing(1),
     '&:hover': {
       background: '#CCBC8E'
@@ -112,12 +87,61 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(1),
     minWidth: 300,
     width: 400
+  },
+  searchLink: {
+    marginTop: theme.spacing(1),
+    // color: '#f50057',
+    fontSize: theme.typography.pxToRem(15),
+    textAlign: 'inherit'
+  },
+  linkWrap: {
+    marginTop: theme.spacing(2)
+    // background: '#E3E0D8'
+  },
+  epadTitle: {
+    color: '#3f51b5',
+    fontWeight: '500'
+  },
+  explanation: {
+    marginTop: theme.spacing(2)
+  },
+  wrap: {
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1)
   }
 }));
+
+function TabPanel(props) {
+  const classes = useStyles();
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`scrollable-auto-tabpanel-${index}`}
+      aria-labelledby={`scrollable-auto-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Container className={classes.wrap}>
+          <Box p={3}>{children}</Box>
+        </Container>
+      )}
+    </div>
+  );
+}
+
+TabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.any.isRequired,
+  value: PropTypes.any.isRequired
+};
 
 const TermSearch = props => {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
+  const [description, setDescription] = React.useState('');
   const { enqueueSnackbar } = useSnackbar();
   const {
     handleBioportalSearch,
@@ -125,9 +149,11 @@ const TermSearch = props => {
     handleSearchInput,
     handleOntologyInput,
     searchTerm,
+    saveTerm,
     getUploadedTerms,
     handleClose,
-    ontology
+    ontology,
+    searchStatus
   } = props;
 
   const handleChange = (event, newValue) => {
@@ -186,7 +212,7 @@ const TermSearch = props => {
           onFileLoaded={handleUpload}
           parserOptions={papaparseOptions}
         />
-        <p>
+        <p className={classes.explanation}>
           Upload CSV file with the columns of
           <span className={classes.attributes}> codeMeaning, codeValue</span>,
           and
@@ -206,126 +232,111 @@ const TermSearch = props => {
     return selectValue;
   };
 
+  const renderSearchOptions = () => {
+    const { status } = searchStatus;
+    const newSearch = status === 'showOther' || status === 'suggestAddEpad';
+    let node;
+    if (newSearch) {
+      node = (
+        <>
+          <Typography>{searchStatus.explanation}</Typography>
+          <Link
+            component="button"
+            variant="body2"
+            onClick={searchStatus.onClick}
+            className={classes.searchLink}
+          >
+            {searchStatus.link}
+          </Link>
+        </>
+      );
+    } else if (status === 'showEpadAdd') {
+      node = (
+        <>
+          <Typography className={classes.epadTitle}>
+            {searchStatus.explanation}
+          </Typography>
+          <div className={classes.searchGroup}>
+            <div className={classes.inputGroup}>
+              <TextField
+                className={classes.searchInput}
+                // placeholder="Term"
+                defaultValue={searchTerm}
+              />
+              <TextField
+                className={classes.searchInput}
+                placeholder="Description (optional)"
+                onChange={e => setDescription(e.target.value)}
+              />
+            </div>
+            <IconButton
+              className={classes.searchButton}
+              onClick={() => saveTerm(description)}
+            >
+              <SaveIcon />
+            </IconButton>
+          </div>
+        </>
+      );
+    }
+    return <div className={classes.linkWrap}> {node} </div>;
+  };
+
   const bioPortalSearch = () => {
     return (
-      <div className={classes.searchGroup}>
-        <div className={classes.inputGroup}>
-          <Autocomplete
-            options={JSON.parse(sessionStorage.getItem('searchedTerms')) || []}
-            value={searchTerm}
-            onChange={(_, data) => handleSearchInput(null, data)}
-            onInputChange={handleSearchInput}
-            style={{ width: 300 }}
-            renderInput={params => (
-              <TextField
-                {...params}
-                className={classes.searchInput}
-                placeholder="Search term"
-              />
-            )}
-          />
-          <Autocomplete
-            multiple
-            size="small"
-            options={ontologies ? Object.values(ontologies) : []}
-            renderOption={option => (
-              <React.Fragment>
-                {option.name} ({option.acronym})
-              </React.Fragment>
-            )}
-            getOptionLabel={option => option.acronym || ''}
-            onChange={(_, data) => handleOntologyInput(null, data)}
-            onInputChange={handleOntologyInput}
-            style={{ width: 300 }}
-            value={selectedOntologies()}
-            renderInput={params => (
-              <TextField
-                {...params}
-                className={classes.searchInput}
-                placeholder={
-                  selectedOntologies().length < 3
-                    ? `Choose ${
-                        ontology || selectedOntologies().length > 0
-                          ? 'more'
-                          : 'an'
-                      } ontology`
-                    : ''
-                }
-              />
-            )}
-          />
+      <>
+        <div className={classes.searchGroup}>
+          <div className={classes.inputGroup}>
+            <TextField
+              value={searchTerm}
+              onChange={handleSearchInput}
+              className={classes.searchInput}
+              placeholder="Search term"
+            />
+
+            <Autocomplete
+              multiple
+              size="small"
+              options={ontologies ? Object.values(ontologies) : []}
+              renderOption={option => (
+                <React.Fragment>
+                  {option.name} ({option.acronym})
+                </React.Fragment>
+              )}
+              getOptionLabel={option => option.acronym || ''}
+              onChange={(_, data) => handleOntologyInput(null, data)}
+              onInputChange={handleOntologyInput}
+              style={{ width: 300 }}
+              value={selectedOntologies()}
+              renderInput={params => (
+                <TextField
+                  {...params}
+                  className={classes.searchInput}
+                  placeholder={
+                    selectedOntologies().length < 3
+                      ? `Choose ${
+                          ontology || selectedOntologies().length > 0
+                            ? 'more'
+                            : 'an'
+                        } ontology`
+                      : ''
+                  }
+                />
+              )}
+            />
+          </div>
+          <IconButton
+            className={classes.searchButton}
+            onClick={handleBioportalSearch}
+          >
+            <Search />
+          </IconButton>
         </div>
-        <IconButton
-          className={classes.searchButton}
-          onClick={handleBioportalSearch}
-        >
-          <Search />
-        </IconButton>
-      </div>
+        {searchStatus.status && renderSearchOptions()}
+      </>
     );
   };
 
-  const ePADSearch = () => {
-    return (
-      <div className={classes.accordionRoot}>
-        <Accordion>
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel1a-content"
-            id="panel1a-header"
-          >
-            <Typography className={classes.heading}>
-              Search term in ePAD lexicon
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <div className={classes.searchGroup}>
-              <div className={classes.inputGroup}>
-                <TextField
-                  className={classes.entryInput}
-                  placeholder="Search term"
-                />
-              </div>
-              <IconButton
-                className={classes.searchButton}
-                onClick={() => console.log('clicked')}
-              >
-                <Search />
-              </IconButton>
-            </div>
-          </AccordionDetails>
-        </Accordion>
-        <Accordion>
-          <AccordionSummary
-            expandIcon={<ExpandMoreIcon />}
-            aria-controls="panel1a-content"
-            id="panel1a-header"
-          >
-            <Typography className={classes.heading}>
-              Save term to ePAD lexicon
-            </Typography>
-          </AccordionSummary>
-          <AccordionDetails>
-            <div className={classes.searchGroup}>
-              <div className={classes.inputGroup}>
-                <TextField className={classes.entryInput} placeholder="Term" />
-                <TextField
-                  className={classes.entryInput}
-                  placeholder="Unique code"
-                />
-              </div>
-              <IconButton
-                className={classes.searchButton}
-                onClick={() => console.log('clicked')}
-              >
-                <SaveIcon />
-              </IconButton>
-            </div>
-          </AccordionDetails>
-        </Accordion>
-      </div>
-    );
-  };
   return (
     <Dialog open={true}>
       <DialogContent>
@@ -336,19 +347,16 @@ const TermSearch = props => {
               onChange={handleChange}
               indicatorColor="primary"
               textColor="primary"
+              variant="fullWidth"
             >
-              <Tab label="BioPortal" {...a11yProps(0)} />
-              <Tab label="ePAD" {...a11yProps(1)} />
-              <Tab label="Upload" {...a11yProps(2)} />
+              <Tab label="Term Search" {...a11yProps(0)} />
+              <Tab label="upload Term" {...a11yProps(1)} />
             </Tabs>
           </AppBar>
           <TabPanel value={value} index={0}>
             {bioPortalSearch()}
           </TabPanel>
           <TabPanel value={value} index={1}>
-            {ePADSearch()}
-          </TabPanel>
-          <TabPanel value={value} index={2}>
             {upload()}
           </TabPanel>
         </div>
@@ -370,7 +378,9 @@ TermSearch.propTypes = {
   handleSearchInput: PropTypes.func,
   handleOntologyInput: PropTypes.func,
   searchTerm: PropTypes.string,
+  saveTerm: PropTypes.func,
   getUploadedTerms: PropTypes.func,
   handleClose: PropTypes.func,
-  ontology: PropTypes.string
+  ontology: PropTypes.string,
+  searchStatus: PropTypes.object
 };

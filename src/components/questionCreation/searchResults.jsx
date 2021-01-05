@@ -60,25 +60,37 @@ const SearchResults = props => {
   const populateList = () => {
     const nodeList = [];
     for (let k = 0; k < results.collection.length; k += 1) {
-      const acronym = results.collection[k].links.ontology.split('/').pop();
-      const { definition } = results.collection[k];
+      const item = results.collection[k];
+      const isSourceEPAD =
+        item.schemadesignator || item.codevalue || item.codemeaning;
+      const acronym =
+        item.schemadesignator || item.links?.ontology?.split('/').pop() || '';
+      const { definition } = item;
+      const link = isSourceEPAD
+        ? `${item.codemeaning} - ${item.schemadesignator}`
+        : `${item.prefLabel} - ${ontologies[acronym]?.name} (${ontologies[acronym]?.acronym})`;
+      const title = isSourceEPAD ? item.schemadesignator : ontologies[acronym];
       nodeList.push(
         <ListItem key={`result${k}`} className={classes.listItemContainer}>
           <div className={classes.listItemTextContainer}>
             <Checkbox
               size="small"
               className={classes.listItemCheckbox}
-              onClick={() => handleSelection(k, ontologies[acronym])}
+              onClick={() => handleSelection(k, title)}
             />
             <Link
               component="button"
               variant="body2"
               className={classes.listItemTitle}
-              onClick={() => {
-                window.open(results.collection[k].links.ui, '_blank', '');
-              }}
+              onClick={
+                isSourceEPAD
+                  ? null
+                  : () => {
+                      window.open(item.links.ui, '_blank', '');
+                    }
+              }
             >
-              {`${results.collection[k].prefLabel} - ${ontologies[acronym].name} (${ontologies[acronym].acronym})`}
+              {link}
             </Link>
           </div>
           <ListItemText

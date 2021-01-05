@@ -3,11 +3,11 @@ import formurlencoded from 'form-urlencoded';
 import config from './keys';
 import { ontologies } from '../utils/helper';
 
-const REST_URL = 'http://data.bioontology.org';
+const BIOPORTAL_URL = 'http://data.bioontology.org';
+const EPAD_URL = 'http://localhost:8080';
 
 const validatOntologyFilter = list => {
   let result = [];
-  console.log(list);
   // if there isn't any ontology filter search in all supported ontologies
   if (!list || list.length === 0) result = Object.keys(ontologies);
   // if there is a ontologies list, search in only supported ones
@@ -25,7 +25,7 @@ const getCollectionResults = (keyword, ontologiesList, page) => {
   params = `${params}&ontologies=${ontologyFilter}`;
   if (page) params = `${params}&page=${page}`;
   return axios.get(
-    `${REST_URL}${params}&pagesize=150&display=prefLabel,synonym,definition,notation,cui,semanticType,properties`,
+    `${BIOPORTAL_URL}${params}&pagesize=150&display=prefLabel,synonym,definition,notation,cui,semanticType,properties`,
     {
       headers: { Authorization: `apikey token=${config.API_KEY}` }
     }
@@ -37,7 +37,7 @@ const getDetail = (ontology, url) => {
     .split('=')
     .pop();
   return axios.get(
-    `${REST_URL}/ontologies/${ontology}/classes/${encodedURL}?display=all`,
+    `${BIOPORTAL_URL}/ontologies/${ontology}/classes/${encodedURL}?display=all`,
     {
       headers: { Authorization: `apikey token=${config.API_KEY}` }
     }
@@ -45,9 +45,30 @@ const getDetail = (ontology, url) => {
 };
 
 const getSelectedDetails = (ontology, url) => {
-  return axios.get(`${REST_URL}/ontologies/${ontology}/${url}?display=all`, {
-    headers: { Authorization: `apikey token=${config.API_KEY}` }
+  return axios.get(
+    `${BIOPORTAL_URL}/ontologies/${ontology}/${url}?display=all`,
+    {
+      headers: { Authorization: `apikey token=${config.API_KEY}` }
+    }
+  );
+};
+
+const getTermFromEPAD = term => {
+  return axios.get(`${EPAD_URL}/ontology?codemeaning=${term}`);
+};
+
+const insertTermToEPAD = (codemeaning, description, creator) => {
+  return axios.post(`${EPAD_URL}/ontology`, {
+    codemeaning,
+    description,
+    creator
   });
 };
 
-export { getCollectionResults, getSelectedDetails, getDetail };
+export {
+  getCollectionResults,
+  getSelectedDetails,
+  getDetail,
+  getTermFromEPAD,
+  insertTermToEPAD
+};
