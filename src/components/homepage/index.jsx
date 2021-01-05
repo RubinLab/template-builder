@@ -647,7 +647,6 @@ export default function HomePage({
                   <Typography variant="h5" className={classes.title}>
                     Template Preview
                   </Typography>
-                  {console.log(completeTemplate)}
                   <TemplatePreview
                     template={completeTemplate}
                     noOfQuestions={questions.length}

@@ -226,10 +226,7 @@ const TermSearch = props => {
 
   const renderSearchOptions = () => {
     const { status } = searchStatus;
-    const newSearch =
-      status === 'showOther' ||
-      status === 'suggestSearchEpad' ||
-      status === 'suggestAddEpad';
+    const newSearch = status === 'showOther' || status === 'suggestAddEpad';
     let node;
     if (newSearch) {
       node = (

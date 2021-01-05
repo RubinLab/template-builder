@@ -171,6 +171,17 @@ const QuestionForm = props => {
     return filteredOntology;
   };
 
+  const searchEPAD = async term => {
+    try {
+      const { data: terms } = await getTermFromEPAD(term);
+      if (Array.isArray(terms) && terms.length) return { collection: terms };
+    } catch (err) {
+      console.error(err);
+      return { collection: [] };
+    }
+    return { collection: [] };
+  };
+
   const populateAlternativeSearch = (status, data) => {
     const trimmedTerm = searchTerm.trim();
     const ontList = filterOntologyList().join(', ');
@@ -185,32 +196,6 @@ const QuestionForm = props => {
           onClick: () => {
             setSearchResults(data);
             setShowSearchResults(true);
-          },
-          status
-        };
-      case 'suggestSearchEpad':
-        return {
-          explanation: `Couldn't find ${trimmedTerm} in the supported Bioportal ontologies `,
-          link: 'Search in ePAD Lexicon!',
-          onClick: () => {
-            setSearchStatus(populateAlternativeSearch('showEpadSearch'));
-          },
-          status
-        };
-      case 'showEpadSearch':
-        return {
-          explanation: 'Search in ePAD Lexicon:',
-          onClick: term => {
-            getTermFromEPAD(term)
-              .then(res => {
-                if (res.data.length > 0) {
-                  setSearchResults({ collection: res.data, epad: true });
-                  setShowSearchResults(true);
-                } else {
-                  setSearchStatus(populateAlternativeSearch('suggestAddEpad'));
-                }
-              })
-              .catch(err => console.error(err));
           },
           status
         };
@@ -264,6 +249,31 @@ const QuestionForm = props => {
       });
   };
 
+  const formCombinedSearchResult = async () => {
+    const searchResult = await getCollectionResults(
+      searchTermRef.current.trim()
+    );
+    const epadResults = await searchEPAD(searchTermRef.current.trim());
+
+    if (searchResult.data.collection.length > 0 && epadResults.length > 0) {
+      const combinedData = {
+        ...searchResult.data,
+        collection: [...epadResults.collection, ...searchResult.data.collection]
+      };
+      setSearchStatus(populateAlternativeSearch('showOther', combinedData));
+    } else if (searchResult.data.collection.length > 0) {
+      setSearchStatus(
+        populateAlternativeSearch('showOther', searchResult.data)
+      );
+    } else {
+      setSearchStatus(
+        populateAlternativeSearch('showOther', {
+          collection: epadResults
+        })
+      );
+    }
+  };
+
   const handleClickOutsideOfDrawer = async e => {
     try {
       const { className } = e.target;
@@ -282,29 +292,14 @@ const QuestionForm = props => {
         return;
       }
       if (
-        searchStatusRef.current.status === 'suggestSearchEpad' &&
+        searchStatusRef.current.status === 'showOther' &&
         showResultsRef.current
       ) {
         setSearchStatus(populateAlternativeSearch('suggestAddEpad'));
       }
-      if (
-        searchStatusRef.current.status === 'showOther' &&
-        showResultsRef.current
-      ) {
-        setSearchStatus(populateAlternativeSearch('suggestSearchEpad'));
-      }
 
       if (searchStatusRef.current.firstSearch && showResultsRef.current) {
-        const searchResult = await getCollectionResults(
-          searchTermRef.current.trim()
-        );
-        if (searchResult.data.collection.length > 0) {
-          setSearchStatus(
-            populateAlternativeSearch('showOther', searchResult.data)
-          );
-        } else {
-          setSearchStatus(populateAlternativeSearch('suggestSearchEpad'));
-        }
+        formCombinedSearchResult();
       }
       setShowSearchResults(false);
     } catch (err) {
@@ -370,20 +365,15 @@ const QuestionForm = props => {
         );
         if (searchResult.data.collection.length === 0) {
           // if thre isn't a result check if there is a filter in the search
-          if (filteredOntology.length || filteredOntology.length !== 4) {
-            // if there is a filter make a search with no filter
-            searchResult = await getCollectionResults(trimmedSearchTerm, []);
-            // if show alternative search results
-            if (searchResult.data.collection.length > 0) {
-              setSearchStatus(
-                populateAlternativeSearch('showOther', searchResult.data)
-              );
-              // if there is no result bioportal suggest epad search
-            } else {
-              setSearchStatus(populateAlternativeSearch('suggestSearchEpad'));
-            }
+          if (filteredOntology.length !== 0 && filteredOntology.length !== 4) {
+            // if there is a filter make a search with no filter including epad
+            formCombinedSearchResult();
           } else {
-            setSearchStatus(populateAlternativeSearch('suggestSearchEpad'));
+            // if there isn't any filtter make the search only in epad
+            const epadResults = await searchEPAD(searchTermRef.current.trim());
+            setSearchStatus(
+              populateAlternativeSearch('showOther', epadResults)
+            );
           }
         } else {
           setSearchResults(searchResult.data);
@@ -579,11 +569,8 @@ const QuestionForm = props => {
   const toggleDrawer = event => {
     if (event.key === 'Escape') {
       setShowSearchResults(false);
-      if (searchStatus.status === 'suggestSearchEpad') {
-        setSearchStatus(populateAlternativeSearch('suggestAddEpad'));
-      }
       if (searchStatus.status === 'showOther' || searchTerm) {
-        setSearchStatus(populateAlternativeSearch('suggestSearchEpad'));
+        setSearchStatus(populateAlternativeSearch('suggestAddEpad'));
       }
     }
   };

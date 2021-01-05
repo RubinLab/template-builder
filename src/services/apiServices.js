@@ -8,7 +8,6 @@ const EPAD_URL = 'http://localhost:8080';
 
 const validatOntologyFilter = list => {
   let result = [];
-  console.log(list);
   // if there isn't any ontology filter search in all supported ontologies
   if (!list || list.length === 0) result = Object.keys(ontologies);
   // if there is a ontologies list, search in only supported ones
