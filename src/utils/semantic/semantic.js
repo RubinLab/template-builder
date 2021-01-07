@@ -17,6 +17,9 @@
  * http://opensource.org/licenses/MIT
  *
  */
+
+ /* eslint-disable */
+
 import $ from "jquery";
 import jQuery from "jquery";
 import self from "jquery";
