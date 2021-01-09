@@ -1,3 +1,5 @@
+/* eslint-disable */
+ 
  /*
  * # Semantic UI - 2.4.1
  * https://github.com/Semantic-Org/Semantic-UI
@@ -17,8 +19,6 @@
  * http://opensource.org/licenses/MIT
  *
  */
-
- /* eslint-disable */
 
 import $ from "jquery";
 import jQuery from "jquery";

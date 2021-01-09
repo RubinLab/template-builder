@@ -21,7 +21,9 @@ import Drawer from '@material-ui/core/Drawer';
 import Button from '@material-ui/core/Button';
 import SearchResults from './searchResults.jsx';
 import AnswerList from './answersList.jsx';
-import TermSearch from './TermSearch.jsx';
+import TermSearchDialog from './TermSearchDialog.jsx';
+import ScaleValue from './ScaleValue.jsx';
+
 import {
   getCollectionResults,
   getDetail,
@@ -118,6 +120,8 @@ const QuestionForm = props => {
   const [answerType, setAnswerType] = useState('');
   const [ontologyLibs, setOntologyLibs] = useState(null);
   const [openSearch, setOpenSearch] = useState(false);
+  const [openAddValue, setOpenAddValue] = useState(false);
+  const [quantificationName, setquantificationName] = useState('');
   const [searchStatus, _setSearchStatus] = useState({
     explanation: null,
     message: null,
@@ -319,6 +323,7 @@ const QuestionForm = props => {
         } else {
           // if there isn't any filtter make the search only in epad
           const epadResults = await searchEPAD(searchTermRef.current.trim());
+
           if (epadResults.collection.length > 0)
             setSearchStatus(
               populateAlternativeSearch('showOther', epadResults)
@@ -537,6 +542,32 @@ const QuestionForm = props => {
     }
   };
 
+  const handleValueAddition = (value, valueLabel, valueDescription) => {
+    const allowedTerm = { ...selectedTerms.pop() };
+    const newSelected = [...selectedTerms];
+    if (allowedTerm.CharacteristicQuantification) {
+      allowedTerm.CharacteristicQuantification[0].Scale.ScaleLevel.push({
+        value,
+        valueLabel,
+        valueDescription
+      });
+    } else {
+      allowedTerm.CharacteristicQuantification = [
+        {
+          name: quantificationName,
+          annotatorConfidence: false,
+          characteristicQuantificationIndex: 0,
+          Scale: {
+            scaleType: 'Nominal',
+            ScaleLevel: [{ value, valueLabel, valueDescription }]
+          }
+        }
+      ];
+    }
+    newSelected.push(allowedTerm);
+    postQuestion({ ...formInput, selectedTerms: newSelected });
+  };
+
   const getUploadedTerms = data => {
     const newSelected = { ...selectedTerms, ...data };
     postQuestion({ ...formInput, selectedTerms: newSelected });
@@ -561,7 +592,18 @@ const QuestionForm = props => {
         assignDefaultVals(0, 3, false);
         break;
       case 'scale':
-        assignDefaultVals(null, null, true);
+        if (!characteristic) {
+          enqueueSnackbar(
+            `Scale can be created in characteristic questions! 
+            Please select a "Question type" and click on "ADD CHARACTERISTICS" button`,
+            {
+              variant: 'warning'
+            }
+          );
+          setAnswerType('');
+        } else {
+          assignDefaultVals(1, 1, true);
+        }
         break;
       case 'text':
         assignDefaultVals(null, null, true);
@@ -599,6 +641,14 @@ const QuestionForm = props => {
       if (searchStatus.status === 'showOther' || searchTerm) {
         setSearchStatus(populateAlternativeSearch('suggestAddEpad'));
       }
+    }
+  };
+
+  const openTermAdding = () => {
+    if (answerType === 'single' || answerType === 'multi') {
+      setOpenSearch(true);
+    } else if (answerType === 'scale') {
+      setOpenAddValue(true);
     }
   };
 
@@ -657,7 +707,7 @@ const QuestionForm = props => {
 
       <div className={classes.answerGroup}>
         {openSearch && (
-          <TermSearch
+          <TermSearchDialog
             handleBioportalSearch={handleBioportalSearch}
             ontologyLibs={ontologyLibs}
             handleSearchInput={handleSearchInput}
@@ -665,9 +715,16 @@ const QuestionForm = props => {
             saveTerm={saveTermToEPAD}
             searchTerm={searchTerm}
             getUploadedTerms={getUploadedTerms}
-            handleClose={() => setOpenSearch(false)}
+            onCancel={() => setOpenSearch(false)}
             ontology={ontology}
             searchStatus={searchStatus}
+            open={openSearch}
+          />
+        )}
+        {openAddValue && (
+          <ScaleValue
+            handleClose={() => setOpenAddValue(false)}
+            saveValue={handleValueAddition}
           />
         )}
         <FormControl className={classes.formControl}>
@@ -688,7 +745,10 @@ const QuestionForm = props => {
               Multiple select
             </MenuItem>
             <MenuItem value={'scale'}>
-              <LinearScale className={classes.icon} />
+              <LinearScale
+                className={classes.icon}
+                disabled={!characteristic}
+              />
               Linear scale
             </MenuItem>
             <MenuItem value={'text'}>
@@ -699,12 +759,19 @@ const QuestionForm = props => {
           <Button
             variant="outlined"
             className={classes.button}
-            onClick={() => setOpenSearch(true)}
+            onClick={openTermAdding}
           >
             Add Term
           </Button>
         </FormControl>
       </div>
+      {answerType === 'scale' && characteristic && (
+        <TextField
+          className={classes.textField}
+          label="Name for the quantification"
+          onChange={e => setquantificationName(e.target.value)}
+        />
+      )}
       {selectedTerms && (
         <div>
           <AnswerList
