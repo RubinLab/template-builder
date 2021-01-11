@@ -4,16 +4,31 @@ import TextField from '@material-ui/core/TextField';
 import FormControl from '@material-ui/core/FormControl';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Button from '@material-ui/core/Button';
+import { useSnackbar } from 'notistack';
 
 const Quantile = props => {
   const [formInput, setFormInput] = useState({});
+  const [submitted, setSubmitted] = useState(false);
+
+  const { enqueueSnackbar } = useSnackbar();
+
+  const saveCalculation = () => {
+    if (!formInput.bins || !formInput.maxValue || !formInput.minValue) {
+      enqueueSnackbar('Please fill the required fields!', { variant: 'error' });
+      setSubmitted(true);
+    } else {
+      props.postFormInput(formInput, 'Quantile');
+      setSubmitted(false);
+      setFormInput({});
+    }
+  };
 
   const handleFormInput = e => {
     console.log(e.target);
     const { name, value } = e.target;
     const newFormInput = { ...formInput, [name]: value };
     setFormInput(newFormInput);
-    props.postFormInput(newFormInput, 'Quantile');
   };
 
   return (
@@ -24,6 +39,7 @@ const Quantile = props => {
         name="minValue"
         onChange={handleFormInput}
         required
+        error={!formInput.minValue && submitted}
       />
       <TextField
         // className={classes.textField}
@@ -31,6 +47,7 @@ const Quantile = props => {
         name="maxValue"
         onChange={handleFormInput}
         required
+        error={!formInput.maxValue && submitted}
       />
       <TextField
         // className={classes.textField}
@@ -38,6 +55,7 @@ const Quantile = props => {
         name="bins"
         onChange={handleFormInput}
         required
+        error={!formInput.bins && submitted}
       />
       <TextField
         // className={classes.textField}
@@ -67,6 +85,7 @@ const Quantile = props => {
           console.log(e.target.checked);
         }}
       />
+      <Button onClick={saveCalculation}>{'Save & Next'}</Button>
     </FormControl>
   );
 };

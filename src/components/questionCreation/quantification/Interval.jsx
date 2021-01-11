@@ -4,16 +4,38 @@ import TextField from '@material-ui/core/TextField';
 import FormControl from '@material-ui/core/FormControl';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Button from '@material-ui/core/Button';
+import { useSnackbar } from 'notistack';
 
 const Interval = props => {
   const [formInput, setFormInput] = useState({});
+  const [submitted, setSubmitted] = useState(false);
+
+  const {
+    minValue,
+    maxValue,
+    minOperator,
+    maxOperator,
+    ucumString
+  } = formInput;
+  const { enqueueSnackbar } = useSnackbar();
+
+  const saveCalculation = () => {
+    if (!minValue || !maxValue || !minOperator || !maxOperator || !ucumString) {
+      enqueueSnackbar('Please fill the required fields!', { variant: 'error' });
+      setSubmitted(true);
+    } else {
+      props.postFormInput(newFormInput, 'Interval');
+      setSubmitted(false);
+      setFormInput({});
+    }
+  };
 
   const handleFormInput = e => {
     console.log(e.target);
     const { name, value } = e.target;
     const newFormInput = { ...formInput, [name]: value };
     setFormInput(newFormInput);
-    props.postFormInput(newFormInput, 'Interval');
   };
 
   return (
@@ -24,6 +46,7 @@ const Interval = props => {
         name="minValue"
         onChange={handleFormInput}
         required
+        error={!formInput.minValue && submitted}
       />
       <TextField
         // className={classes.textField}
@@ -31,6 +54,7 @@ const Interval = props => {
         name="maxValue"
         onChange={handleFormInput}
         required
+        error={!formInput.maxValue && submitted}
       />
       <TextField
         // className={classes.textField}
@@ -38,6 +62,7 @@ const Interval = props => {
         name="ucumString"
         onChange={handleFormInput}
         required
+        error={!formInput.ucumString && submitted}
       />
       <TextField
         // className={classes.textField}
@@ -45,6 +70,7 @@ const Interval = props => {
         name="minOperator"
         onChange={handleFormInput}
         required
+        error={!formInput.minOperator && submitted}
       />
       <TextField
         // className={classes.textField}
@@ -52,6 +78,7 @@ const Interval = props => {
         name="maxOperator"
         onChange={handleFormInput}
         required
+        error={!formInput.maxOperator && submitted}
       />
 
       <TextField
@@ -96,6 +123,7 @@ const Interval = props => {
           console.log(e.target.checked);
         }}
       />
+      <Button onClick={saveCalculation}>{'Save & Next'}</Button>
     </FormControl>
   );
 };

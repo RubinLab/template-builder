@@ -31,13 +31,14 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const QuantificationWrap = props => {
+const QuantificationWrap = () => {
   const [value, setValue] = React.useState('Scale');
   //   const { enqueueSnackbar } = useSnackbar();
   const classes = useStyles();
 
-  const getQuantificationInput = type => {
-    console.log(' got it!!', type);
+  const getQuantificationInput = (obj, type) => {
+    console.log(' got it!!', type, obj);
+    // props.saveCalculation();
   };
 
   const renderForm = () => {

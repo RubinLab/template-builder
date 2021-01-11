@@ -4,16 +4,30 @@ import TextField from '@material-ui/core/TextField';
 import FormControl from '@material-ui/core/FormControl';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Button from '@material-ui/core/Button';
+import { useSnackbar } from 'notistack';
 
 const Numerical = props => {
   const [formInput, setFormInput] = useState({});
+  const [submitted, setSubmitted] = useState(false);
+  const { enqueueSnackbar } = useSnackbar();
+
+  const saveCalculation = () => {
+    if (!formInput.value || !formInput.ucumString) {
+      enqueueSnackbar('Please fill the required fields!', { variant: 'error' });
+      setSubmitted(true);
+    } else {
+      props.postFormInput(newFormInput, 'Numerical');
+      setSubmitted(false);
+      setFormInput({});
+    }
+  };
 
   const handleFormInput = e => {
     console.log(e.target);
     const { name, value } = e.target;
     const newFormInput = { ...formInput, [name]: value };
     setFormInput(newFormInput);
-    props.postFormInput(newFormInput, 'Numerical');
   };
 
   return (
@@ -24,6 +38,7 @@ const Numerical = props => {
         name="value"
         onChange={handleFormInput}
         required
+        error={!formInput.value && submitted}
       />
       <TextField
         // className={classes.textField}
@@ -43,6 +58,7 @@ const Numerical = props => {
         name="ucumString"
         onChange={handleFormInput}
         required
+        error={!formInput.ucumString && submitted}
       />
       <TextField
         // className={classes.textField}
@@ -80,6 +96,7 @@ const Numerical = props => {
           console.log(e.target.checked);
         }}
       />
+      <Button onClick={saveCalculation}>{'Save & Next'}</Button>
     </FormControl>
   );
 };

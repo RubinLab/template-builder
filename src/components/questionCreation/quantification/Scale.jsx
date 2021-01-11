@@ -5,15 +5,22 @@ import FormControl from '@material-ui/core/FormControl';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Button from '@material-ui/core/Button';
+import { useSnackbar } from 'notistack';
 
 const Scale = props => {
   const [formInput, setFormInput] = useState({});
+  const [submitted, setSubmitted] = useState(false);
+
+  const { enqueueSnackbar } = useSnackbar();
 
   const saveCalculation = () => {
     if (!formInput.value) {
-      console.log('here');
+      enqueueSnackbar('Please fill the required fields!', { variant: 'error' });
+      setSubmitted(true);
     } else {
       props.postFormInput(formInput, 'Scale');
+      setSubmitted(false);
+      setFormInput({});
     }
   };
 
@@ -32,6 +39,7 @@ const Scale = props => {
         name="value"
         onChange={handleFormInput}
         required
+        error={!formInput.value && submitted}
       />
       <TextField
         // className={classes.textField}
