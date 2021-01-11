@@ -22,7 +22,7 @@ import Button from '@material-ui/core/Button';
 import SearchResults from './searchResults.jsx';
 import AnswerList from './answersList.jsx';
 import TermSearchDialog from './TermSearchDialog.jsx';
-import ScaleValue from './ScaleValue.jsx';
+import QuantificationDialog from './quantification/QuantificationDialog.jsx';
 
 import {
   getCollectionResults,
@@ -120,8 +120,8 @@ const QuestionForm = props => {
   const [answerType, setAnswerType] = useState('');
   const [ontologyLibs, setOntologyLibs] = useState(null);
   const [openSearch, setOpenSearch] = useState(false);
-  const [openAddValue, setOpenAddValue] = useState(false);
-  const [quantificationName, setquantificationName] = useState('');
+  const [addQuantification, setAddQuantification] = useState(false);
+  // const [quantificationName, setquantificationName] = useState('');
   const [searchStatus, _setSearchStatus] = useState({
     explanation: null,
     message: null,
@@ -542,30 +542,32 @@ const QuestionForm = props => {
     }
   };
 
-  const handleValueAddition = (value, valueLabel, valueDescription) => {
-    const allowedTerm = { ...selectedTerms.pop() };
-    const newSelected = [...selectedTerms];
-    if (allowedTerm.CharacteristicQuantification) {
-      allowedTerm.CharacteristicQuantification[0].Scale.ScaleLevel.push({
-        value,
-        valueLabel,
-        valueDescription
-      });
-    } else {
-      allowedTerm.CharacteristicQuantification = [
-        {
-          name: quantificationName,
-          annotatorConfidence: false,
-          characteristicQuantificationIndex: 0,
-          Scale: {
-            scaleType: 'Nominal',
-            ScaleLevel: [{ value, valueLabel, valueDescription }]
-          }
-        }
-      ];
-    }
-    newSelected.push(allowedTerm);
-    postQuestion({ ...formInput, selectedTerms: newSelected });
+  const handleAddCalculation = termIndex => {
+    console.log('termIndex', termIndex);
+    setAddQuantification(true);
+    // const allowedTerm = { ...selectedTerms.pop() };
+    // const newSelected = [...selectedTerms];
+    // if (allowedTerm.CharacteristicQuantification) {
+    //   allowedTerm.CharacteristicQuantification[0].Scale.ScaleLevel.push({
+    //     value,
+    //     valueLabel,
+    //     valueDescription
+    //   });
+    // } else {
+    //   allowedTerm.CharacteristicQuantification = [
+    //     {
+    //       name: quantificationName,
+    //       annotatorConfidence: false,
+    //       characteristicQuantificationIndex: 0,
+    //       Scale: {
+    //         scaleType: 'Nominal',
+    //         ScaleLevel: [{ value, valueLabel, valueDescription }]
+    //       }
+    //     }
+    //   ];
+    // }
+    // newSelected.push(allowedTerm);
+    // postQuestion({ ...formInput, selectedTerms: newSelected });
   };
 
   const getUploadedTerms = data => {
@@ -594,15 +596,21 @@ const QuestionForm = props => {
       case 'scale':
         if (!characteristic) {
           enqueueSnackbar(
-            `Scale can be created in characteristic questions! 
-            Please select a "Question type" and click on "ADD CHARACTERISTICS" button`,
+            `Quantification can be created in characteristic questions! 
+            Select a "Question type" and click on "ADD CHARACTERISTICS" button`,
             {
               variant: 'warning'
             }
           );
           setAnswerType('');
         } else {
-          assignDefaultVals(1, 1, true);
+          enqueueSnackbar(
+            `To create a quantification, first add a term and click on the scale icon next to the term!`,
+            {
+              variant: 'info'
+            }
+          );
+          assignDefaultVals(1, 1, false);
         }
         break;
       case 'text':
@@ -648,7 +656,7 @@ const QuestionForm = props => {
     if (answerType === 'single' || answerType === 'multi') {
       setOpenSearch(true);
     } else if (answerType === 'scale') {
-      setOpenAddValue(true);
+      // setAddQuantification(true);
     }
   };
 
@@ -721,10 +729,11 @@ const QuestionForm = props => {
             open={openSearch}
           />
         )}
-        {openAddValue && (
-          <ScaleValue
-            handleClose={() => setOpenAddValue(false)}
-            saveValue={handleValueAddition}
+        {addQuantification && (
+          <QuantificationDialog
+            handleClose={() => setAddQuantification(false)}
+            saveValue={handleAddCalculation}
+            open={addQuantification}
           />
         )}
         <FormControl className={classes.formControl}>
@@ -749,7 +758,7 @@ const QuestionForm = props => {
                 className={classes.icon}
                 disabled={!characteristic}
               />
-              Linear scale
+              Scale/Quantification
             </MenuItem>
             <MenuItem value={'text'}>
               <ShortText className={classes.icon} />
@@ -765,18 +774,20 @@ const QuestionForm = props => {
           </Button>
         </FormControl>
       </div>
-      {answerType === 'scale' && characteristic && (
+      {/* {answerType === 'scale' && characteristic && (
         <TextField
           className={classes.textField}
           label="Name for the quantification"
           onChange={e => setquantificationName(e.target.value)}
         />
-      )}
+      )} */}
       {selectedTerms && (
         <div>
           <AnswerList
             answers={Object.values(selectedTerms)}
             handleDelete={handleDeleteSelectedTerm}
+            characteristic={characteristic}
+            handleAddCalculation={handleAddCalculation}
           />
         </div>
       )}

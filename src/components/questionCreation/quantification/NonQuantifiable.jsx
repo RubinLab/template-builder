@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import TextField from '@material-ui/core/TextField';
-import FormControl from '@material-ui/core/FormControl';
 import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import TermSearch from '../TermSearch.jsx';
 
 const NonQuantifiable = props => {
@@ -20,25 +20,30 @@ const NonQuantifiable = props => {
     <>
       <TermSearch />
       <TextField
-        className={classes.textField}
+        // className={classes.textField}
         label="Value description"
         name="valueDescription"
         onChange={handleFormInput}
       />
-      <Checkbox
+      <FormControlLabel
+        value="defaultAnswer"
+        control={<Checkbox color="primary" />}
         label="Default Answer"
-        name="defaultAnswer"
-        onChange={handleFormInput}
+        labelPlacement="end"
+        onChange={e => {
+          console.log(e.target.value);
+          console.log(e.target.checked);
+        }}
       />
-      <Checkbox
-        label="Default Answer"
-        name="defaultAnswer"
-        onChange={handleFormInput}
-      />
-      <Checkbox
+      <FormControlLabel
+        value="noMoreQuestions"
+        control={<Checkbox color="primary" />}
         label="No more questions"
-        name="noMoreQuestions"
-        onChange={handleFormInput}
+        labelPlacement="end"
+        onChange={e => {
+          console.log(e.target.value);
+          console.log(e.target.checked);
+        }}
       />
     </>
   );
