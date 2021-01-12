@@ -731,7 +731,7 @@ const QuestionForm = props => {
         )}
         {addQuantification && (
           <QuantificationDialog
-            handleClose={() => setAddQuantification(false)}
+            onCancel={() => setAddQuantification(false)}
             saveValue={handleAddCalculation}
             open={addQuantification}
           />

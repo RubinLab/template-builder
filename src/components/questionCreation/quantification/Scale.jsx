@@ -8,7 +8,13 @@ import Button from '@material-ui/core/Button';
 import { useSnackbar } from 'notistack';
 
 const Scale = props => {
-  const [formInput, setFormInput] = useState({});
+  const [formInput, setFormInput] = useState({
+    value: '',
+    valueLabel: '',
+    valueDescription: '',
+    defaultAnswer: false,
+    noMoreQuestions: false
+  });
   const [submitted, setSubmitted] = useState(false);
 
   const { enqueueSnackbar } = useSnackbar();
@@ -20,14 +26,27 @@ const Scale = props => {
     } else {
       props.postFormInput(formInput, 'Scale');
       setSubmitted(false);
-      setFormInput({});
+      setFormInput({
+        value: '',
+        valueLabel: '',
+        valueDescription: '',
+        defaultAnswer: false,
+        noMoreQuestions: false
+      });
     }
   };
 
   const handleFormInput = e => {
+    e.preventDefault();
     console.log(e.target);
     const { name, value } = e.target;
     const newFormInput = { ...formInput, [name]: value };
+    setFormInput(newFormInput);
+  };
+
+  const handleFormCheckbox = e => {
+    const { checked, value } = e.target;
+    const newFormInput = { ...formInput, [value]: checked };
     setFormInput(newFormInput);
   };
 
@@ -35,6 +54,7 @@ const Scale = props => {
     <FormControl>
       <TextField
         // className={classes.textField}
+        value={formInput.value}
         label="Value"
         name="value"
         onChange={handleFormInput}
@@ -43,35 +63,41 @@ const Scale = props => {
       />
       <TextField
         // className={classes.textField}
+        value={formInput.valueLabel}
         label="Value label"
         name="valueLabel"
         onChange={handleFormInput}
       />
       <TextField
         // className={classes.textField}
+        value={formInput.valueDescription}
         label="Value description"
         name="valueDescription"
         onChange={handleFormInput}
       />
       <FormControlLabel
-        value="defaultAnswer"
-        control={<Checkbox color="primary" />}
+        control={
+          <Checkbox
+            color="primary"
+            value="defaultAnswer"
+            checked={formInput.defaultAnswer}
+            onChange={handleFormCheckbox}
+          />
+        }
         label="Default Answer"
         labelPlacement="end"
-        onChange={e => {
-          console.log(e.target.value);
-          console.log(e.target.checked);
-        }}
       />
       <FormControlLabel
-        value="noMoreQuestions"
-        control={<Checkbox color="primary" />}
+        control={
+          <Checkbox
+            color="primary"
+            checked={formInput.noMoreQuestions}
+            value="noMoreQuestions"
+            onChange={handleFormCheckbox}
+          />
+        }
         label="No more questions"
         labelPlacement="end"
-        onChange={e => {
-          console.log(e.target.value);
-          console.log(e.target.checked);
-        }}
       />
       <Button onClick={saveCalculation}>{'Save & Next'}</Button>
     </FormControl>

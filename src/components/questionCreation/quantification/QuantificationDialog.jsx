@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 // import { makeStyles } from '@material-ui/core/styles';
 import QuantificationWrap from './QuantificationWrap.jsx';
 import PopupDialog from '../common/PopupDialog.jsx';
-import Button from '@material-ui/core/Button';
-import { useSnackbar } from 'notistack';
+// import Button from '@material-ui/core/Button';
+// import { useSnackbar } from 'notistack';
 
 // const useStyles = makeStyles(theme => ({
 //   accordionRoot: {

@@ -8,7 +8,15 @@ import Button from '@material-ui/core/Button';
 import { useSnackbar } from 'notistack';
 
 const Quantile = props => {
-  const [formInput, setFormInput] = useState({});
+  const [formInput, setFormInput] = useState({
+    minValue: '',
+    maxValue: '',
+    bins: '',
+    defaultBin: '',
+    valueLabel: '',
+    valueDescription: '',
+    noMoreQuestions: false
+  });
   const [submitted, setSubmitted] = useState(false);
 
   const { enqueueSnackbar } = useSnackbar();
@@ -20,14 +28,29 @@ const Quantile = props => {
     } else {
       props.postFormInput(formInput, 'Quantile');
       setSubmitted(false);
-      setFormInput({});
+      setFormInput({
+        minValue: '',
+        maxValue: '',
+        bins: '',
+        defaultBin: '',
+        valueLabel: '',
+        valueDescription: '',
+        noMoreQuestions: false
+      });
     }
   };
 
   const handleFormInput = e => {
+    e.preventDefault();
     console.log(e.target);
     const { name, value } = e.target;
     const newFormInput = { ...formInput, [name]: value };
+    setFormInput(newFormInput);
+  };
+
+  const handleFormCheckbox = e => {
+    const { checked, value } = e.target;
+    const newFormInput = { ...formInput, [value]: checked };
     setFormInput(newFormInput);
   };
 
@@ -37,6 +60,7 @@ const Quantile = props => {
         // className={classes.textField}
         label="Minimum Value"
         name="minValue"
+        value={formInput.minValue}
         onChange={handleFormInput}
         required
         error={!formInput.minValue && submitted}
@@ -45,6 +69,7 @@ const Quantile = props => {
         // className={classes.textField}
         label="Maximum Value"
         name="maxValue"
+        value={formInput.maxValue}
         onChange={handleFormInput}
         required
         error={!formInput.maxValue && submitted}
@@ -53,6 +78,7 @@ const Quantile = props => {
         // className={classes.textField}
         label="Bins"
         name="bins"
+        value={formInput.bins}
         onChange={handleFormInput}
         required
         error={!formInput.bins && submitted}
@@ -61,29 +87,30 @@ const Quantile = props => {
         // className={classes.textField}
         label="Default Bin"
         name="defaultBin"
+        value={formInput.defaultBin}
         onChange={handleFormInput}
       />
       <TextField
         // className={classes.textField}
         label="Value label"
         name="valueLabel"
+        value={formInput.valueLabel}
         onChange={handleFormInput}
       />
       <TextField
         // className={classes.textField}
         label="Value description"
         name="valueDescription"
+        value={formInput.valueDescription}
         onChange={handleFormInput}
       />
       <FormControlLabel
         value="noMoreQuestions"
+        checked={formInput.noMoreQuestions}
         control={<Checkbox color="primary" />}
         label="No more questions"
         labelPlacement="end"
-        onChange={e => {
-          console.log(e.target.value);
-          console.log(e.target.checked);
-        }}
+        onChange={handleFormCheckbox}
       />
       <Button onClick={saveCalculation}>{'Save & Next'}</Button>
     </FormControl>

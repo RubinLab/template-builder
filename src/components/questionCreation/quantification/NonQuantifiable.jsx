@@ -8,15 +8,18 @@ import { useSnackbar } from 'notistack';
 import TermSearch from '../TermSearch.jsx';
 
 const NonQuantifiable = props => {
-  const [formInput, setFormInput] = useState({});
-
+  const [formInput, setFormInput] = useState({
+    valueDescription: '',
+    defaultAnswer: false,
+    noMoreQuestions: false
+  });
   const { enqueueSnackbar } = useSnackbar();
 
   const saveCalculation = () => {
     if (!formInput.value) {
       enqueueSnackbar('Please fill the required fields!', { variant: 'error' });
     } else {
-      props.postFormInput(newFormInput, 'NonQuantifiable');
+      props.postFormInput(formInput, 'NonQuantifiable');
     }
   };
 
@@ -24,6 +27,12 @@ const NonQuantifiable = props => {
     console.log(e.target);
     const { name, value } = e.target;
     const newFormInput = { ...formInput, [name]: value };
+    setFormInput(newFormInput);
+  };
+
+  const handleFormCheckbox = e => {
+    const { checked, value } = e.target;
+    const newFormInput = { ...formInput, [value]: checked };
     setFormInput(newFormInput);
   };
 
@@ -37,24 +46,26 @@ const NonQuantifiable = props => {
         onChange={handleFormInput}
       />
       <FormControlLabel
-        value="defaultAnswer"
-        control={<Checkbox color="primary" />}
+        control={
+          <Checkbox
+            color="primary"
+            name="defaultAnswer"
+            onChange={handleFormCheckbox}
+          />
+        }
         label="Default Answer"
         labelPlacement="end"
-        onChange={e => {
-          console.log(e.target.value);
-          console.log(e.target.checked);
-        }}
       />
       <FormControlLabel
-        value="noMoreQuestions"
-        control={<Checkbox color="primary" />}
+        control={
+          <Checkbox
+            color="primary"
+            name="noMoreQuestions"
+            onChange={handleFormCheckbox}
+          />
+        }
         label="No more questions"
         labelPlacement="end"
-        onChange={e => {
-          console.log(e.target.value);
-          console.log(e.target.checked);
-        }}
       />
       <Button onClick={saveCalculation}>{'Save & Next'}</Button>
     </>

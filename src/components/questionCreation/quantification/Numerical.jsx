@@ -8,7 +8,16 @@ import Button from '@material-ui/core/Button';
 import { useSnackbar } from 'notistack';
 
 const Numerical = props => {
-  const [formInput, setFormInput] = useState({});
+  const [formInput, setFormInput] = useState({
+    value: '',
+    valueLabel: '',
+    valueDescription: '',
+    ucumString: '',
+    operator: '',
+    defaultAnswer: false,
+    noMoreQuestions: false,
+    askForInput: false
+  });
   const [submitted, setSubmitted] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
 
@@ -17,16 +26,32 @@ const Numerical = props => {
       enqueueSnackbar('Please fill the required fields!', { variant: 'error' });
       setSubmitted(true);
     } else {
-      props.postFormInput(newFormInput, 'Numerical');
+      props.postFormInput(formInput, 'Numerical');
       setSubmitted(false);
-      setFormInput({});
+      setFormInput({
+        value: '',
+        valueLabel: '',
+        valueDescription: '',
+        ucumString: '',
+        operator: '',
+        defaultAnswer: false,
+        noMoreQuestions: false,
+        askForInput: false
+      });
     }
   };
 
   const handleFormInput = e => {
+    e.preventDefault();
     console.log(e.target);
     const { name, value } = e.target;
     const newFormInput = { ...formInput, [name]: value };
+    setFormInput(newFormInput);
+  };
+
+  const handleFormCheckbox = e => {
+    const { checked, value, name } = e.target;
+    const newFormInput = { ...formInput, [name]: checked };
     setFormInput(newFormInput);
   };
 
@@ -35,6 +60,7 @@ const Numerical = props => {
       <TextField
         // className={classes.textField}
         label="Value"
+        value={formInput.value}
         name="value"
         onChange={handleFormInput}
         required
@@ -43,18 +69,21 @@ const Numerical = props => {
       <TextField
         // className={classes.textField}
         label="Value label"
+        value={formInput.valueLabel}
         name="valueLabel"
         onChange={handleFormInput}
       />
       <TextField
         // className={classes.textField}
         label="Value description"
+        value={formInput.valueDescription}
         name="valueDescription"
         onChange={handleFormInput}
       />
       <TextField
         // className={classes.textField}
         label="UcumString"
+        value={formInput.ucumString}
         name="ucumString"
         onChange={handleFormInput}
         required
@@ -63,38 +92,45 @@ const Numerical = props => {
       <TextField
         // className={classes.textField}
         label="Operator"
+        value={formInput.operator}
         name="operator"
         onChange={handleFormInput}
       />
       <FormControlLabel
-        value="defaultAnswer"
-        control={<Checkbox color="primary" />}
+        control={
+          <Checkbox
+            color="primary"
+            checked={formInput.defaultAnswer}
+            name="defaultAnswer"
+            onChange={handleFormCheckbox}
+          />
+        }
         label="Default Answer"
         labelPlacement="end"
-        onChange={e => {
-          console.log(e.target.value);
-          console.log(e.target.checked);
-        }}
       />
       <FormControlLabel
-        value="noMoreQuestions"
-        control={<Checkbox color="primary" />}
+        control={
+          <Checkbox
+            color="primary"
+            onChange={handleFormCheckbox}
+            checked={formInput.noMoreQuestions}
+            name="noMoreQuestions"
+          />
+        }
         label="No more questions"
         labelPlacement="end"
-        onChange={e => {
-          console.log(e.target.value);
-          console.log(e.target.checked);
-        }}
       />
       <FormControlLabel
-        name="askForInput"
-        control={<Checkbox color="primary" />}
+        control={
+          <Checkbox
+            color="primary"
+            name="askForInput"
+            checked={formInput.askForInput}
+            onChange={handleFormCheckbox}
+          />
+        }
         label="Ask For Input"
         labelPlacement="end"
-        onChange={e => {
-          console.log(e.target.value);
-          console.log(e.target.checked);
-        }}
       />
       <Button onClick={saveCalculation}>{'Save & Next'}</Button>
     </FormControl>
