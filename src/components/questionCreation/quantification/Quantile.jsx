@@ -21,8 +21,13 @@ const Quantile = props => {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const saveCalculation = () => {
-    if (!formInput.bins || !formInput.maxValue || !formInput.minValue) {
+  const saveQuantification = () => {
+    if (
+      !formInput.bins ||
+      !formInput.maxValue ||
+      !formInput.minValue ||
+      !props.name
+    ) {
       enqueueSnackbar('Please fill the required fields!', { variant: 'error' });
       setSubmitted(true);
     } else {
@@ -111,7 +116,7 @@ const Quantile = props => {
         labelPlacement="end"
         onChange={handleFormCheckbox}
       />
-      <Button onClick={saveCalculation}>{'Save & Next'}</Button>
+      <Button onClick={saveQuantification}>{'Save & Next'}</Button>
     </FormControl>
   );
 };
@@ -119,5 +124,7 @@ const Quantile = props => {
 export default Quantile;
 
 Quantile.propTypes = {
-  postFormInput: PropTypes.func
+  postFormInput: PropTypes.func,
+  validateName: PropTypes.func,
+  name: PropTypes.string
 };

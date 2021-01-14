@@ -31,9 +31,19 @@ const Interval = props => {
   } = formInput;
   const { enqueueSnackbar } = useSnackbar();
 
-  const saveCalculation = () => {
-    if (!minValue || !maxValue || !minOperator || !maxOperator || !ucumString) {
-      enqueueSnackbar('Please fill the required fields!', { variant: 'error' });
+  const saveQuantification = () => {
+    if (!props.name) {
+      props.validateName();
+    } else if (
+      !minValue ||
+      !maxValue ||
+      !minOperator ||
+      !maxOperator ||
+      !ucumString
+    ) {
+      enqueueSnackbar('Please fill the required fields!', {
+        variant: 'error'
+      });
       setSubmitted(true);
     } else {
       props.postFormInput(formInput, 'Interval');
@@ -164,7 +174,7 @@ const Interval = props => {
         label="Ask For Input"
         labelPlacement="end"
       />
-      <Button onClick={saveCalculation}>{'Save & Next'}</Button>
+      <Button onClick={saveQuantification}>{'Save & Next'}</Button>
     </FormControl>
   );
 };
@@ -172,5 +182,7 @@ const Interval = props => {
 export default Interval;
 
 Interval.propTypes = {
-  postFormInput: PropTypes.func
+  postFormInput: PropTypes.func,
+  validateName: PropTypes.func,
+  name: PropTypes.string
 };

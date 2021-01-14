@@ -21,8 +21,8 @@ const Numerical = props => {
   const [submitted, setSubmitted] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
 
-  const saveCalculation = () => {
-    if (!formInput.value || !formInput.ucumString) {
+  const saveQuantification = () => {
+    if (!formInput.value || !formInput.ucumString || !props.name) {
       enqueueSnackbar('Please fill the required fields!', { variant: 'error' });
       setSubmitted(true);
     } else {
@@ -49,7 +49,7 @@ const Numerical = props => {
   };
 
   const handleFormCheckbox = e => {
-    const { checked, value, name } = e.target;
+    const { checked, name } = e.target;
     const newFormInput = { ...formInput, [name]: checked };
     setFormInput(newFormInput);
   };
@@ -131,7 +131,7 @@ const Numerical = props => {
         label="Ask For Input"
         labelPlacement="end"
       />
-      <Button onClick={saveCalculation}>{'Save & Next'}</Button>
+      <Button onClick={saveQuantification}>{'Save & Next'}</Button>
     </FormControl>
   );
 };
@@ -139,5 +139,7 @@ const Numerical = props => {
 export default Numerical;
 
 Numerical.propTypes = {
-  postFormInput: PropTypes.func
+  postFormInput: PropTypes.func,
+  validateName: PropTypes.func,
+  name: PropTypes.string
 };

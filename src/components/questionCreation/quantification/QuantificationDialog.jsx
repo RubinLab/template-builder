@@ -10,8 +10,8 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
-
-// import { useSnackbar } from 'notistack';
+import TextField from '@material-ui/core/TextField';
+import { useSnackbar } from 'notistack';
 import NonQuantifiable from './NonQuantifiable.jsx';
 import Interval from './Interval.jsx';
 import Numerical from './Numerical.jsx';
@@ -40,15 +40,17 @@ const useStyles = makeStyles(theme => ({
 
 const QuantificationDialog = props => {
   const [value, setValue] = React.useState('Scale');
+  const [name, setName] = React.useState('');
   const [annotatorConfidence, setAnnotatorConfidence] = React.useState(false);
   const [quantification, setQuantification] = React.useState([]);
   const [lastScaleType, setLastScaleType] = React.useState('');
+  const [submitted, setSubmitted] = React.useState(false);
 
-  //   const { enqueueSnackbar } = useSnackbar();
+  const { enqueueSnackbar } = useSnackbar();
   const classes = useStyles();
 
   const getQuantificationInput = (obj, type) => {
-    let result = [...quantification];
+    const result = [...quantification];
     const lastIndex = quantification.length
       ? quantification.length - 1
       : quantification.length;
@@ -64,7 +66,8 @@ const QuantificationDialog = props => {
         if (
           lastScaleType === obj.scaleType &&
           quantification[lastIndex] &&
-          quantification[lastIndex].Scale
+          quantification[lastIndex].Scale &&
+          quantification[lastIndex].name === name
         ) {
           // push the object to ScaleLevel attribute of the last item in the array
           result[lastIndex].Scale.ScaleLevel.push(item);
@@ -73,8 +76,7 @@ const QuantificationDialog = props => {
           // create a new scale quantification
           // set the scale type to
           const newScale = {
-            name: `scale${obj.scaleType}CharacteristicQuantification`,
-            characteristicQuantificationIndex: props.index,
+            name,
             annotatorConfidence,
             Scale: {
               scaleType: obj.scaleType,
@@ -87,12 +89,15 @@ const QuantificationDialog = props => {
         break;
       }
       case 'Numerical': {
-        if (quantification[lastIndex] && quantification[lastIndex].Numerical) {
+        if (
+          quantification[lastIndex] &&
+          quantification[lastIndex].Numerical &&
+          quantification[lastIndex].name === name
+        ) {
           result[lastIndex].Numerical.push(item);
         } else {
           const newNumerical = {
-            name: `NumericalCharacteristicQuantification`,
-            characteristicQuantificationIndex: props.index,
+            name,
             annotatorConfidence,
             Numerical: [item]
           };
@@ -103,12 +108,17 @@ const QuantificationDialog = props => {
         break;
       }
       case 'Interval': {
-        if (quantification[lastIndex] && quantification[lastIndex].Interval) {
+        console.log('in Interval');
+
+        if (
+          quantification[lastIndex] &&
+          quantification[lastIndex].Interval &&
+          quantification[lastIndex].name === name
+        ) {
           result[lastIndex].Interval.push(item);
         } else {
           const newInterval = {
-            name: `IntervalCharacteristicQuantification`,
-            characteristicQuantificationIndex: props.index,
+            name,
             annotatorConfidence,
             Interval: [item]
           };
@@ -119,12 +129,15 @@ const QuantificationDialog = props => {
         break;
       }
       case 'Quantile': {
-        if (quantification[lastIndex] && quantification[lastIndex].Interval) {
+        if (
+          quantification[lastIndex] &&
+          quantification[lastIndex].Interval &&
+          quantification[lastIndex].name === name
+        ) {
           result[lastIndex].Interval.push(item);
         } else {
           const newQuantile = {
-            name: `QuantileCharacteristicQuantification`,
-            characteristicQuantificationIndex: props.index,
+            name,
             annotatorConfidence,
             Quantile: [item]
           };
@@ -135,23 +148,29 @@ const QuantificationDialog = props => {
         break;
       }
       case 'NonQuantifiable': {
-        result = {
-          name: `NonQuantifiableCharacteristicQuantification`,
-          characteristicQuantificationIndex: props.index,
-          annotatorConfidence
-        };
-        // empty last scale type
-        setLastScaleType('');
-
+        if (
+          quantification[lastIndex] &&
+          quantification[lastIndex].NonQuantifiable &&
+          quantification[lastIndex].name === name
+        ) {
+          result[lastIndex].NonQuantifiable.push(item);
+        } else {
+          const newNonQuantifiable = {
+            name,
+            annotatorConfidence,
+            NonQuantifiable: [item]
+          };
+          // empty last scale type
+          result.push(newNonQuantifiable);
+          setLastScaleType('');
+        }
         break;
       }
       default:
         return result;
     }
-    // props.saveQuantification(result);
     setQuantification(result);
     return result;
-    // props.saveCalculation();
   };
 
   const renderForm = () => {
@@ -161,23 +180,77 @@ const QuantificationDialog = props => {
           <Scale
             postFormInput={getQuantificationInput}
             setNewScaleType={setLastScaleType}
+            validateName={() => setSubmitted(true)}
+            name={name}
           />
         );
       }
       case 'Numerical': {
-        return <Numerical postFormInput={getQuantificationInput} />;
+        return (
+          <Numerical
+            postFormInput={getQuantificationInput}
+            validateName={() => setSubmitted(true)}
+            name={name}
+          />
+        );
       }
       case 'Interval': {
-        return <Interval postFormInput={getQuantificationInput} />;
+        return (
+          <Interval
+            postFormInput={getQuantificationInput}
+            validateName={() => setSubmitted(true)}
+            name={name}
+          />
+        );
       }
       case 'Quantile': {
-        return <Quantile postFormInput={getQuantificationInput} />;
+        return (
+          <Quantile
+            postFormInput={getQuantificationInput}
+            validateName={() => setSubmitted(true)}
+            name={name}
+          />
+        );
       }
       case 'NonQuantifiable': {
-        return <NonQuantifiable postFormInput={getQuantificationInput} />;
+        return (
+          <NonQuantifiable
+            postFormInput={getQuantificationInput}
+            handleBioportalSearch={props.handleBioportalSearch}
+            ontologyLibs={props.ontologyLibs}
+            handleSearchInput={props.handleSearchInput}
+            handleOntologyInput={props.handleOntologyInput}
+            saveTerm={props.saveTerm}
+            searchTerm={props.searchTerm}
+            getUploadedTerms={props.getUploadedTerms}
+            ontology={props.ontology}
+            searchStatus={props.searchStatus}
+            nonquantifiableTerm={props.nonquantifiableTerm}
+            clearSearchTerm={props.clearSearchTerm}
+            validateName={() => setSubmitted(true)}
+            name={name}
+          />
+        );
       }
       default:
-        return <Scale postFormInput={getQuantificationInput} />;
+        return (
+          <Scale
+            postFormInput={getQuantificationInput}
+            validateName={() => setSubmitted(true)}
+            name={name}
+          />
+        );
+    }
+  };
+
+  const handleDone = () => {
+    if (!name) {
+      enqueueSnackbar('Please fill the required fields!', { variant: 'error' });
+      setSubmitted(true);
+    } else {
+      props.saveQuantification(quantification);
+      setSubmitted(false);
+      setName('');
     }
   };
 
@@ -185,9 +258,21 @@ const QuantificationDialog = props => {
     <Dialog open={props.open}>
       <DialogContent>
         <FormControl className={classes.formControl}>
+          <TextField
+            // className={classes.textField}
+            value={name}
+            label="Quantification Name"
+            name="name"
+            onChange={e => setName(e.target.value)}
+            required
+            error={!name && submitted}
+          />
           <InputLabel>Quantification type:</InputLabel>
           <Select
-            onChange={e => setValue(e.target.value)}
+            onChange={e => {
+              setValue(e.target.value);
+              props.clearSearchTerm();
+            }}
             value={value}
             label="Qantification Type"
           >
@@ -197,6 +282,7 @@ const QuantificationDialog = props => {
             <option value={'Quantile'}>Quantile</option>
             <option value={'NonQuantifiable'}>NonQuantifiable</option>
           </Select>
+
           <FormControlLabel
             control={
               <Checkbox
@@ -214,9 +300,16 @@ const QuantificationDialog = props => {
       </DialogContent>
       <DialogActions>
         <Button
-          onClick={() => props.saveQuantification(quantification)}
-          color="primary"
+          onClick={() => {
+            props.onCancel();
+            setName('');
+            setSubmitted(false);
+          }}
+          color="secondary"
         >
+          Cancel
+        </Button>
+        <Button onClick={handleDone} color="primary">
           Done
         </Button>
       </DialogActions>
@@ -228,10 +321,7 @@ export default QuantificationDialog;
 
 QuantificationDialog.propTypes = {
   saveQuantification: PropTypes.func,
-  index: PropTypes.number,
-  onCancel: PropTypes.func,
   open: PropTypes.bool,
-
   handleBioportalSearch: PropTypes.func,
   ontologyLibs: PropTypes.object,
   handleSearchInput: PropTypes.func,
@@ -240,5 +330,8 @@ QuantificationDialog.propTypes = {
   saveTerm: PropTypes.func,
   getUploadedTerms: PropTypes.func,
   ontology: PropTypes.string,
-  searchStatus: PropTypes.object
+  searchStatus: PropTypes.object,
+  nonquantifiableTerm: PropTypes.object,
+  clearSearchTerm: PropTypes.func,
+  onCancel: PropTypes.func
 };

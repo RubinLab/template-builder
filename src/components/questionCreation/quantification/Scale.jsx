@@ -22,8 +22,8 @@ const Scale = props => {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const saveCalculation = () => {
-    if (!formInput.value) {
+  const saveQuantification = () => {
+    if (!formInput.value || !props.name) {
       enqueueSnackbar('Please fill the required fields!', { variant: 'error' });
       setSubmitted(true);
     } else {
@@ -113,7 +113,7 @@ const Scale = props => {
         label="No more questions"
         labelPlacement="end"
       />
-      <Button onClick={saveCalculation}>{'Save & Next'}</Button>
+      <Button onClick={saveQuantification}>{'Save & Next'}</Button>
     </FormControl>
   );
 };
@@ -121,5 +121,8 @@ const Scale = props => {
 export default Scale;
 
 Scale.propTypes = {
-  postFormInput: PropTypes.func
+  postFormInput: PropTypes.func,
+  setNewScaleType: PropTypes.func,
+  validateName: PropTypes.func,
+  name: PropTypes.string
 };

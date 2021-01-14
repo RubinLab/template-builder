@@ -121,6 +121,7 @@ const QuestionForm = props => {
   const [ontologyLibs, setOntologyLibs] = useState(null);
   const [openSearch, setOpenSearch] = useState(false);
   const [addQuantification, setAddQuantification] = useState(false);
+  const [nonquantifiableTerm, setNonquantifiableTerm] = useState({});
   const [idForQuantification, setIdForQuantification] = useState(false);
 
   // const [quantificationName, setquantificationName] = useState('');
@@ -488,8 +489,22 @@ const QuestionForm = props => {
     return codeValue;
   };
 
+  const clearSearchSetup = () => {
+    setShowSearchResults(false);
+    setOpenSearch(false);
+    setOntologyLibs([]);
+    setSearchTerm('');
+    setSearchStatus({
+      explanation: null,
+      message: null,
+      onClick: null,
+      status: null
+    });
+  };
+
   const handleTermSelection = async (termIndex, title) => {
     try {
+      let allowedTerm = {};
       let newSelected = selectedTerms ? { ...selectedTerms } : {};
       const id = createID();
       if (title !== '99EPAD') {
@@ -498,7 +513,7 @@ const QuestionForm = props => {
           .pop();
         const url = searchResults.collection[termIndex][`@id`];
         const details = await getDetail(acronym, url);
-        const allowedTerm = returnSelection(acronym, details.data);
+        allowedTerm = returnSelection(acronym, details.data);
         if (allowedTerm || (allowedTerm && !allowedTerm.codeMeaning)) {
           const newTerm = {
             [id]: {
@@ -518,8 +533,8 @@ const QuestionForm = props => {
           });
         }
       } else {
-        const allowedTerm = {
-          codeValue: searchResults.collection[termIndex].codevaluee,
+        allowedTerm = {
+          codeValue: searchResults.collection[termIndex].codevalue,
           codeMeaning: searchResults.collection[termIndex].codemeaning,
           codingSchemeDesignator:
             searchResults.collection[termIndex].schemadesignator
@@ -527,26 +542,20 @@ const QuestionForm = props => {
         const newTerm = { [id]: { allowedTerm, title, id } };
         newSelected = { ...selectedTerms, ...newTerm };
       }
-      postQuestion({ ...formInput, selectedTerms: newSelected });
-      setTermSelection(newSelected);
-      setShowSearchResults(false);
-      setOpenSearch(false);
-      setOntologyLibs([]);
-      setSearchTerm('');
-      setSearchStatus({
-        explanation: null,
-        message: null,
-        onClick: null,
-        status: null
-      });
+      if (addQuantification) {
+        setNonquantifiableTerm(allowedTerm);
+        clearSearchSetup();
+      } else {
+        postQuestion({ ...formInput, selectedTerms: newSelected });
+        setTermSelection(newSelected);
+        clearSearchSetup();
+      }
     } catch (err) {
       console.error(err);
     }
   };
 
   const saveQuantification = quantification => {
-    console.log('quantification', quantification);
-    console.log(idForQuantification);
     const newSelected = { ...selectedTerms };
     const termWithQuantification = { ...newSelected[idForQuantification] };
     // check if already quantification form the term
@@ -568,10 +577,23 @@ const QuestionForm = props => {
   };
 
   const getUploadedTerms = data => {
-    const newSelected = { ...selectedTerms, ...data };
-    postQuestion({ ...formInput, selectedTerms: newSelected });
-    setTermSelection(newSelected);
-    setOpenSearch(false);
+    if (addQuantification) {
+      const dataArray = Object.values(data);
+      setNonquantifiableTerm(dataArray[0].allowedTerm);
+      if (dataArray.length > 1) {
+        enqueueSnackbar(
+          'First entry in the file is accepted! Expecting one term at a time!',
+          {
+            variant: 'warning'
+          }
+        );
+      }
+    } else {
+      const newSelected = { ...selectedTerms, ...data };
+      postQuestion({ ...formInput, selectedTerms: newSelected });
+      setTermSelection(newSelected);
+      setOpenSearch(false);
+    }
   };
 
   const assignDefaultVals = (min, max) => {
@@ -711,28 +733,37 @@ const QuestionForm = props => {
       </div>
 
       <div className={classes.answerGroup}>
-        {openSearch && (
-          <TermSearchDialog
-            handleBioportalSearch={handleBioportalSearch}
-            ontologyLibs={ontologyLibs}
-            handleSearchInput={handleSearchInput}
-            handleOntologyInput={handleOntologyInput}
-            saveTerm={saveTermToEPAD}
-            searchTerm={searchTerm}
-            getUploadedTerms={getUploadedTerms}
-            onCancel={() => setOpenSearch(false)}
-            ontology={ontology}
-            searchStatus={searchStatus}
-            open={openSearch}
-          />
-        )}
-        {addQuantification && (
-          <QuantificationDialog
-            onCancel={() => setAddQuantification(false)}
-            saveQuantification={saveQuantification}
-            open={addQuantification}
-          />
-        )}
+        <TermSearchDialog
+          handleBioportalSearch={handleBioportalSearch}
+          ontologyLibs={ontologyLibs}
+          handleSearchInput={handleSearchInput}
+          handleOntologyInput={handleOntologyInput}
+          saveTerm={saveTermToEPAD}
+          searchTerm={searchTerm}
+          getUploadedTerms={getUploadedTerms}
+          ontology={ontology}
+          searchStatus={searchStatus}
+          onCancel={() => setOpenSearch(false)}
+          open={openSearch}
+        />
+
+        <QuantificationDialog
+          saveQuantification={saveQuantification}
+          onCancel={() => setAddQuantification(false)}
+          clearSearchTerm={() => setNonquantifiableTerm({})}
+          open={addQuantification}
+          handleBioportalSearch={handleBioportalSearch}
+          ontologyLibs={ontologyLibs}
+          handleSearchInput={handleSearchInput}
+          handleOntologyInput={handleOntologyInput}
+          saveTerm={saveTermToEPAD}
+          searchTerm={searchTerm}
+          getUploadedTerms={getUploadedTerms}
+          ontology={ontology}
+          searchStatus={searchStatus}
+          nonquantifiableTerm={nonquantifiableTerm}
+        />
+
         <FormControl className={classes.formControl}>
           <InputLabel id="answerType">Answer type</InputLabel>
           <Select
