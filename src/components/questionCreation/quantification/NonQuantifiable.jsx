@@ -24,7 +24,6 @@ const NonQuantifiable = props => {
   };
 
   const handleFormInput = e => {
-    console.log(e.target);
     const { name, value } = e.target;
     const newFormInput = { ...formInput, [name]: value };
     setFormInput(newFormInput);

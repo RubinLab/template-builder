@@ -69,7 +69,7 @@ export default function AnswersList(props) {
               <span className={classes.ontologyTitle}>{title}</span>
             </div>
             <IconButton
-              onClick={() => handleAddCalculation(i)}
+              onClick={() => handleAddCalculation(el.id)}
               className={classes.listItemIcon}
             >
               <LinearScale />

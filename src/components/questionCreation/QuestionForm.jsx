@@ -121,6 +121,8 @@ const QuestionForm = props => {
   const [ontologyLibs, setOntologyLibs] = useState(null);
   const [openSearch, setOpenSearch] = useState(false);
   const [addQuantification, setAddQuantification] = useState(false);
+  const [idForQuantification, setIdForQuantification] = useState(false);
+
   // const [quantificationName, setquantificationName] = useState('');
   const [searchStatus, _setSearchStatus] = useState({
     explanation: null,
@@ -542,32 +544,27 @@ const QuestionForm = props => {
     }
   };
 
-  const handleAddCalculation = termIndex => {
-    console.log('termIndex', termIndex);
-    setAddQuantification(true);
-    // const allowedTerm = { ...selectedTerms.pop() };
-    // const newSelected = [...selectedTerms];
-    // if (allowedTerm.CharacteristicQuantification) {
-    //   allowedTerm.CharacteristicQuantification[0].Scale.ScaleLevel.push({
-    //     value,
-    //     valueLabel,
-    //     valueDescription
-    //   });
-    // } else {
-    //   allowedTerm.CharacteristicQuantification = [
-    //     {
-    //       name: quantificationName,
-    //       annotatorConfidence: false,
-    //       characteristicQuantificationIndex: 0,
-    //       Scale: {
-    //         scaleType: 'Nominal',
-    //         ScaleLevel: [{ value, valueLabel, valueDescription }]
-    //       }
-    //     }
-    //   ];
-    // }
-    // newSelected.push(allowedTerm);
-    // postQuestion({ ...formInput, selectedTerms: newSelected });
+  const saveQuantification = quantification => {
+    console.log('quantification', quantification);
+    console.log(idForQuantification);
+    const newSelected = { ...selectedTerms };
+    const termWithQuantification = { ...newSelected[idForQuantification] };
+    // check if already quantification form the term
+    const existingQuantification =
+      termWithQuantification.allowedTerm.CharacteristicQuantification;
+    // if there is merge, if not accept the new
+    const mergedQuantification = existingQuantification
+      ? [...existingQuantification, ...quantification]
+      : quantification;
+    // assign index numbers for quantification
+    const finalQuantification = mergedQuantification.map((el, i) => ({
+      ...el,
+      characteristicQuantificationIndex: i + 1
+    }));
+    termWithQuantification.allowedTerm.CharacteristicQuantification = finalQuantification;
+    newSelected[idForQuantification] = termWithQuantification;
+    setTermSelection(newSelected);
+    setAddQuantification(false);
   };
 
   const getUploadedTerms = data => {
@@ -732,7 +729,7 @@ const QuestionForm = props => {
         {addQuantification && (
           <QuantificationDialog
             onCancel={() => setAddQuantification(false)}
-            saveValue={handleAddCalculation}
+            saveQuantification={saveQuantification}
             open={addQuantification}
           />
         )}
@@ -787,7 +784,10 @@ const QuestionForm = props => {
             answers={Object.values(selectedTerms)}
             handleDelete={handleDeleteSelectedTerm}
             characteristic={characteristic}
-            handleAddCalculation={handleAddCalculation}
+            handleAddCalculation={index => {
+              setAddQuantification(true);
+              setIdForQuantification(index);
+            }}
           />
         </div>
       )}

@@ -5,6 +5,8 @@ import FormControl from '@material-ui/core/FormControl';
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Button from '@material-ui/core/Button';
+import Select from '@material-ui/core/Select';
+import InputLabel from '@material-ui/core/InputLabel';
 import { useSnackbar } from 'notistack';
 
 const Scale = props => {
@@ -12,6 +14,7 @@ const Scale = props => {
     value: '',
     valueLabel: '',
     valueDescription: '',
+    scaleType: 'Nominal',
     defaultAnswer: false,
     noMoreQuestions: false
   });
@@ -30,6 +33,7 @@ const Scale = props => {
         value: '',
         valueLabel: '',
         valueDescription: '',
+        scaleType: formInput.scaleType,
         defaultAnswer: false,
         noMoreQuestions: false
       });
@@ -38,7 +42,6 @@ const Scale = props => {
 
   const handleFormInput = e => {
     e.preventDefault();
-    console.log(e.target);
     const { name, value } = e.target;
     const newFormInput = { ...formInput, [name]: value };
     setFormInput(newFormInput);
@@ -52,6 +55,17 @@ const Scale = props => {
 
   return (
     <FormControl>
+      <InputLabel id="templateLevel">Scale Type</InputLabel>
+      <Select
+        value={formInput.scaleType}
+        onChange={handleFormInput}
+        name="scaleType"
+        // label="Scale Type"
+      >
+        <option value={'Nominal'}>Nominal</option>
+        <option value={'Ordinal'}>Ordinal</option>
+        <option value={'Ratio'}>Ratio</option>
+      </Select>
       <TextField
         // className={classes.textField}
         value={formInput.value}

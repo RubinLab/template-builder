@@ -43,7 +43,6 @@ const Numerical = props => {
 
   const handleFormInput = e => {
     e.preventDefault();
-    console.log(e.target);
     const { name, value } = e.target;
     const newFormInput = { ...formInput, [name]: value };
     setFormInput(newFormInput);
