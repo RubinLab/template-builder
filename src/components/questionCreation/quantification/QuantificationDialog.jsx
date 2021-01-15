@@ -60,115 +60,47 @@ const QuantificationDialog = props => {
     values.forEach((el, i) => {
       if (el && keys[i] !== 'scaleType') item[keys[i]] = el;
     });
-    switch (type) {
-      case 'Scale': {
-        // if last scaleType and last item in the array is Scale
-        if (
-          lastScaleType === obj.scaleType &&
-          quantification[lastIndex] &&
-          quantification[lastIndex].Scale &&
-          quantification[lastIndex].name === name
-        ) {
-          // push the object to ScaleLevel attribute of the last item in the array
-          result[lastIndex].Scale.ScaleLevel.push(item);
-        } else {
-          // if not
-          // create a new scale quantification
-          // set the scale type to
-          const newScale = {
-            name,
-            annotatorConfidence,
-            Scale: {
-              scaleType: obj.scaleType,
-              ScaleLevel: [item]
-            }
-          };
-          result.push(newScale);
-          setLastScaleType(obj.scaleType);
-        }
-        break;
-      }
-      case 'Numerical': {
-        if (
-          quantification[lastIndex] &&
-          quantification[lastIndex].Numerical &&
-          quantification[lastIndex].name === name
-        ) {
-          result[lastIndex].Numerical.push(item);
-        } else {
-          const newNumerical = {
-            name,
-            annotatorConfidence,
-            Numerical: [item]
-          };
-          result.push(newNumerical);
-          setLastScaleType('');
-        }
-        // empty last scale type
-        break;
-      }
-      case 'Interval': {
-        console.log('in Interval');
 
-        if (
-          quantification[lastIndex] &&
-          quantification[lastIndex].Interval &&
-          quantification[lastIndex].name === name
-        ) {
-          result[lastIndex].Interval.push(item);
-        } else {
-          const newInterval = {
-            name,
-            annotatorConfidence,
-            Interval: [item]
-          };
-          // empty last scale type
-          result.push(newInterval);
-          setLastScaleType('');
-        }
-        break;
+    if (type === 'Scale') {
+      // if last scaleType and last item in the array is Scale
+      if (
+        lastScaleType === obj.scaleType &&
+        quantification[lastIndex] &&
+        quantification[lastIndex].Scale &&
+        quantification[lastIndex].name === name
+      ) {
+        // push the object to ScaleLevel attribute of the last item in the array
+        result[lastIndex].Scale.ScaleLevel.push(item);
+      } else {
+        // if not create a new scale quantification
+        // set the scale type to new scale type
+        const newScale = {
+          name,
+          annotatorConfidence,
+          Scale: {
+            scaleType: obj.scaleType,
+            ScaleLevel: [item]
+          }
+        };
+        result.push(newScale);
+        setLastScaleType(obj.scaleType);
       }
-      case 'Quantile': {
-        if (
-          quantification[lastIndex] &&
-          quantification[lastIndex].Interval &&
-          quantification[lastIndex].name === name
-        ) {
-          result[lastIndex].Interval.push(item);
-        } else {
-          const newQuantile = {
-            name,
-            annotatorConfidence,
-            Quantile: [item]
-          };
-          // empty last scale type
-          result.push(newQuantile);
-          setLastScaleType('');
-        }
-        break;
-      }
-      case 'NonQuantifiable': {
-        if (
-          quantification[lastIndex] &&
-          quantification[lastIndex].NonQuantifiable &&
-          quantification[lastIndex].name === name
-        ) {
-          result[lastIndex].NonQuantifiable.push(item);
-        } else {
-          const newNonQuantifiable = {
-            name,
-            annotatorConfidence,
-            NonQuantifiable: [item]
-          };
-          // empty last scale type
-          result.push(newNonQuantifiable);
-          setLastScaleType('');
-        }
-        break;
-      }
-      default:
-        return result;
+    } else if (
+      quantification[lastIndex] &&
+      quantification[lastIndex][type] &&
+      quantification[lastIndex].name === name
+    ) {
+      result[lastIndex][type].push(item);
+    } else {
+      const quant = {
+        name,
+        annotatorConfidence,
+        [type]: [item]
+      };
+      result.push(quant);
+      setLastScaleType('');
     }
+
     setQuantification(result);
     return result;
   };
