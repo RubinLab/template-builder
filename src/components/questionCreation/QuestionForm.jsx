@@ -15,10 +15,10 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Select from '@material-ui/core/Select';
 import Checkbox from '@material-ui/core/Checkbox';
 import Drawer from '@material-ui/core/Drawer';
 import Button from '@material-ui/core/Button';
+import Select from '@material-ui/core/Select';
 import SearchResults from './searchResults.jsx';
 import AnswerList from './answersList.jsx';
 import TermSearchDialog from './TermSearchDialog.jsx';
@@ -30,7 +30,11 @@ import {
   getTermFromEPAD,
   insertTermToEPAD
 } from '../../services/apiServices';
-import { createID, shapeSelectedTermData } from '../../utils/helper';
+import {
+  createID,
+  shapeSelectedTermData,
+  geometricShapes
+} from '../../utils/helper';
 
 const materialUseStyles = makeStyles(theme => ({
   root: { direction: 'row', marginLeft: theme.spacing(1) },
@@ -62,12 +66,6 @@ const materialUseStyles = makeStyles(theme => ({
     flexWrap: 'wrap',
     marginTop: theme.spacing(3)
   },
-  answerGroup: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    flexWrap: 'wrap'
-  },
   checkbox: {
     marginLeft: theme.spacing(0),
     marginTop: theme.spacing(3),
@@ -86,6 +84,12 @@ const materialUseStyles = makeStyles(theme => ({
   resultsDrawer: {
     flexShrink: 0
   },
+  answerTermGroup: {
+    display: 'flex',
+    width: 400,
+    justifyContent: 'space-between',
+    alignItems: 'baseline'
+  },
   button: {
     display: 'block',
     marginTop: theme.spacing(3),
@@ -94,6 +98,9 @@ const materialUseStyles = makeStyles(theme => ({
     '&:hover': {
       background: '#CCBC8E'
     }
+  },
+  geometricShape: {
+    width: 150
   }
 }));
 
@@ -123,6 +130,7 @@ const QuestionForm = props => {
   const [addQuantification, setAddQuantification] = useState(false);
   const [nonquantifiableTerm, setNonquantifiableTerm] = useState({});
   const [idForQuantification, setIdForQuantification] = useState(false);
+  const [GeometricShape, setGeometricShape] = useState('');
 
   // const [quantificationName, setquantificationName] = useState('');
   const [searchStatus, _setSearchStatus] = useState({
@@ -732,76 +740,97 @@ const QuestionForm = props => {
         />
       </div>
 
-      <div className={classes.answerGroup}>
-        <TermSearchDialog
-          handleBioportalSearch={handleBioportalSearch}
-          ontologyLibs={ontologyLibs}
-          handleSearchInput={handleSearchInput}
-          handleOntologyInput={handleOntologyInput}
-          saveTerm={saveTermToEPAD}
-          searchTerm={searchTerm}
-          getUploadedTerms={getUploadedTerms}
-          ontology={ontology}
-          searchStatus={searchStatus}
-          onCancel={() => setOpenSearch(false)}
-          open={openSearch}
-        />
+      {/* <div className={classes.answerGroup}> */}
+      <TermSearchDialog
+        handleBioportalSearch={handleBioportalSearch}
+        ontologyLibs={ontologyLibs}
+        handleSearchInput={handleSearchInput}
+        handleOntologyInput={handleOntologyInput}
+        saveTerm={saveTermToEPAD}
+        searchTerm={searchTerm}
+        getUploadedTerms={getUploadedTerms}
+        ontology={ontology}
+        searchStatus={searchStatus}
+        onCancel={() => setOpenSearch(false)}
+        open={openSearch}
+      />
 
-        <QuantificationDialog
-          saveQuantification={saveQuantification}
-          onCancel={() => setAddQuantification(false)}
-          clearSearchTerm={() => setNonquantifiableTerm({})}
-          open={addQuantification}
-          handleBioportalSearch={handleBioportalSearch}
-          ontologyLibs={ontologyLibs}
-          handleSearchInput={handleSearchInput}
-          handleOntologyInput={handleOntologyInput}
-          saveTerm={saveTermToEPAD}
-          searchTerm={searchTerm}
-          getUploadedTerms={getUploadedTerms}
-          ontology={ontology}
-          searchStatus={searchStatus}
-          nonquantifiableTerm={nonquantifiableTerm}
-        />
+      <QuantificationDialog
+        saveQuantification={saveQuantification}
+        onCancel={() => setAddQuantification(false)}
+        clearSearchTerm={() => setNonquantifiableTerm({})}
+        open={addQuantification}
+        handleBioportalSearch={handleBioportalSearch}
+        ontologyLibs={ontologyLibs}
+        handleSearchInput={handleSearchInput}
+        handleOntologyInput={handleOntologyInput}
+        saveTerm={saveTermToEPAD}
+        searchTerm={searchTerm}
+        getUploadedTerms={getUploadedTerms}
+        ontology={ontology}
+        searchStatus={searchStatus}
+        nonquantifiableTerm={nonquantifiableTerm}
+      />
 
-        <FormControl className={classes.formControl}>
-          <InputLabel id="answerType">Answer type</InputLabel>
+      <FormControl className={classes.formControl}>
+        <InputLabel id="answerType">Answer type</InputLabel>
+        <Select
+          labelId="answerType"
+          id="answerType-controlled-open-select"
+          value={answerType}
+          onChange={handleAnswerTypeSelection}
+          className={classes.answerTypeMenu}
+        >
+          <MenuItem value={'single'}>
+            <RadioButtonChecked className={classes.icon} />
+            Single select
+          </MenuItem>
+          <MenuItem value={'multi'}>
+            <CheckBox className={classes.icon} />
+            Multiple select
+          </MenuItem>
+          <MenuItem value={'scale'}>
+            <LinearScale className={classes.icon} disabled={!characteristic} />
+            Scale/Quantification
+          </MenuItem>
+          <MenuItem value={'text'}>
+            <ShortText className={classes.icon} />
+            Short answer
+          </MenuItem>
+        </Select>
+      </FormControl>
+      <div className={classes.answerTermGroup}>
+        <Button
+          variant="outlined"
+          className={classes.button}
+          onClick={openTermAdding}
+          disabled={GeometricShape}
+        >
+          Add Controlled Term
+        </Button>
+        <FormControl className={classes.geometricShape}>
+          <InputLabel id="GeometricShape">Geometric Shape</InputLabel>
           <Select
-            labelId="answerType"
-            id="answerType-controlled-open-select"
-            value={answerType}
-            onChange={handleAnswerTypeSelection}
-            className={classes.answerTypeMenu}
+            labelId="GeometricShape"
+            value={GeometricShape}
+            onChange={e => {
+              console.log(e.target.value);
+              setGeometricShape(e.target.value);
+            }}
+            disabled={selectedTerms && Object.keys(selectedTerms).length > 0}
           >
-            <MenuItem value={'single'}>
-              <RadioButtonChecked className={classes.icon} />
-              Single select
+            <MenuItem value="">
+              <em>None</em>
             </MenuItem>
-            <MenuItem value={'multi'}>
-              <CheckBox className={classes.icon} />
-              Multiple select
-            </MenuItem>
-            <MenuItem value={'scale'}>
-              <LinearScale
-                className={classes.icon}
-                disabled={!characteristic}
-              />
-              Scale/Quantification
-            </MenuItem>
-            <MenuItem value={'text'}>
-              <ShortText className={classes.icon} />
-              Short answer
-            </MenuItem>
+            {Object.keys(geometricShapes).map(el => (
+              <MenuItem value={el} key={el}>
+                {geometricShapes[el]}
+              </MenuItem>
+            ))}
           </Select>
-          <Button
-            variant="outlined"
-            className={classes.button}
-            onClick={openTermAdding}
-          >
-            Add Term
-          </Button>
         </FormControl>
       </div>
+      {/* </div> */}
       {/* {answerType === 'scale' && characteristic && (
         <TextField
           className={classes.textField}
@@ -863,24 +892,6 @@ const QuestionForm = props => {
           }}
           disabled={disabled}
         />
-        {/* <TextField
-          className={classes.inputField}
-          label="Next ID"
-          size="small"
-          onChange={e => {
-            setNextID(e.target.value);
-          }}
-        />
-        <FormControlLabel
-          className={classes.checkbox}
-          value="noMore"
-          control={<Checkbox color="primary" />}
-          label="No more question"
-          labelPlacement="end"
-          onChange={e => {
-            setNoMore(e.target.value);
-          }}
-        /> */}
       </div>
       <div>
         <FormControlLabel

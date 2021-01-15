@@ -65,6 +65,23 @@ const ontologies = {
   SNOMEDCT: { name: `SNOMED CT`, acronym: `SNOMEDCT` }
 };
 
+const geometricShapes = {
+  Point: 'Point',
+  Circle: 'Circle',
+  Polyline: 'Polyline',
+  Ellipse: 'Ellipse',
+  MultiPoint: 'MultiPoint',
+  '3DPolygon': '3D Polygon',
+  '3DPolyline': '3D Polyline',
+  '3DMultiPoint': '3D Multi Point',
+  '3DPoint': '3D Point',
+  '3DEllipse': '3D Ellipse',
+  '3DEllipsoid': '3D Ellipsoid',
+  Line: 'Line',
+  AnyShape: 'Any Shape',
+  AnyClosedShape: 'Any Closed Shape'
+};
+
 function formAnswerIDFromIndeces(
   questionIndex,
   answerIndex,
@@ -101,5 +118,6 @@ export {
   ontologies,
   formAnswerIDFromIndeces,
   getIndecesFromAnswerID,
-  shapeSelectedTermData
+  shapeSelectedTermData,
+  geometricShapes
 };
