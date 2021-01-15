@@ -155,6 +155,8 @@ export default function HomePage({
     ajv.addMetaSchema(ajvDraft);
     const valid = ajv.validate(schema, cont);
     if (!valid) {
+      console.log('not valid errors:');
+      console.log(ajv.errors);
       setValErrors(validationErrors.concat(ajv.errors));
     } else {
       const containerExists = cont.TemplateContainer !== undefined;

@@ -174,7 +174,8 @@ const QuestionForm = props => {
     selectedTerms,
     minCard,
     maxCard,
-    showConfidence
+    showConfidence,
+    GeometricShape
   };
 
   const addToEpad = () => {};
@@ -814,7 +815,7 @@ const QuestionForm = props => {
             labelId="GeometricShape"
             value={GeometricShape}
             onChange={e => {
-              console.log(e.target.value);
+              postQuestion({ ...formInput, GeometricShape: e.target.value });
               setGeometricShape(e.target.value);
             }}
             disabled={selectedTerms && Object.keys(selectedTerms).length > 0}
