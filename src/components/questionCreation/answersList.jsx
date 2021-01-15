@@ -1,6 +1,7 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
+import LinearScale from '@material-ui/icons/LinearScale';
 import Delete from '@material-ui/icons/Delete';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -47,7 +48,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function AnswersList(props) {
   const classes = useStyles();
-  const { handleDelete, answers } = props;
+  const { handleDelete, handleAddCalculation, answers } = props;
 
   return (
     <List className={classes.list}>
@@ -68,6 +69,12 @@ export default function AnswersList(props) {
               <span className={classes.ontologyTitle}>{title}</span>
             </div>
             <IconButton
+              onClick={() => handleAddCalculation(el.id)}
+              className={classes.listItemIcon}
+            >
+              <LinearScale />
+            </IconButton>
+            <IconButton
               onClick={() => handleDelete(el)}
               className={classes.listItemIcon}
             >
@@ -82,5 +89,7 @@ export default function AnswersList(props) {
 
 AnswersList.propTypes = {
   handleDelete: PropTypes.func,
+  handleAddCalculation: PropTypes.func,
+  chracteristic: PropTypes.bool,
   answers: PropTypes.array
 };

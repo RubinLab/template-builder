@@ -21,7 +21,9 @@ import Drawer from '@material-ui/core/Drawer';
 import Button from '@material-ui/core/Button';
 import SearchResults from './searchResults.jsx';
 import AnswerList from './answersList.jsx';
-import TermSearch from './TermSearch.jsx';
+import TermSearchDialog from './TermSearchDialog.jsx';
+import QuantificationDialog from './quantification/QuantificationDialog.jsx';
+
 import {
   getCollectionResults,
   getDetail,
@@ -118,6 +120,11 @@ const QuestionForm = props => {
   const [answerType, setAnswerType] = useState('');
   const [ontologyLibs, setOntologyLibs] = useState(null);
   const [openSearch, setOpenSearch] = useState(false);
+  const [addQuantification, setAddQuantification] = useState(false);
+  const [nonquantifiableTerm, setNonquantifiableTerm] = useState({});
+  const [idForQuantification, setIdForQuantification] = useState(false);
+
+  // const [quantificationName, setquantificationName] = useState('');
   const [searchStatus, _setSearchStatus] = useState({
     explanation: null,
     message: null,
@@ -319,6 +326,7 @@ const QuestionForm = props => {
         } else {
           // if there isn't any filtter make the search only in epad
           const epadResults = await searchEPAD(searchTermRef.current.trim());
+
           if (epadResults.collection.length > 0)
             setSearchStatus(
               populateAlternativeSearch('showOther', epadResults)
@@ -481,8 +489,22 @@ const QuestionForm = props => {
     return codeValue;
   };
 
+  const clearSearchSetup = () => {
+    setShowSearchResults(false);
+    setOpenSearch(false);
+    setOntologyLibs([]);
+    setSearchTerm('');
+    setSearchStatus({
+      explanation: null,
+      message: null,
+      onClick: null,
+      status: null
+    });
+  };
+
   const handleTermSelection = async (termIndex, title) => {
     try {
+      let allowedTerm = {};
       let newSelected = selectedTerms ? { ...selectedTerms } : {};
       const id = createID();
       if (title !== '99EPAD') {
@@ -491,7 +513,7 @@ const QuestionForm = props => {
           .pop();
         const url = searchResults.collection[termIndex][`@id`];
         const details = await getDetail(acronym, url);
-        const allowedTerm = returnSelection(acronym, details.data);
+        allowedTerm = returnSelection(acronym, details.data);
         if (allowedTerm || (allowedTerm && !allowedTerm.codeMeaning)) {
           const newTerm = {
             [id]: {
@@ -511,8 +533,8 @@ const QuestionForm = props => {
           });
         }
       } else {
-        const allowedTerm = {
-          codeValue: searchResults.collection[termIndex].codevaluee,
+        allowedTerm = {
+          codeValue: searchResults.collection[termIndex].codevalue,
           codeMeaning: searchResults.collection[termIndex].codemeaning,
           codingSchemeDesignator:
             searchResults.collection[termIndex].schemadesignator
@@ -520,28 +542,58 @@ const QuestionForm = props => {
         const newTerm = { [id]: { allowedTerm, title, id } };
         newSelected = { ...selectedTerms, ...newTerm };
       }
-      postQuestion({ ...formInput, selectedTerms: newSelected });
-      setTermSelection(newSelected);
-      setShowSearchResults(false);
-      setOpenSearch(false);
-      setOntologyLibs([]);
-      setSearchTerm('');
-      setSearchStatus({
-        explanation: null,
-        message: null,
-        onClick: null,
-        status: null
-      });
+      if (addQuantification) {
+        setNonquantifiableTerm(allowedTerm);
+        clearSearchSetup();
+      } else {
+        postQuestion({ ...formInput, selectedTerms: newSelected });
+        setTermSelection(newSelected);
+        clearSearchSetup();
+      }
     } catch (err) {
       console.error(err);
     }
   };
 
-  const getUploadedTerms = data => {
-    const newSelected = { ...selectedTerms, ...data };
-    postQuestion({ ...formInput, selectedTerms: newSelected });
+  const saveQuantification = quantification => {
+    const newSelected = { ...selectedTerms };
+    const termWithQuantification = { ...newSelected[idForQuantification] };
+    // check if already quantification form the term
+    const existingQuantification =
+      termWithQuantification.allowedTerm.CharacteristicQuantification;
+    // if there is merge, if not accept the new
+    const mergedQuantification = existingQuantification
+      ? [...existingQuantification, ...quantification]
+      : quantification;
+    // assign index numbers for quantification
+    const finalQuantification = mergedQuantification.map((el, i) => ({
+      ...el,
+      characteristicQuantificationIndex: i + 1
+    }));
+    termWithQuantification.allowedTerm.CharacteristicQuantification = finalQuantification;
+    newSelected[idForQuantification] = termWithQuantification;
     setTermSelection(newSelected);
-    setOpenSearch(false);
+    setAddQuantification(false);
+  };
+
+  const getUploadedTerms = data => {
+    if (addQuantification) {
+      const dataArray = Object.values(data);
+      setNonquantifiableTerm(dataArray[0].allowedTerm);
+      if (dataArray.length > 1) {
+        enqueueSnackbar(
+          'First entry in the file is accepted! Expecting one term at a time!',
+          {
+            variant: 'warning'
+          }
+        );
+      }
+    } else {
+      const newSelected = { ...selectedTerms, ...data };
+      postQuestion({ ...formInput, selectedTerms: newSelected });
+      setTermSelection(newSelected);
+      setOpenSearch(false);
+    }
   };
 
   const assignDefaultVals = (min, max) => {
@@ -561,7 +613,24 @@ const QuestionForm = props => {
         assignDefaultVals(0, 3, false);
         break;
       case 'scale':
-        assignDefaultVals(null, null, true);
+        if (!characteristic) {
+          enqueueSnackbar(
+            `Quantification can be created in characteristic questions! 
+            Select a "Question type" and click on "ADD CHARACTERISTICS" button`,
+            {
+              variant: 'warning'
+            }
+          );
+          setAnswerType('');
+        } else {
+          enqueueSnackbar(
+            `To create a quantification, first add a term and click on the scale icon next to the term!`,
+            {
+              variant: 'info'
+            }
+          );
+          assignDefaultVals(1, 1, false);
+        }
         break;
       case 'text':
         assignDefaultVals(null, null, true);
@@ -599,6 +668,14 @@ const QuestionForm = props => {
       if (searchStatus.status === 'showOther' || searchTerm) {
         setSearchStatus(populateAlternativeSearch('suggestAddEpad'));
       }
+    }
+  };
+
+  const openTermAdding = () => {
+    if (answerType === 'single' || answerType === 'multi') {
+      setOpenSearch(true);
+    } else if (answerType === 'scale') {
+      // setAddQuantification(true);
     }
   };
 
@@ -656,20 +733,37 @@ const QuestionForm = props => {
       </div>
 
       <div className={classes.answerGroup}>
-        {openSearch && (
-          <TermSearch
-            handleBioportalSearch={handleBioportalSearch}
-            ontologyLibs={ontologyLibs}
-            handleSearchInput={handleSearchInput}
-            handleOntologyInput={handleOntologyInput}
-            saveTerm={saveTermToEPAD}
-            searchTerm={searchTerm}
-            getUploadedTerms={getUploadedTerms}
-            handleClose={() => setOpenSearch(false)}
-            ontology={ontology}
-            searchStatus={searchStatus}
-          />
-        )}
+        <TermSearchDialog
+          handleBioportalSearch={handleBioportalSearch}
+          ontologyLibs={ontologyLibs}
+          handleSearchInput={handleSearchInput}
+          handleOntologyInput={handleOntologyInput}
+          saveTerm={saveTermToEPAD}
+          searchTerm={searchTerm}
+          getUploadedTerms={getUploadedTerms}
+          ontology={ontology}
+          searchStatus={searchStatus}
+          onCancel={() => setOpenSearch(false)}
+          open={openSearch}
+        />
+
+        <QuantificationDialog
+          saveQuantification={saveQuantification}
+          onCancel={() => setAddQuantification(false)}
+          clearSearchTerm={() => setNonquantifiableTerm({})}
+          open={addQuantification}
+          handleBioportalSearch={handleBioportalSearch}
+          ontologyLibs={ontologyLibs}
+          handleSearchInput={handleSearchInput}
+          handleOntologyInput={handleOntologyInput}
+          saveTerm={saveTermToEPAD}
+          searchTerm={searchTerm}
+          getUploadedTerms={getUploadedTerms}
+          ontology={ontology}
+          searchStatus={searchStatus}
+          nonquantifiableTerm={nonquantifiableTerm}
+        />
+
         <FormControl className={classes.formControl}>
           <InputLabel id="answerType">Answer type</InputLabel>
           <Select
@@ -688,8 +782,11 @@ const QuestionForm = props => {
               Multiple select
             </MenuItem>
             <MenuItem value={'scale'}>
-              <LinearScale className={classes.icon} />
-              Linear scale
+              <LinearScale
+                className={classes.icon}
+                disabled={!characteristic}
+              />
+              Scale/Quantification
             </MenuItem>
             <MenuItem value={'text'}>
               <ShortText className={classes.icon} />
@@ -699,17 +796,29 @@ const QuestionForm = props => {
           <Button
             variant="outlined"
             className={classes.button}
-            onClick={() => setOpenSearch(true)}
+            onClick={openTermAdding}
           >
             Add Term
           </Button>
         </FormControl>
       </div>
+      {/* {answerType === 'scale' && characteristic && (
+        <TextField
+          className={classes.textField}
+          label="Name for the quantification"
+          onChange={e => setquantificationName(e.target.value)}
+        />
+      )} */}
       {selectedTerms && (
         <div>
           <AnswerList
             answers={Object.values(selectedTerms)}
             handleDelete={handleDeleteSelectedTerm}
+            characteristic={characteristic}
+            handleAddCalculation={index => {
+              setAddQuantification(true);
+              setIdForQuantification(index);
+            }}
           />
         </div>
       )}

@@ -293,7 +293,7 @@ export default function QuestionCreation(props) {
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => handleClose(false)} color="primary">
+          <Button onClick={() => handleClose(false)} color="secondary">
             Cancel
           </Button>
           <Button onClick={handleSave} color="primary">

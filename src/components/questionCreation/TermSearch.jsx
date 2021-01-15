@@ -11,10 +11,6 @@ import Search from '@material-ui/icons/Search';
 import IconButton from '@material-ui/core/IconButton';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
-import Dialog from '@material-ui/core/Dialog';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import Button from '@material-ui/core/Button';
 import Link from '@material-ui/core/Link';
 import SaveIcon from '@material-ui/icons/Save';
 import Container from '@material-ui/core/Container';
@@ -151,7 +147,6 @@ const TermSearch = props => {
     searchTerm,
     saveTerm,
     getUploadedTerms,
-    handleClose,
     ontology,
     searchStatus
   } = props;
@@ -338,35 +333,26 @@ const TermSearch = props => {
   };
 
   return (
-    <Dialog open={true}>
-      <DialogContent>
-        <div className={classes.root}>
-          <AppBar position="static" color="default">
-            <Tabs
-              value={value}
-              onChange={handleChange}
-              indicatorColor="primary"
-              textColor="primary"
-              variant="fullWidth"
-            >
-              <Tab label="Term Search" {...a11yProps(0)} />
-              <Tab label="upload Term" {...a11yProps(1)} />
-            </Tabs>
-          </AppBar>
-          <TabPanel value={value} index={0}>
-            {bioPortalSearch()}
-          </TabPanel>
-          <TabPanel value={value} index={1}>
-            {upload()}
-          </TabPanel>
-        </div>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={handleClose} color="secondary">
-          Cancel
-        </Button>
-      </DialogActions>
-    </Dialog>
+    <div className={classes.root}>
+      <AppBar position="static" color="default">
+        <Tabs
+          value={value}
+          onChange={handleChange}
+          indicatorColor="primary"
+          textColor="primary"
+          variant="fullWidth"
+        >
+          <Tab label="Term Search" {...a11yProps(0)} />
+          <Tab label="upload Term" {...a11yProps(1)} />
+        </Tabs>
+      </AppBar>
+      <TabPanel value={value} index={0}>
+        {bioPortalSearch()}
+      </TabPanel>
+      <TabPanel value={value} index={1}>
+        {upload()}
+      </TabPanel>
+    </div>
   );
 };
 
@@ -380,7 +366,6 @@ TermSearch.propTypes = {
   searchTerm: PropTypes.string,
   saveTerm: PropTypes.func,
   getUploadedTerms: PropTypes.func,
-  handleClose: PropTypes.func,
   ontology: PropTypes.string,
   searchStatus: PropTypes.object
 };
