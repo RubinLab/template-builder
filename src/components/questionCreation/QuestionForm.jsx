@@ -129,8 +129,9 @@ const QuestionForm = props => {
   const [openSearch, setOpenSearch] = useState(false);
   const [addQuantification, setAddQuantification] = useState(false);
   const [nonquantifiableTerm, setNonquantifiableTerm] = useState({});
-  const [idForQuantification, setIdForQuantification] = useState(false);
+  const [termID, setTermID] = useState(false);
   const [GeometricShape, setGeometricShape] = useState('');
+  const [addTerm, setAddTerm] = useState(false);
 
   // const [quantificationName, setquantificationName] = useState('');
   const [searchStatus, _setSearchStatus] = useState({
@@ -554,6 +555,14 @@ const QuestionForm = props => {
       if (addQuantification) {
         setNonquantifiableTerm(allowedTerm);
         clearSearchSetup();
+        setTermID('');
+      } else if (addTerm) {
+        if (selectedTerms[termID].allowedTerm.ValidTerm) {
+          selectedTerms[termID].allowedTerm.ValidTerm.push(allowedTerm);
+        } else {
+          selectedTerms[termID].allowedTerm.ValidTerm = [allowedTerm];
+        }
+        clearSearchSetup();
       } else {
         postQuestion({ ...formInput, selectedTerms: newSelected });
         setTermSelection(newSelected);
@@ -566,7 +575,7 @@ const QuestionForm = props => {
 
   const saveQuantification = quantification => {
     const newSelected = { ...selectedTerms };
-    const termWithQuantification = { ...newSelected[idForQuantification] };
+    const termWithQuantification = { ...newSelected[termID] };
     // check if already quantification form the term
     const existingQuantification =
       termWithQuantification.allowedTerm.CharacteristicQuantification;
@@ -580,9 +589,10 @@ const QuestionForm = props => {
       characteristicQuantificationIndex: i + 1
     }));
     termWithQuantification.allowedTerm.CharacteristicQuantification = finalQuantification;
-    newSelected[idForQuantification] = termWithQuantification;
+    newSelected[termID] = termWithQuantification;
     setTermSelection(newSelected);
     setAddQuantification(false);
+    setTermID('');
   };
 
   const getUploadedTerms = data => {
@@ -845,9 +855,14 @@ const QuestionForm = props => {
             answers={Object.values(selectedTerms)}
             handleDelete={handleDeleteSelectedTerm}
             characteristic={characteristic}
+            handleAddTerm={index => {
+              setTermID(index);
+              setOpenSearch(true);
+              setAddTerm(true);
+            }}
             handleAddCalculation={index => {
               setAddQuantification(true);
-              setIdForQuantification(index);
+              setTermID(index);
             }}
           />
         </div>
