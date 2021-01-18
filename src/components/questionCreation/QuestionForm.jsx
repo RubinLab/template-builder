@@ -734,14 +734,6 @@ const QuestionForm = props => {
     }
   };
 
-  const openTermAdding = () => {
-    if (answerType === 'single' || answerType === 'multi') {
-      setOpenSearch(true);
-    } else if (answerType === 'scale') {
-      // setAddQuantification(true);
-    }
-  };
-
   const disabled = answerType === 'single';
   return (
     <div className={classes.root}>
@@ -858,7 +850,7 @@ const QuestionForm = props => {
         <Button
           variant="outlined"
           className={classes.button}
-          onClick={openTermAdding}
+          onClick={() => setOpenSearch(true)}
           disabled={GeometricShape}
         >
           Add Controlled Term
