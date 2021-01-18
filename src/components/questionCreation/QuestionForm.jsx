@@ -118,7 +118,7 @@ const QuestionForm = props => {
   } = props;
   const [searchResults, setSearchResults] = useState({});
   const [question, setQuestion] = useState('');
-  const [explanatoryText, setExplanatoryText] = useState();
+  const [explanatoryText, setExplanatoryText] = useState('');
   const [questionType, setQuestionType] = useState('');
   const [showSearchResults, _setShowSearchResults] = useState(false);
   const [searchTerm, _setSearchTerm] = useState('');
@@ -384,28 +384,46 @@ const QuestionForm = props => {
   }, []);
 
   const filFormInputOnEdit = () => {
-    setQuestion(edit.label);
-    setExplanatoryText(edit.explanatoryText);
-    setMinCard(edit.minCardinality);
-    setMaxCard(edit.maxCardinality);
-    if (edit.maxCardinality === 1 && edit.minCardinality === 1) {
-      setAnswerType('single');
-    } else if (
-      typeof edit.maxCardinality === 'number' &&
-      typeof edit.minCardinality === 'number'
-    ) {
-      setAnswerType('multi');
+    try {
+      const editFormInput = {
+        explanatoryText: edit.explanatoryText,
+        maxCard: edit.maxCardinality,
+        minCard: edit.minCardinality,
+        question: edit.label
+      };
+      setQuestion(edit.label);
+      setExplanatoryText(edit.explanatoryText);
+      setMinCard(edit.minCardinality);
+      setMaxCard(edit.maxCardinality);
+      if (edit.maxCardinality === 1 && edit.minCardinality === 1) {
+        setAnswerType('single');
+      } else if (
+        typeof edit.maxCardinality === 'number' &&
+        typeof edit.minCardinality === 'number'
+      ) {
+        setAnswerType('multi');
+      }
+      if (edit && edit.AllowedTerm && edit.AllowedTerm.length > 0) {
+        const selectedTermsfromEdit = shapeSelectedTermData(edit.AllowedTerm);
+        setTermSelection(selectedTermsfromEdit);
+        editFormInput.selectedTerms = selectedTermsfromEdit;
+      }
+      if (edit.AnatomicEntity || (detailEdit && detailEdit[0] === 'anatomic')) {
+        setQuestionType('anatomic');
+        editFormInput.questionType = 'anatomic';
+      } else {
+        setQuestionType('observation');
+        editFormInput.questionType = 'observation';
+      }
+
+      if (edit.GeometricShape) {
+        setGeometricShape(edit.GeometricShape);
+        editFormInput.GeometricShape = edit.GeometricShape;
+      }
+      postQuestion(editFormInput);
+    } catch (err) {
+      console.error(err);
     }
-    if (edit && edit.AllowedTerm.length > 0) {
-      const selectedTermsfromEdit = shapeSelectedTermData(edit.AllowedTerm);
-      setTermSelection(selectedTermsfromEdit);
-    }
-    if (edit.AnatomicEntity || (detailEdit && detailEdit[0] === 'anatomic')) {
-      setQuestionType('anatomic');
-    } else {
-      setQuestionType('observation');
-    }
-    postQuestion(formInput);
   };
 
   useEffect(() => {
