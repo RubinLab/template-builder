@@ -112,7 +112,9 @@ const QuestionForm = props => {
     ontology,
     edit,
     detailEdit,
-    author
+    authors,
+    templateName,
+    templateUID
   } = props;
   const [searchResults, setSearchResults] = useState({});
   const [question, setQuestion] = useState('');
@@ -248,12 +250,36 @@ const QuestionForm = props => {
     }
   };
 
-  const saveTermToEPAD = description => {
-    const codeMeaning = searchTerm.trim();
-    insertTermToEPAD(codeMeaning, description, author)
-      .then(() => {
+  const saveTermToEPAD = (term, description) => {
+    const codeMeaningToSave = searchTerm.trim();
+    const termToSave = term.trim() || codeMeaningToSave;
+
+    insertTermToEPAD(
+      termToSave,
+      description,
+      authors,
+      templateName,
+      templateUID,
+      'T'
+    )
+      .then(res => {
+        setOpenSearch(false);
+        const id = createID();
+        const newSelectedTerms = { ...selectedTerms };
+        const { codemeaning, codevalue } = res.data;
+        newSelectedTerms[id] = {
+          allowedTerm: {
+            codeMeaning: codemeaning,
+            codeValue: codevalue,
+            codingSchemeDesignator: '99EPAD'
+          },
+          id,
+          title: '99EPAD'
+        };
+        setTermSelection(newSelectedTerms);
+
         enqueueSnackbar(
-          `${codeMeaning} successfully saved to the EPAD lexicon`,
+          `${termToSave} successfully saved to the EPAD lexicon`,
           {
             variant: 'success'
           }
@@ -265,7 +291,7 @@ const QuestionForm = props => {
             ? err.response.data.message
             : '';
         enqueueSnackbar(
-          `Couln't save ${codeMeaning} to the EPAD lexicon! ${errMessage}`,
+          `Couln't save ${termToSave} to the EPAD lexicon! ${errMessage}`,
           {
             variant: 'error'
           }
@@ -295,7 +321,7 @@ const QuestionForm = props => {
     } else if (epadResults.collection.length > 0) {
       setSearchStatus(
         populateAlternativeSearch('showOther', {
-          collection: epadResults
+          collection: epadResults.collection
         })
       );
     } else {
@@ -954,5 +980,7 @@ QuestionForm.propTypes = {
   ontology: PropTypes.string,
   edit: PropTypes.object,
   detailEdit: PropTypes.array,
-  author: PropTypes.string
+  authors: PropTypes.string,
+  templateName: PropTypes.string,
+  templateUID: PropTypes.string
 };

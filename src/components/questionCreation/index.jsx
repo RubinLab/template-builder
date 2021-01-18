@@ -47,7 +47,8 @@ export default function QuestionCreation(props) {
     authors,
     index,
     ontology,
-    edit
+    edit,
+    templateUID
   } = props;
   const [showDetailCreation, setShowDetailCreation] = useState(false);
   const [details, setDetails] = useState({
@@ -249,7 +250,9 @@ export default function QuestionCreation(props) {
             postQuestion={setQuestion}
             ontology={ontology}
             edit={edit}
-            author={authors}
+            authors={authors}
+            templateName={templateName}
+            templateUID={templateUID}
           />
 
           {showCharCreateButton && (
@@ -289,6 +292,8 @@ export default function QuestionCreation(props) {
               ontology={ontology}
               edit={editPath[0] ? details[editPath[0]][editPath[1]] : null}
               detailEdit={editPath}
+              templateName={templateName}
+              templateUID={templateUID}
             />
           )}
         </DialogContent>
@@ -314,5 +319,6 @@ QuestionCreation.propTypes = {
   authors: PropTypes.string,
   index: PropTypes.number,
   ontology: PropTypes.string,
-  edit: PropTypes.object
+  edit: PropTypes.object,
+  templateUID: PropTypes.string
 };
