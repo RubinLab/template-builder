@@ -5,11 +5,11 @@ import Accessibility from '@material-ui/icons/Accessibility';
 import { useSnackbar } from 'notistack';
 import Visibility from '@material-ui/icons/Visibility';
 // import Search from '@material-ui/icons/Search';
-import LocalHospital from '@material-ui/icons/LocalHospital';
+// import LocalHospital from '@material-ui/icons/LocalHospital';
 import RadioButtonChecked from '@material-ui/icons/RadioButtonChecked';
 import CheckBox from '@material-ui/icons/CheckBox';
 import LinearScale from '@material-ui/icons/LinearScale';
-import ShortText from '@material-ui/icons/ShortText';
+// import ShortText from '@material-ui/icons/ShortText';
 import TextField from '@material-ui/core/TextField';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -755,12 +755,12 @@ const QuestionForm = props => {
                 <Visibility className={classes.icon} />
                 Imaging Observation
               </MenuItem>
-              {!characteristic && (
+              {/* {!characteristic && (
                 <MenuItem value={'history'}>
                   <LocalHospital className={classes.icon} />
                   {`Clinical hist. & diagnosis`}
                 </MenuItem>
-              )}
+              )} */}
             </Select>
           </FormControl>
         </div>
@@ -840,10 +840,10 @@ const QuestionForm = props => {
             <LinearScale className={classes.icon} disabled={!characteristic} />
             Scale/Quantification
           </MenuItem>
-          <MenuItem value={'text'}>
+          {/* <MenuItem value={'text'}>
             <ShortText className={classes.icon} />
             Short answer
-          </MenuItem>
+          </MenuItem> */}
         </Select>
       </FormControl>
       <div className={classes.answerTermGroup}>

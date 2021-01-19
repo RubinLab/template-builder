@@ -2,7 +2,7 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Accessibility from '@material-ui/icons/Accessibility';
 import Visibility from '@material-ui/icons/Visibility';
-import LocalHospital from '@material-ui/icons/LocalHospital';
+// import LocalHospital from '@material-ui/icons/LocalHospital';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
@@ -10,20 +10,20 @@ import Select from '@material-ui/core/Select';
 const materialUseStyles = makeStyles(theme => ({
   formControl: {
     marginTop: theme.spacing(3),
-    minWidth: 150,
+    minWidth: 150
   },
   button: {
     display: 'block',
-    marginTop: theme.spacing(2),
+    marginTop: theme.spacing(2)
   },
   icon: {
-    marginRight: theme.spacing(1),
+    marginRight: theme.spacing(1)
   },
   textField: {
     marginTop: theme.spacing(3),
     minWidth: 400,
-    overflowWrap: 'break-word',
-  },
+    overflowWrap: 'break-word'
+  }
 }));
 
 export default function Form() {
@@ -46,10 +46,10 @@ export default function Form() {
           <Visibility className={classes.icon} />
           Imaging Observation
         </MenuItem>
-        <MenuItem value={'history'}>
+        {/* <MenuItem value={'history'}>
           <LocalHospital className={classes.icon} />
           {`Clinical hist. & diagnosis`}
-        </MenuItem>
+        </MenuItem> */}
       </Select>
     </>
   );
