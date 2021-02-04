@@ -137,6 +137,7 @@ TabPanel.propTypes = {
 const TermSearch = props => {
   const classes = useStyles();
   const [value, setValue] = React.useState(0);
+  const [termToSave, setTermToSave] = React.useState('');
   const [description, setDescription] = React.useState('');
   const { enqueueSnackbar } = useSnackbar();
   const {
@@ -257,6 +258,7 @@ const TermSearch = props => {
                 className={classes.searchInput}
                 // placeholder="Term"
                 defaultValue={searchTerm}
+                onChange={e => setTermToSave(e.target.value)}
               />
               <TextField
                 className={classes.searchInput}
@@ -266,7 +268,7 @@ const TermSearch = props => {
             </div>
             <IconButton
               className={classes.searchButton}
-              onClick={() => saveTerm(description)}
+              onClick={() => saveTerm(termToSave, description)}
             >
               <SaveIcon />
             </IconButton>

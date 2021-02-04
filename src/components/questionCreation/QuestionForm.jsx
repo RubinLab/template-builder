@@ -5,20 +5,20 @@ import Accessibility from '@material-ui/icons/Accessibility';
 import { useSnackbar } from 'notistack';
 import Visibility from '@material-ui/icons/Visibility';
 // import Search from '@material-ui/icons/Search';
-import LocalHospital from '@material-ui/icons/LocalHospital';
+// import LocalHospital from '@material-ui/icons/LocalHospital';
 import RadioButtonChecked from '@material-ui/icons/RadioButtonChecked';
 import CheckBox from '@material-ui/icons/CheckBox';
 import LinearScale from '@material-ui/icons/LinearScale';
-import ShortText from '@material-ui/icons/ShortText';
+// import ShortText from '@material-ui/icons/ShortText';
 import TextField from '@material-ui/core/TextField';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Select from '@material-ui/core/Select';
 import Checkbox from '@material-ui/core/Checkbox';
 import Drawer from '@material-ui/core/Drawer';
 import Button from '@material-ui/core/Button';
+import Select from '@material-ui/core/Select';
 import SearchResults from './searchResults.jsx';
 import AnswerList from './answersList.jsx';
 import TermSearchDialog from './TermSearchDialog.jsx';
@@ -30,7 +30,11 @@ import {
   getTermFromEPAD,
   insertTermToEPAD
 } from '../../services/apiServices';
-import { createID, shapeSelectedTermData } from '../../utils/helper';
+import {
+  createID,
+  shapeSelectedTermData,
+  geometricShapes
+} from '../../utils/helper';
 
 const materialUseStyles = makeStyles(theme => ({
   root: { direction: 'row', marginLeft: theme.spacing(1) },
@@ -62,12 +66,6 @@ const materialUseStyles = makeStyles(theme => ({
     flexWrap: 'wrap',
     marginTop: theme.spacing(3)
   },
-  answerGroup: {
-    display: 'flex',
-    flexDirection: 'row',
-    alignItems: 'flex-end',
-    flexWrap: 'wrap'
-  },
   checkbox: {
     marginLeft: theme.spacing(0),
     marginTop: theme.spacing(3),
@@ -86,6 +84,12 @@ const materialUseStyles = makeStyles(theme => ({
   resultsDrawer: {
     flexShrink: 0
   },
+  answerTermGroup: {
+    display: 'flex',
+    width: 400,
+    justifyContent: 'space-between',
+    alignItems: 'baseline'
+  },
   button: {
     display: 'block',
     marginTop: theme.spacing(3),
@@ -94,6 +98,9 @@ const materialUseStyles = makeStyles(theme => ({
     '&:hover': {
       background: '#CCBC8E'
     }
+  },
+  geometricShape: {
+    width: 150
   }
 }));
 
@@ -105,11 +112,13 @@ const QuestionForm = props => {
     ontology,
     edit,
     detailEdit,
-    author
+    authors,
+    templateName,
+    templateUID
   } = props;
   const [searchResults, setSearchResults] = useState({});
   const [question, setQuestion] = useState('');
-  const [explanatoryText, setExplanatoryText] = useState();
+  const [explanatoryText, setExplanatoryText] = useState('');
   const [questionType, setQuestionType] = useState('');
   const [showSearchResults, _setShowSearchResults] = useState(false);
   const [searchTerm, _setSearchTerm] = useState('');
@@ -122,7 +131,9 @@ const QuestionForm = props => {
   const [openSearch, setOpenSearch] = useState(false);
   const [addQuantification, setAddQuantification] = useState(false);
   const [nonquantifiableTerm, setNonquantifiableTerm] = useState({});
-  const [idForQuantification, setIdForQuantification] = useState(false);
+  const [termID, setTermID] = useState(false);
+  const [GeometricShape, setGeometricShape] = useState('');
+  const [addTerm, setAddTerm] = useState(false);
 
   // const [quantificationName, setquantificationName] = useState('');
   const [searchStatus, _setSearchStatus] = useState({
@@ -166,7 +177,8 @@ const QuestionForm = props => {
     selectedTerms,
     minCard,
     maxCard,
-    showConfidence
+    showConfidence,
+    GeometricShape
   };
 
   const addToEpad = () => {};
@@ -238,12 +250,36 @@ const QuestionForm = props => {
     }
   };
 
-  const saveTermToEPAD = description => {
-    const codeMeaning = searchTerm.trim();
-    insertTermToEPAD(codeMeaning, description, author)
-      .then(() => {
+  const saveTermToEPAD = (term, description) => {
+    const codeMeaningToSave = searchTerm.trim();
+    const termToSave = term.trim() || codeMeaningToSave;
+
+    insertTermToEPAD(
+      termToSave,
+      description,
+      authors,
+      templateName,
+      templateUID,
+      'T'
+    )
+      .then(res => {
+        setOpenSearch(false);
+        const id = createID();
+        const newSelectedTerms = { ...selectedTerms };
+        const { codemeaning, codevalue } = res.data;
+        newSelectedTerms[id] = {
+          allowedTerm: {
+            codeMeaning: codemeaning,
+            codeValue: codevalue,
+            codingSchemeDesignator: '99EPAD'
+          },
+          id,
+          title: '99EPAD'
+        };
+        setTermSelection(newSelectedTerms);
+
         enqueueSnackbar(
-          `${codeMeaning} successfully saved to the EPAD lexicon`,
+          `${termToSave} successfully saved to the EPAD lexicon`,
           {
             variant: 'success'
           }
@@ -255,7 +291,7 @@ const QuestionForm = props => {
             ? err.response.data.message
             : '';
         enqueueSnackbar(
-          `Couln't save ${codeMeaning} to the EPAD lexicon! ${errMessage}`,
+          `Couln't save ${termToSave} to the EPAD lexicon! ${errMessage}`,
           {
             variant: 'error'
           }
@@ -285,7 +321,7 @@ const QuestionForm = props => {
     } else if (epadResults.collection.length > 0) {
       setSearchStatus(
         populateAlternativeSearch('showOther', {
-          collection: epadResults
+          collection: epadResults.collection
         })
       );
     } else {
@@ -348,28 +384,46 @@ const QuestionForm = props => {
   }, []);
 
   const filFormInputOnEdit = () => {
-    setQuestion(edit.label);
-    setExplanatoryText(edit.explanatoryText);
-    setMinCard(edit.minCardinality);
-    setMaxCard(edit.maxCardinality);
-    if (edit.maxCardinality === 1 && edit.minCardinality === 1) {
-      setAnswerType('single');
-    } else if (
-      typeof edit.maxCardinality === 'number' &&
-      typeof edit.minCardinality === 'number'
-    ) {
-      setAnswerType('multi');
+    try {
+      const editFormInput = {
+        explanatoryText: edit.explanatoryText,
+        maxCard: edit.maxCardinality,
+        minCard: edit.minCardinality,
+        question: edit.label
+      };
+      setQuestion(edit.label);
+      setExplanatoryText(edit.explanatoryText);
+      setMinCard(edit.minCardinality);
+      setMaxCard(edit.maxCardinality);
+      if (edit.maxCardinality === 1 && edit.minCardinality === 1) {
+        setAnswerType('single');
+      } else if (
+        typeof edit.maxCardinality === 'number' &&
+        typeof edit.minCardinality === 'number'
+      ) {
+        setAnswerType('multi');
+      }
+      if (edit && edit.AllowedTerm && edit.AllowedTerm.length > 0) {
+        const selectedTermsfromEdit = shapeSelectedTermData(edit.AllowedTerm);
+        setTermSelection(selectedTermsfromEdit);
+        editFormInput.selectedTerms = selectedTermsfromEdit;
+      }
+      if (edit.AnatomicEntity || (detailEdit && detailEdit[0] === 'anatomic')) {
+        setQuestionType('anatomic');
+        editFormInput.questionType = 'anatomic';
+      } else {
+        setQuestionType('observation');
+        editFormInput.questionType = 'observation';
+      }
+
+      if (edit.GeometricShape) {
+        setGeometricShape(edit.GeometricShape);
+        editFormInput.GeometricShape = edit.GeometricShape;
+      }
+      postQuestion(editFormInput);
+    } catch (err) {
+      console.error(err);
     }
-    if (edit && edit.AllowedTerm.length > 0) {
-      const selectedTermsfromEdit = shapeSelectedTermData(edit.AllowedTerm);
-      setTermSelection(selectedTermsfromEdit);
-    }
-    if (edit.AnatomicEntity || (detailEdit && detailEdit[0] === 'anatomic')) {
-      setQuestionType('anatomic');
-    } else {
-      setQuestionType('observation');
-    }
-    postQuestion(formInput);
   };
 
   useEffect(() => {
@@ -545,6 +599,14 @@ const QuestionForm = props => {
       if (addQuantification) {
         setNonquantifiableTerm(allowedTerm);
         clearSearchSetup();
+        setTermID('');
+      } else if (addTerm) {
+        if (selectedTerms[termID].allowedTerm.ValidTerm) {
+          selectedTerms[termID].allowedTerm.ValidTerm.push(allowedTerm);
+        } else {
+          selectedTerms[termID].allowedTerm.ValidTerm = [allowedTerm];
+        }
+        clearSearchSetup();
       } else {
         postQuestion({ ...formInput, selectedTerms: newSelected });
         setTermSelection(newSelected);
@@ -557,7 +619,7 @@ const QuestionForm = props => {
 
   const saveQuantification = quantification => {
     const newSelected = { ...selectedTerms };
-    const termWithQuantification = { ...newSelected[idForQuantification] };
+    const termWithQuantification = { ...newSelected[termID] };
     // check if already quantification form the term
     const existingQuantification =
       termWithQuantification.allowedTerm.CharacteristicQuantification;
@@ -571,9 +633,10 @@ const QuestionForm = props => {
       characteristicQuantificationIndex: i + 1
     }));
     termWithQuantification.allowedTerm.CharacteristicQuantification = finalQuantification;
-    newSelected[idForQuantification] = termWithQuantification;
+    newSelected[termID] = termWithQuantification;
     setTermSelection(newSelected);
     setAddQuantification(false);
+    setTermID('');
   };
 
   const getUploadedTerms = data => {
@@ -671,14 +734,6 @@ const QuestionForm = props => {
     }
   };
 
-  const openTermAdding = () => {
-    if (answerType === 'single' || answerType === 'multi') {
-      setOpenSearch(true);
-    } else if (answerType === 'scale') {
-      // setAddQuantification(true);
-    }
-  };
-
   const disabled = answerType === 'single';
   return (
     <div className={classes.root}>
@@ -700,12 +755,12 @@ const QuestionForm = props => {
                 <Visibility className={classes.icon} />
                 Imaging Observation
               </MenuItem>
-              {!characteristic && (
+              {/* {!characteristic && (
                 <MenuItem value={'history'}>
                   <LocalHospital className={classes.icon} />
                   {`Clinical hist. & diagnosis`}
                 </MenuItem>
-              )}
+              )} */}
             </Select>
           </FormControl>
         </div>
@@ -732,76 +787,97 @@ const QuestionForm = props => {
         />
       </div>
 
-      <div className={classes.answerGroup}>
-        <TermSearchDialog
-          handleBioportalSearch={handleBioportalSearch}
-          ontologyLibs={ontologyLibs}
-          handleSearchInput={handleSearchInput}
-          handleOntologyInput={handleOntologyInput}
-          saveTerm={saveTermToEPAD}
-          searchTerm={searchTerm}
-          getUploadedTerms={getUploadedTerms}
-          ontology={ontology}
-          searchStatus={searchStatus}
-          onCancel={() => setOpenSearch(false)}
-          open={openSearch}
-        />
+      {/* <div className={classes.answerGroup}> */}
+      <TermSearchDialog
+        handleBioportalSearch={handleBioportalSearch}
+        ontologyLibs={ontologyLibs}
+        handleSearchInput={handleSearchInput}
+        handleOntologyInput={handleOntologyInput}
+        saveTerm={saveTermToEPAD}
+        searchTerm={searchTerm}
+        getUploadedTerms={getUploadedTerms}
+        ontology={ontology}
+        searchStatus={searchStatus}
+        onCancel={() => setOpenSearch(false)}
+        open={openSearch}
+      />
 
-        <QuantificationDialog
-          saveQuantification={saveQuantification}
-          onCancel={() => setAddQuantification(false)}
-          clearSearchTerm={() => setNonquantifiableTerm({})}
-          open={addQuantification}
-          handleBioportalSearch={handleBioportalSearch}
-          ontologyLibs={ontologyLibs}
-          handleSearchInput={handleSearchInput}
-          handleOntologyInput={handleOntologyInput}
-          saveTerm={saveTermToEPAD}
-          searchTerm={searchTerm}
-          getUploadedTerms={getUploadedTerms}
-          ontology={ontology}
-          searchStatus={searchStatus}
-          nonquantifiableTerm={nonquantifiableTerm}
-        />
+      <QuantificationDialog
+        saveQuantification={saveQuantification}
+        onCancel={() => setAddQuantification(false)}
+        clearSearchTerm={() => setNonquantifiableTerm({})}
+        open={addQuantification}
+        handleBioportalSearch={handleBioportalSearch}
+        ontologyLibs={ontologyLibs}
+        handleSearchInput={handleSearchInput}
+        handleOntologyInput={handleOntologyInput}
+        saveTerm={saveTermToEPAD}
+        searchTerm={searchTerm}
+        getUploadedTerms={getUploadedTerms}
+        ontology={ontology}
+        searchStatus={searchStatus}
+        nonquantifiableTerm={nonquantifiableTerm}
+      />
 
-        <FormControl className={classes.formControl}>
-          <InputLabel id="answerType">Answer type</InputLabel>
+      <FormControl className={classes.formControl}>
+        <InputLabel id="answerType">Answer type</InputLabel>
+        <Select
+          labelId="answerType"
+          id="answerType-controlled-open-select"
+          value={answerType}
+          onChange={handleAnswerTypeSelection}
+          className={classes.answerTypeMenu}
+        >
+          <MenuItem value={'single'}>
+            <RadioButtonChecked className={classes.icon} />
+            Single select
+          </MenuItem>
+          <MenuItem value={'multi'}>
+            <CheckBox className={classes.icon} />
+            Multiple select
+          </MenuItem>
+          <MenuItem value={'scale'}>
+            <LinearScale className={classes.icon} disabled={!characteristic} />
+            Scale/Quantification
+          </MenuItem>
+          {/* <MenuItem value={'text'}>
+            <ShortText className={classes.icon} />
+            Short answer
+          </MenuItem> */}
+        </Select>
+      </FormControl>
+      <div className={classes.answerTermGroup}>
+        <Button
+          variant="outlined"
+          className={classes.button}
+          onClick={() => setOpenSearch(true)}
+          disabled={GeometricShape}
+        >
+          Add Controlled Term
+        </Button>
+        <FormControl className={classes.geometricShape}>
+          <InputLabel id="GeometricShape">Geometric Shape</InputLabel>
           <Select
-            labelId="answerType"
-            id="answerType-controlled-open-select"
-            value={answerType}
-            onChange={handleAnswerTypeSelection}
-            className={classes.answerTypeMenu}
+            labelId="GeometricShape"
+            value={GeometricShape}
+            onChange={e => {
+              postQuestion({ ...formInput, GeometricShape: e.target.value });
+              setGeometricShape(e.target.value);
+            }}
+            disabled={selectedTerms && Object.keys(selectedTerms).length > 0}
           >
-            <MenuItem value={'single'}>
-              <RadioButtonChecked className={classes.icon} />
-              Single select
+            <MenuItem value="">
+              <em>None</em>
             </MenuItem>
-            <MenuItem value={'multi'}>
-              <CheckBox className={classes.icon} />
-              Multiple select
-            </MenuItem>
-            <MenuItem value={'scale'}>
-              <LinearScale
-                className={classes.icon}
-                disabled={!characteristic}
-              />
-              Scale/Quantification
-            </MenuItem>
-            <MenuItem value={'text'}>
-              <ShortText className={classes.icon} />
-              Short answer
-            </MenuItem>
+            {Object.keys(geometricShapes).map(el => (
+              <MenuItem value={el} key={el}>
+                {geometricShapes[el]}
+              </MenuItem>
+            ))}
           </Select>
-          <Button
-            variant="outlined"
-            className={classes.button}
-            onClick={openTermAdding}
-          >
-            Add Term
-          </Button>
         </FormControl>
       </div>
+      {/* </div> */}
       {/* {answerType === 'scale' && characteristic && (
         <TextField
           className={classes.textField}
@@ -815,9 +891,14 @@ const QuestionForm = props => {
             answers={Object.values(selectedTerms)}
             handleDelete={handleDeleteSelectedTerm}
             characteristic={characteristic}
+            handleAddTerm={index => {
+              setTermID(index);
+              setOpenSearch(true);
+              setAddTerm(true);
+            }}
             handleAddCalculation={index => {
               setAddQuantification(true);
-              setIdForQuantification(index);
+              setTermID(index);
             }}
           />
         </div>
@@ -863,24 +944,6 @@ const QuestionForm = props => {
           }}
           disabled={disabled}
         />
-        {/* <TextField
-          className={classes.inputField}
-          label="Next ID"
-          size="small"
-          onChange={e => {
-            setNextID(e.target.value);
-          }}
-        />
-        <FormControlLabel
-          className={classes.checkbox}
-          value="noMore"
-          control={<Checkbox color="primary" />}
-          label="No more question"
-          labelPlacement="end"
-          onChange={e => {
-            setNoMore(e.target.value);
-          }}
-        /> */}
       </div>
       <div>
         <FormControlLabel
@@ -927,5 +990,7 @@ QuestionForm.propTypes = {
   ontology: PropTypes.string,
   edit: PropTypes.object,
   detailEdit: PropTypes.array,
-  author: PropTypes.string
+  authors: PropTypes.string,
+  templateName: PropTypes.string,
+  templateUID: PropTypes.string
 };

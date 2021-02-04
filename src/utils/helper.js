@@ -12,9 +12,7 @@ function createTemplateQuestion(ques, authors, index, characteristic) {
   const minCardinality = parseInt(ques.minCard);
   // eslint-disable-next-line radix
   const maxCardinality = parseInt(ques.maxCard);
-  const allowedTerm = ques.selectedTerms
-    ? Object.values(ques.selectedTerms).map(el => el.allowedTerm)
-    : [];
+
   const component = {
     label: ques.question,
     itemNumber: index,
@@ -26,8 +24,14 @@ function createTemplateQuestion(ques, authors, index, characteristic) {
     id
   };
 
-  component.AllowedTerm = allowedTerm;
-
+  if (ques.GeometricShape) {
+    component.GeometricShape = ques.GeometricShape;
+  } else {
+    const allowedTerm = ques.selectedTerms
+      ? Object.values(ques.selectedTerms).map(el => el.allowedTerm)
+      : [];
+    component.AllowedTerm = allowedTerm;
+  }
   if (questionType === 'anatomic' && !characteristic) {
     component.AnatomicEntity = {
       annotatorConfidence: showConfidence
@@ -63,6 +67,23 @@ const ontologies = {
   RADLEX: { name: `Radiology Lexicon`, acronym: `RADLEX` },
   NCIT: { name: `National Cancer Institute Thesaurus`, acronym: `NCIT` },
   SNOMEDCT: { name: `SNOMED CT`, acronym: `SNOMEDCT` }
+};
+
+const geometricShapes = {
+  Point: 'Point',
+  Circle: 'Circle',
+  Polyline: 'Polyline',
+  Ellipse: 'Ellipse',
+  MultiPoint: 'MultiPoint',
+  '3DPolygon': '3D Polygon',
+  '3DPolyline': '3D Polyline',
+  '3DMultiPoint': '3D Multi Point',
+  '3DPoint': '3D Point',
+  '3DEllipse': '3D Ellipse',
+  '3DEllipsoid': '3D Ellipsoid',
+  Line: 'Line',
+  AnyShape: 'Any Shape',
+  AnyClosedShape: 'Any Closed Shape'
 };
 
 function formAnswerIDFromIndeces(
@@ -101,5 +122,6 @@ export {
   ontologies,
   formAnswerIDFromIndeces,
   getIndecesFromAnswerID,
-  shapeSelectedTermData
+  shapeSelectedTermData,
+  geometricShapes
 };

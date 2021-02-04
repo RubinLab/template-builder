@@ -2,10 +2,12 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import LinearScale from '@material-ui/icons/LinearScale';
+import AddCircle from '@material-ui/icons/AddCircle';
 import Delete from '@material-ui/icons/Delete';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
 
 const useStyles = makeStyles(theme => ({
   listItem: {
@@ -48,7 +50,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function AnswersList(props) {
   const classes = useStyles();
-  const { handleDelete, handleAddCalculation, answers } = props;
+  const { handleDelete, handleAddCalculation, handleAddTerm, answers } = props;
 
   return (
     <List className={classes.list}>
@@ -68,18 +70,30 @@ export default function AnswersList(props) {
               </span>
               <span className={classes.ontologyTitle}>{title}</span>
             </div>
-            <IconButton
-              onClick={() => handleAddCalculation(el.id)}
-              className={classes.listItemIcon}
-            >
-              <LinearScale />
-            </IconButton>
-            <IconButton
-              onClick={() => handleDelete(el)}
-              className={classes.listItemIcon}
-            >
-              <Delete />
-            </IconButton>
+            <Tooltip title="Add Quantification">
+              <IconButton
+                onClick={() => handleAddCalculation(el.id)}
+                className={classes.listItemIcon}
+              >
+                <LinearScale />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Add Term">
+              <IconButton
+                onClick={() => handleAddTerm(el.id)}
+                className={classes.listItemIcon}
+              >
+                <AddCircle />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Delete">
+              <IconButton
+                onClick={() => handleDelete(el)}
+                className={classes.listItemIcon}
+              >
+                <Delete />
+              </IconButton>
+            </Tooltip>
           </ListItem>
         );
       })}
@@ -90,6 +104,7 @@ export default function AnswersList(props) {
 AnswersList.propTypes = {
   handleDelete: PropTypes.func,
   handleAddCalculation: PropTypes.func,
+  handleAddTerm: PropTypes.func,
   chracteristic: PropTypes.bool,
   answers: PropTypes.array
 };

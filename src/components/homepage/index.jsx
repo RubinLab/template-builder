@@ -4,6 +4,7 @@ import Ajv from 'ajv';
 import ajvDraft from 'ajv/lib/refs/json-schema-draft-04.json';
 import _ from 'lodash';
 import { makeStyles } from '@material-ui/core/styles';
+import { useSnackbar } from 'notistack';
 import TextField from '@material-ui/core/TextField';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -139,13 +140,17 @@ export default function HomePage({
     linkedAnswer: null,
     linkedQuestion: null
   });
-  // const [open, setOpen] = useState(false);
   const [completeTemplate, setCompTemplate] = useState({});
   const [validationErrors, setValErrors] = useState([]);
   const [tempContUID, setTempContUID] = useState('');
   const [requiredError, setRequiredError] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
+  const [codeMeaning, setCodeMeaning] = useState('');
+  const [codeValue, setCodeValue] = useState('');
+  const [codingSchemaDesignator, setcodingSchemaDesignator] = useState('');
   const [showForm, setShowForm] = useState(true);
+  const { enqueueSnackbar } = useSnackbar();
+
   // TODO
   // CLARIFY how and whre to get data like version codemeaning, codevalue etc.
   // clarify the difference between template and the container
@@ -155,6 +160,8 @@ export default function HomePage({
     ajv.addMetaSchema(ajvDraft);
     const valid = ajv.validate(schema, cont);
     if (!valid) {
+      console.log('not valid errors:');
+      console.log(ajv.errors);
       setValErrors(validationErrors.concat(ajv.errors));
     } else {
       const containerExists = cont.TemplateContainer !== undefined;
@@ -197,10 +204,10 @@ export default function HomePage({
     newTemplate.version = version;
     newTemplate.creationDate = getDate();
     newTemplate.description = description;
-    newTemplate.codeMeaning = ''; // ???
-    newTemplate.codeValue = ''; // ??
-    newTemplate.codingSchemeDesignator = ''; // ??
-    newTemplate.codingSchemeVersion = ''; // ??
+    newTemplate.codeMeaning = codeMeaning; // ???
+    newTemplate.codeValue = codeValue; // ??
+    newTemplate.codingSchemaDesignator = codingSchemaDesignator; // ??
+    // newTemplate.codingSchemeVersion = ''; // ??
     return newTemplate;
   };
 
@@ -273,13 +280,24 @@ export default function HomePage({
     } else id = createID();
     setquestionID(id);
   };
+
   const checkRequiredFields = addQuestionClicked => {
-    if ((!description || !templateName || !version) && showDialog) {
+    const showError =
+      !description ||
+      !templateName ||
+      !version ||
+      !author ||
+      !codeMeaning ||
+      !codeValue ||
+      !codingSchemaDesignator;
+
+    if (showError && showDialog) {
       setRequiredError(true);
+      enqueueSnackbar('Please fill the required fields!', { variant: 'error' });
       if (addQuestionClicked) handleAddQuestion(false);
     }
 
-    if (description && templateName && version) {
+    if (!showError) {
       setRequiredError(false);
     }
   };
@@ -506,11 +524,6 @@ export default function HomePage({
                   <form className={classes.form} noValidate autoComplete="off">
                     <TextField
                       error={requiredError && !templateName}
-                      helperText={
-                        requiredError && !templateName
-                          ? 'Fill before creating a question'
-                          : ''
-                      }
                       required={true}
                       className={classes.textField}
                       id="standard-basic"
@@ -540,14 +553,11 @@ export default function HomePage({
                         id="standard-basic"
                         label="Author"
                         onChange={e => setAuthor(e.target.value)}
+                        required={true}
+                        error={requiredError && !author}
                       />
                       <TextField
                         error={requiredError && !description}
-                        helperText={
-                          requiredError && !description
-                            ? 'Fill before creating a question'
-                            : ''
-                        }
                         required={true}
                         className={classes.textField}
                         multiline
@@ -560,11 +570,6 @@ export default function HomePage({
                       />
                       <TextField
                         error={requiredError && !version}
-                        helperText={
-                          requiredError && !version
-                            ? 'Fill before creating a question'
-                            : ''
-                        }
                         required={true}
                         className={classes.textField}
                         id="standard-basic"
@@ -574,9 +579,48 @@ export default function HomePage({
                           setVersion(e.target.value);
                         }}
                       />
+
+                      <TextField
+                        error={requiredError && !codeMeaning}
+                        required={true}
+                        className={classes.textField}
+                        id="standard-basic"
+                        label="Code Meaning"
+                        onChange={e => {
+                          checkRequiredFields();
+                          setCodeMeaning(e.target.value);
+                        }}
+                      />
+
+                      <TextField
+                        error={requiredError && !codeValue}
+                        required={true}
+                        className={classes.textField}
+                        id="standard-basic"
+                        label="Code Value"
+                        onChange={e => {
+                          checkRequiredFields();
+                          setCodeValue(e.target.value);
+                        }}
+                      />
+
+                      <TextField
+                        error={requiredError && !codingSchemaDesignator}
+                        required={true}
+                        className={classes.textField}
+                        id="standard-basic"
+                        label="Coding Schema Designator"
+                        onChange={e => {
+                          checkRequiredFields();
+                          setcodingSchemaDesignator(e.target.value);
+                        }}
+                      />
                     </FormControl>
+
                     <FormControl className={classes.formControl}>
-                      <InputLabel id="ontology">Default Ontology</InputLabel>
+                      <InputLabel id="ontology">
+                        Default ontology for term search
+                      </InputLabel>
                       <Select
                         className={classes.textField}
                         labelId="ontology"
@@ -671,6 +715,8 @@ export default function HomePage({
           index={questions.length}
           ontology={ontology}
           edit={questions[editIndex]}
+          templateName={templateName}
+          templateUID={tempContUID}
         />
       )}
       <Snackbar
