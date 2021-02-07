@@ -7,7 +7,13 @@ function createID() {
 }
 
 function createTemplateQuestion(ques, authors, index, characteristic) {
-  const { questionType, explanatoryText, id, showConfidence } = ques;
+  const {
+    questionType,
+    explanatoryText,
+    id,
+    showConfidence,
+    requireComment
+  } = ques;
   // eslint-disable-next-line radix
   const minCardinality = parseInt(ques.minCard);
   // eslint-disable-next-line radix
@@ -17,6 +23,7 @@ function createTemplateQuestion(ques, authors, index, characteristic) {
     label: ques.question,
     itemNumber: index,
     authors,
+    requireComment,
     explanatoryText,
     minCardinality,
     maxCardinality,

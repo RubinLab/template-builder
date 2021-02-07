@@ -147,7 +147,7 @@ export default function HomePage({
   const [editIndex, setEditIndex] = useState(null);
   const [codeMeaning, setCodeMeaning] = useState('');
   const [codeValue, setCodeValue] = useState('');
-  const [codingSchemaDesignator, setcodingSchemaDesignator] = useState('');
+  const [codingSchemeDesignator, setcodingSchemeDesignator] = useState('');
   const [showForm, setShowForm] = useState(true);
   const { enqueueSnackbar } = useSnackbar();
 
@@ -206,7 +206,7 @@ export default function HomePage({
     newTemplate.description = description;
     newTemplate.codeMeaning = codeMeaning; // ???
     newTemplate.codeValue = codeValue; // ??
-    newTemplate.codingSchemaDesignator = codingSchemaDesignator; // ??
+    newTemplate.codingSchemeDesignator = codingSchemeDesignator; // ??
     // newTemplate.codingSchemeVersion = ''; // ??
     return newTemplate;
   };
@@ -289,7 +289,7 @@ export default function HomePage({
       !author ||
       !codeMeaning ||
       !codeValue ||
-      !codingSchemaDesignator;
+      !codingSchemeDesignator;
 
     if (showError && showDialog) {
       setRequiredError(true);
@@ -605,14 +605,14 @@ export default function HomePage({
                       />
 
                       <TextField
-                        error={requiredError && !codingSchemaDesignator}
+                        error={requiredError && !codingSchemeDesignator}
                         required={true}
                         className={classes.textField}
                         id="standard-basic"
                         label="Coding Schema Designator"
                         onChange={e => {
                           checkRequiredFields();
-                          setcodingSchemaDesignator(e.target.value);
+                          setcodingSchemeDesignator(e.target.value);
                         }}
                       />
                     </FormControl>
@@ -715,7 +715,6 @@ export default function HomePage({
           index={questions.length}
           ontology={ontology}
           edit={questions[editIndex]}
-          templateName={templateName}
           templateUID={tempContUID}
         />
       )}

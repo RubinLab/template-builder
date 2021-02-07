@@ -51,6 +51,7 @@ function App() {
 
   const handleDownload = async () => {
     if (!validTemplate || misingInfo) {
+      console.log('validTemplate', validTemplate);
       setShowSnackbar(true);
     } else {
       try {
