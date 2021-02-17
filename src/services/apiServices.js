@@ -68,7 +68,6 @@ const insertTermToEPAD = (
   referenceuid,
   referencetype
 ) => {
-  console.log('this is called!!!');
   return axios.post(
     `${EPAD_URL}/ontology`,
     {

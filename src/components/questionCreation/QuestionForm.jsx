@@ -179,10 +179,9 @@ const QuestionForm = props => {
     minCard,
     maxCard,
     showConfidence,
-    GeometricShape
+    GeometricShape,
+    requireComment
   };
-
-  if (requireComment) formInput[requireComment] = requireComment;
 
   const addToEpad = () => {};
 
@@ -662,10 +661,16 @@ const QuestionForm = props => {
     }
   };
 
-  const assignDefaultVals = (min, max) => {
+  const assignDefaultVals = (min, max, comment) => {
     setMinCard(min);
     setMaxCard(max);
-    postQuestion({ ...formInput, minCard: min, maxCard: max });
+    setRequireComment(comment);
+    postQuestion({
+      ...formInput,
+      minCard: min,
+      maxCard: max,
+      requireComment: comment
+    });
   };
 
   const handleAnswerTypeSelection = e => {
@@ -673,7 +678,7 @@ const QuestionForm = props => {
     setAnswerType(selection);
     switch (selection) {
       case 'single':
-        assignDefaultVals(1, 1, true);
+        assignDefaultVals(1, 1, false);
         break;
       case 'multi':
         assignDefaultVals(0, 3, false);
@@ -700,7 +705,6 @@ const QuestionForm = props => {
         break;
       case 'text':
         assignDefaultVals(0, 1, true);
-        setRequireComment(true);
         break;
       default:
         setMinCard(null);
