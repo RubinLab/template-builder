@@ -4,7 +4,8 @@ import config from './keys';
 import { ontologies } from '../utils/helper';
 
 const BIOPORTAL_URL = 'http://data.bioontology.org';
-const EPAD_URL = 'http://localhost:8080';
+// const EPAD_URL = 'http://localhost:8080';
+const EPAD_URL = 'http://bds-c02xf0r0jhd5.local:8080';
 
 const validatOntologyFilter = list => {
   let result = [];
@@ -27,7 +28,7 @@ const getCollectionResults = (keyword, ontologiesList, page) => {
   return axios.get(
     `${BIOPORTAL_URL}${params}&pagesize=150&display=prefLabel,synonym,definition,notation,cui,semanticType,properties`,
     {
-      headers: { Authorization: `apikey token=${config.API_KEY}` }
+      headers: { Authorization: `apikey token=${config.bioportal}` }
     }
   );
 };
@@ -39,7 +40,7 @@ const getDetail = (ontology, url) => {
   return axios.get(
     `${BIOPORTAL_URL}/ontologies/${ontology}/classes/${encodedURL}?display=all`,
     {
-      headers: { Authorization: `apikey token=${config.API_KEY}` }
+      headers: { Authorization: `apikey token=${config.bioportal}` }
     }
   );
 };
@@ -48,21 +49,39 @@ const getSelectedDetails = (ontology, url) => {
   return axios.get(
     `${BIOPORTAL_URL}/ontologies/${ontology}/${url}?display=all`,
     {
-      headers: { Authorization: `apikey token=${config.API_KEY}` }
+      headers: { Authorization: `apikey token=${config.bioportal}` }
     }
   );
 };
 
 const getTermFromEPAD = term => {
-  return axios.get(`${EPAD_URL}/ontology?codemeaning=${term}`);
+  return axios.get(`${EPAD_URL}/ontology?codemeaning=${term}`, {
+    headers: { Authorization: `apikey ${config.epad}` }
+  });
 };
 
-const insertTermToEPAD = (codemeaning, description, creator) => {
-  return axios.post(`${EPAD_URL}/ontology`, {
-    codemeaning,
-    description,
-    creator
-  });
+const insertTermToEPAD = (
+  codemeaning,
+  description,
+  creator,
+  referencename,
+  referenceuid,
+  referencetype
+) => {
+  return axios.post(
+    `${EPAD_URL}/ontology`,
+    {
+      codemeaning,
+      description,
+      creator,
+      referencename,
+      referenceuid,
+      referencetype
+    },
+    {
+      headers: { Authorization: `apikey ${config.epad}` }
+    }
+  );
 };
 
 export {

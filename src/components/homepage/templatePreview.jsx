@@ -32,13 +32,13 @@ const materialUseStyles = makeStyles(theme => ({
 
 export default function TemplatePreview(props) {
   const [buttonGroupShow, setButtonGroupShow] = useState(false);
-  console.log(buttonGroupShow);
   const validateForm = hasError => {
     if (hasError) console.log('Answer form has error/s!!!');
   };
 
   const renderButtons = buttonsState => {
     setButtonGroupShow(buttonsState);
+    console.log(buttonGroupShow);
   };
 
   useEffect(() => {

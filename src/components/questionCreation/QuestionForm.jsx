@@ -9,7 +9,7 @@ import Visibility from '@material-ui/icons/Visibility';
 import RadioButtonChecked from '@material-ui/icons/RadioButtonChecked';
 import CheckBox from '@material-ui/icons/CheckBox';
 import LinearScale from '@material-ui/icons/LinearScale';
-// import ShortText from '@material-ui/icons/ShortText';
+import ShortText from '@material-ui/icons/ShortText';
 import TextField from '@material-ui/core/TextField';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -125,6 +125,7 @@ const QuestionForm = props => {
   const [selectedTerms, setTermSelection] = useState(null);
   const [minCard, setMinCard] = useState('');
   const [maxCard, setMaxCard] = useState('');
+  const [requireComment, setRequireComment] = useState(false);
   const [showConfidence, setshowConfidence] = useState(false);
   const [answerType, setAnswerType] = useState('');
   const [ontologyLibs, setOntologyLibs] = useState(null);
@@ -178,7 +179,8 @@ const QuestionForm = props => {
     minCard,
     maxCard,
     showConfidence,
-    GeometricShape
+    GeometricShape,
+    requireComment
   };
 
   const addToEpad = () => {};
@@ -659,10 +661,16 @@ const QuestionForm = props => {
     }
   };
 
-  const assignDefaultVals = (min, max) => {
+  const assignDefaultVals = (min, max, comment) => {
     setMinCard(min);
     setMaxCard(max);
-    postQuestion({ ...formInput, minCard: min, maxCard: max });
+    setRequireComment(comment);
+    postQuestion({
+      ...formInput,
+      minCard: min,
+      maxCard: max,
+      requireComment: comment
+    });
   };
 
   const handleAnswerTypeSelection = e => {
@@ -670,7 +678,7 @@ const QuestionForm = props => {
     setAnswerType(selection);
     switch (selection) {
       case 'single':
-        assignDefaultVals(1, 1, true);
+        assignDefaultVals(1, 1, false);
         break;
       case 'multi':
         assignDefaultVals(0, 3, false);
@@ -696,7 +704,7 @@ const QuestionForm = props => {
         }
         break;
       case 'text':
-        assignDefaultVals(null, null, true);
+        assignDefaultVals(0, 1, true);
         break;
       default:
         setMinCard(null);
@@ -840,10 +848,10 @@ const QuestionForm = props => {
             <LinearScale className={classes.icon} disabled={!characteristic} />
             Scale/Quantification
           </MenuItem>
-          {/* <MenuItem value={'text'}>
+          <MenuItem value={'text'}>
             <ShortText className={classes.icon} />
             Short answer
-          </MenuItem> */}
+          </MenuItem>
         </Select>
       </FormControl>
       <div className={classes.answerTermGroup}>
