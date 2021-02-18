@@ -147,7 +147,7 @@ export default function HomePage({
   const [editIndex, setEditIndex] = useState(null);
   const [codeMeaning, setCodeMeaning] = useState('');
   const [codeValue, setCodeValue] = useState('');
-  const [codingSchemaDesignator, setcodingSchemaDesignator] = useState('');
+  const [codingSchemeDesignator, setcodingSchemeDesignator] = useState('');
   const [showForm, setShowForm] = useState(true);
   const { enqueueSnackbar } = useSnackbar();
 
@@ -207,7 +207,7 @@ export default function HomePage({
     newTemplate.description = description;
     newTemplate.codeMeaning = codeMeaning; // ???
     newTemplate.codeValue = codeValue; // ??
-    newTemplate.codingSchemaDesignator = codingSchemaDesignator; // ??
+    newTemplate.codingSchemeDesignator = codingSchemeDesignator; // ??
     // newTemplate.codingSchemeVersion = ''; // ??
     return newTemplate;
   };
@@ -229,6 +229,18 @@ export default function HomePage({
   // creating a link between an answer and question is
   // a too easy task for showing a warning message
   // show this warning for question deletion instead
+
+  const updateTemplateMeadata = (key, value) => {
+    if (Object.keys(completeTemplate).length > 0) {
+      const newCompleteTemplate = { ...completeTemplate };
+      const commonKeys = ['name', 'authors', 'version'];
+      if (commonKeys.includes(key)) {
+        newCompleteTemplate.TemplateContainer[key] = value;
+      }
+      newCompleteTemplate.TemplateContainer.Template[0][key] = value;
+      setCompTemplate(newCompleteTemplate);
+    }
+  };
 
   const deleteLinkFromJson = answerID => {
     try {
@@ -290,7 +302,7 @@ export default function HomePage({
       !author ||
       !codeMeaning ||
       !codeValue ||
-      !codingSchemaDesignator;
+      !codingSchemeDesignator;
 
     if (showError && showDialog) {
       setRequiredError(true);
@@ -530,6 +542,7 @@ export default function HomePage({
                       id="standard-basic"
                       label="Template Name"
                       onChange={e => {
+                        updateTemplateMeadata('name', e.target.value);
                         checkRequiredFields();
                         setTemplateName(e.target.value);
                       }}
@@ -543,7 +556,10 @@ export default function HomePage({
                         labelId="templateLevel"
                         id="demo-controlled-open-select"
                         value={templateType || ''}
-                        onChange={e => setTemplateType(e.target.value)}
+                        onChange={e => {
+                          updateTemplateMeadata('templateType', e.target.value);
+                          setTemplateType(e.target.value);
+                        }}
                       >
                         <MenuItem value={'study'}>Study</MenuItem>
                         <MenuItem value={'series'}>Series</MenuItem>
@@ -553,7 +569,10 @@ export default function HomePage({
                         className={classes.textField}
                         id="standard-basic"
                         label="Author"
-                        onChange={e => setAuthor(e.target.value)}
+                        onChange={e => {
+                          updateTemplateMeadata('authors', e.target.value);
+                          setAuthor(e.target.value);
+                        }}
                         required={true}
                         error={requiredError && !author}
                       />
@@ -565,6 +584,7 @@ export default function HomePage({
                         id="standard-basic"
                         label="Description"
                         onChange={e => {
+                          updateTemplateMeadata('description', e.target.value);
                           checkRequiredFields();
                           setDescription(e.target.value);
                         }}
@@ -576,6 +596,7 @@ export default function HomePage({
                         id="standard-basic"
                         label="Version"
                         onChange={e => {
+                          updateTemplateMeadata('version', e.target.value);
                           checkRequiredFields();
                           setVersion(e.target.value);
                         }}
@@ -588,6 +609,7 @@ export default function HomePage({
                         id="standard-basic"
                         label="Code Meaning"
                         onChange={e => {
+                          updateTemplateMeadata('codeMeaning', e.target.value);
                           checkRequiredFields();
                           setCodeMeaning(e.target.value);
                         }}
@@ -606,14 +628,14 @@ export default function HomePage({
                       />
 
                       <TextField
-                        error={requiredError && !codingSchemaDesignator}
+                        error={requiredError && !codingSchemeDesignator}
                         required={true}
                         className={classes.textField}
                         id="standard-basic"
                         label="Coding Schema Designator"
                         onChange={e => {
                           checkRequiredFields();
-                          setcodingSchemaDesignator(e.target.value);
+                          setcodingSchemeDesignator(e.target.value);
                         }}
                       />
                     </FormControl>
