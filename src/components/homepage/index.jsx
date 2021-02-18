@@ -180,7 +180,7 @@ export default function HomePage({
     const date = new Date();
     const year = date.getFullYear();
     const month =
-      date.getMonth() < 9 ? `0${date.getMonth() + 1} ` : date.getMonth() + 1;
+      date.getMonth() < 9 ? `0${date.getMonth() + 1}` : date.getMonth() + 1;
     const day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
     return `${year}-${month}-${day}`;
   };
@@ -200,6 +200,7 @@ export default function HomePage({
     const newTemplate = {};
     newTemplate.uid = createID();
     newTemplate.name = templateName;
+    newTemplate.templateType = templateType;
     newTemplate.authors = author;
     newTemplate.version = version;
     newTemplate.creationDate = getDate();
@@ -715,7 +716,6 @@ export default function HomePage({
           index={questions.length}
           ontology={ontology}
           edit={questions[editIndex]}
-          templateName={templateName}
           templateUID={tempContUID}
         />
       )}
