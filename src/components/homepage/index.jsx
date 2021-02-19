@@ -230,12 +230,38 @@ export default function HomePage({
   // a too easy task for showing a warning message
   // show this warning for question deletion instead
 
-  const updateTemplateMeadata = (key, value) => {
+  const updateQuestionMetadata = (key, value) => {
+    const newTemplate = _.cloneDeep(completeTemplate);
+    const list = newTemplate.TemplateContainer.Template[0].Component;
+    for (let i = 0; i < list.length; i += 1) {
+      list[i][key] = value ? (list[i][key] = value) : (list[i][key] = i + 1);
+      const observationCharObservation =
+        list[i].ImagingObservation?.ImagingObservationCharacteristic || [];
+      const anatomicCharObservation =
+        list[i].AnatomicEntity?.ImagingObservationCharacteristic || [];
+      const anatomicCharAnatomic =
+        list[i].AnatomicEntity?.AnatomicEntityCharacteristic || [];
+
+      for (let k = 0; k < observationCharObservation.length; k += 1)
+        observationCharObservation[k][key] = value;
+      for (let k = 0; k < anatomicCharObservation.length; k += 1)
+        anatomicCharObservation[k][key] = value;
+      for (let k = 0; k < anatomicCharAnatomic.length; k += 1)
+        anatomicCharAnatomic[k][key] = value;
+    }
+    return list;
+  };
+
+  const updateTemplateMetadata = (key, value) => {
     if (Object.keys(completeTemplate).length > 0) {
-      const newCompleteTemplate = { ...completeTemplate };
-      const commonKeys = ['name', 'authors', 'version'];
+      const newCompleteTemplate = _.cloneDeep(completeTemplate);
+      const commonKeys = ['name', 'authors', 'version', 'description'];
       if (commonKeys.includes(key)) {
         newCompleteTemplate.TemplateContainer[key] = value;
+        if (key === 'authors') {
+          const component = updateQuestionMetadata(key, value);
+          newCompleteTemplate.TemplateContainer.Template[0].Component = component;
+        }
       }
       newCompleteTemplate.TemplateContainer.Template[0][key] = value;
       setCompTemplate(newCompleteTemplate);
@@ -542,7 +568,7 @@ export default function HomePage({
                       id="standard-basic"
                       label="Template Name"
                       onChange={e => {
-                        updateTemplateMeadata('name', e.target.value);
+                        updateTemplateMetadata('name', e.target.value);
                         checkRequiredFields();
                         setTemplateName(e.target.value);
                       }}
@@ -557,20 +583,23 @@ export default function HomePage({
                         id="demo-controlled-open-select"
                         value={templateType || ''}
                         onChange={e => {
-                          updateTemplateMeadata('templateType', e.target.value);
+                          updateTemplateMetadata(
+                            'templateType',
+                            e.target.value
+                          );
                           setTemplateType(e.target.value);
                         }}
                       >
-                        <MenuItem value={'study'}>Study</MenuItem>
-                        <MenuItem value={'series'}>Series</MenuItem>
-                        <MenuItem value={'image'}>Image</MenuItem>
+                        <MenuItem value={'Study'}>Study</MenuItem>
+                        <MenuItem value={'Series'}>Series</MenuItem>
+                        <MenuItem value={'Image'}>Image</MenuItem>
                       </Select>
                       <TextField
                         className={classes.textField}
                         id="standard-basic"
                         label="Author"
                         onChange={e => {
-                          updateTemplateMeadata('authors', e.target.value);
+                          updateTemplateMetadata('authors', e.target.value);
                           setAuthor(e.target.value);
                         }}
                         required={true}
@@ -584,7 +613,7 @@ export default function HomePage({
                         id="standard-basic"
                         label="Description"
                         onChange={e => {
-                          updateTemplateMeadata('description', e.target.value);
+                          updateTemplateMetadata('description', e.target.value);
                           checkRequiredFields();
                           setDescription(e.target.value);
                         }}
@@ -596,7 +625,7 @@ export default function HomePage({
                         id="standard-basic"
                         label="Version"
                         onChange={e => {
-                          updateTemplateMeadata('version', e.target.value);
+                          updateTemplateMetadata('version', e.target.value);
                           checkRequiredFields();
                           setVersion(e.target.value);
                         }}
@@ -609,7 +638,7 @@ export default function HomePage({
                         id="standard-basic"
                         label="Code Meaning"
                         onChange={e => {
-                          updateTemplateMeadata('codeMeaning', e.target.value);
+                          updateTemplateMetadata('codeMeaning', e.target.value);
                           checkRequiredFields();
                           setCodeMeaning(e.target.value);
                         }}
