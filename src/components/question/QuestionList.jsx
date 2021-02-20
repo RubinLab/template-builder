@@ -84,7 +84,9 @@ export default function QuestionsList(props) {
 
   return (
     <DragDropContext
-      onDragEnd={(...args) => handleReorder(...args, characteristics)}
+      onDragEnd={(...args) => {
+        handleReorder(...args, characteristics);
+      }}
     >
       <Droppable key={1} droppableId={`${1}`}>
         {provided => (

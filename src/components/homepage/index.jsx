@@ -28,7 +28,8 @@ import TemplatePreview from './templatePreview.jsx';
 import {
   createID,
   getIndecesFromAnswerID,
-  formAnswerIDFromIndeces
+  formAnswerIDFromIndeces,
+  updateQuestionMetadata
 } from '../../utils/helper';
 import schema from '../../utils/AIMTemplate_v2rvStanford_schema.json';
 
@@ -230,28 +231,6 @@ export default function HomePage({
   // a too easy task for showing a warning message
   // show this warning for question deletion instead
 
-  const updateQuestionMetadata = (key, value) => {
-    const newTemplate = _.cloneDeep(completeTemplate);
-    const list = newTemplate.TemplateContainer.Template[0].Component;
-    for (let i = 0; i < list.length; i += 1) {
-      list[i][key] = value ? (list[i][key] = value) : (list[i][key] = i + 1);
-      const observationCharObservation =
-        list[i].ImagingObservation?.ImagingObservationCharacteristic || [];
-      const anatomicCharObservation =
-        list[i].AnatomicEntity?.ImagingObservationCharacteristic || [];
-      const anatomicCharAnatomic =
-        list[i].AnatomicEntity?.AnatomicEntityCharacteristic || [];
-
-      for (let k = 0; k < observationCharObservation.length; k += 1)
-        observationCharObservation[k][key] = value;
-      for (let k = 0; k < anatomicCharObservation.length; k += 1)
-        anatomicCharObservation[k][key] = value;
-      for (let k = 0; k < anatomicCharAnatomic.length; k += 1)
-        anatomicCharAnatomic[k][key] = value;
-    }
-    return list;
-  };
-
   const updateTemplateMetadata = (key, value) => {
     if (Object.keys(completeTemplate).length > 0) {
       const newCompleteTemplate = _.cloneDeep(completeTemplate);
@@ -259,8 +238,10 @@ export default function HomePage({
       if (commonKeys.includes(key)) {
         newCompleteTemplate.TemplateContainer[key] = value;
         if (key === 'authors') {
-          const component = updateQuestionMetadata(key, value);
-          newCompleteTemplate.TemplateContainer.Template[0].Component = component;
+          const component =
+            newCompleteTemplate.TemplateContainer.Template[0].Component;
+          const list = updateQuestionMetadata(key, value, component);
+          newCompleteTemplate.TemplateContainer.Template[0].Component = list;
         }
       }
       newCompleteTemplate.TemplateContainer.Template[0][key] = value;
@@ -726,8 +707,13 @@ export default function HomePage({
                     handleDeleteLink={deleteLinkFromJson}
                     creation={false}
                     getList={list => {
-                      setQuestions(list);
-                      formCompleteTemplate(list);
+                      const newList = updateQuestionMetadata(
+                        'itemNumber',
+                        null,
+                        list
+                      );
+                      setQuestions(newList);
+                      formCompleteTemplate(newList);
                     }}
                   />
                 </>
