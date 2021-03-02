@@ -47,6 +47,10 @@ function createTemplateQuestion(ques, authors, index, characteristic) {
     component.ImagingObservation = {
       annotatorConfidence: showConfidence
     };
+  } else if (questionType === 'inference') {
+    component.Inference = {
+      annotatorConfidence: showConfidence
+    };
   } else {
     component.annotatorConfidence = showConfidence;
   }
