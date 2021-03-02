@@ -28,7 +28,8 @@ import TemplatePreview from './templatePreview.jsx';
 import {
   createID,
   getIndecesFromAnswerID,
-  formAnswerIDFromIndeces
+  formAnswerIDFromIndeces,
+  updateQuestionMetadata
 } from '../../utils/helper';
 import schema from '../../utils/AIMTemplate_v2rvStanford_schema.json';
 
@@ -180,7 +181,7 @@ export default function HomePage({
     const date = new Date();
     const year = date.getFullYear();
     const month =
-      date.getMonth() < 9 ? `0${date.getMonth() + 1} ` : date.getMonth() + 1;
+      date.getMonth() < 9 ? `0${date.getMonth() + 1}` : date.getMonth() + 1;
     const day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
     return `${year}-${month}-${day}`;
   };
@@ -200,6 +201,7 @@ export default function HomePage({
     const newTemplate = {};
     newTemplate.uid = createID();
     newTemplate.name = templateName;
+    newTemplate.templateType = templateType;
     newTemplate.authors = author;
     newTemplate.version = version;
     newTemplate.creationDate = getDate();
@@ -228,6 +230,24 @@ export default function HomePage({
   // creating a link between an answer and question is
   // a too easy task for showing a warning message
   // show this warning for question deletion instead
+
+  const updateTemplateMetadata = (key, value) => {
+    if (Object.keys(completeTemplate).length > 0) {
+      const newCompleteTemplate = _.cloneDeep(completeTemplate);
+      const commonKeys = ['name', 'authors', 'version', 'description'];
+      if (commonKeys.includes(key)) {
+        newCompleteTemplate.TemplateContainer[key] = value;
+        if (key === 'authors') {
+          const component =
+            newCompleteTemplate.TemplateContainer.Template[0].Component;
+          const list = updateQuestionMetadata(key, value, component);
+          newCompleteTemplate.TemplateContainer.Template[0].Component = list;
+        }
+      }
+      newCompleteTemplate.TemplateContainer.Template[0][key] = value;
+      setCompTemplate(newCompleteTemplate);
+    }
+  };
 
   const deleteLinkFromJson = answerID => {
     try {
@@ -529,6 +549,7 @@ export default function HomePage({
                       id="standard-basic"
                       label="Template Name"
                       onChange={e => {
+                        updateTemplateMetadata('name', e.target.value);
                         checkRequiredFields();
                         setTemplateName(e.target.value);
                       }}
@@ -542,17 +563,26 @@ export default function HomePage({
                         labelId="templateLevel"
                         id="demo-controlled-open-select"
                         value={templateType || ''}
-                        onChange={e => setTemplateType(e.target.value)}
+                        onChange={e => {
+                          updateTemplateMetadata(
+                            'templateType',
+                            e.target.value
+                          );
+                          setTemplateType(e.target.value);
+                        }}
                       >
-                        <MenuItem value={'study'}>Study</MenuItem>
-                        <MenuItem value={'series'}>Series</MenuItem>
-                        <MenuItem value={'image'}>Image</MenuItem>
+                        <MenuItem value={'Study'}>Study</MenuItem>
+                        <MenuItem value={'Series'}>Series</MenuItem>
+                        <MenuItem value={'Image'}>Image</MenuItem>
                       </Select>
                       <TextField
                         className={classes.textField}
                         id="standard-basic"
                         label="Author"
-                        onChange={e => setAuthor(e.target.value)}
+                        onChange={e => {
+                          updateTemplateMetadata('authors', e.target.value);
+                          setAuthor(e.target.value);
+                        }}
                         required={true}
                         error={requiredError && !author}
                       />
@@ -564,6 +594,7 @@ export default function HomePage({
                         id="standard-basic"
                         label="Description"
                         onChange={e => {
+                          updateTemplateMetadata('description', e.target.value);
                           checkRequiredFields();
                           setDescription(e.target.value);
                         }}
@@ -575,6 +606,7 @@ export default function HomePage({
                         id="standard-basic"
                         label="Version"
                         onChange={e => {
+                          updateTemplateMetadata('version', e.target.value);
                           checkRequiredFields();
                           setVersion(e.target.value);
                         }}
@@ -587,6 +619,7 @@ export default function HomePage({
                         id="standard-basic"
                         label="Code Meaning"
                         onChange={e => {
+                          updateTemplateMetadata('codeMeaning', e.target.value);
                           checkRequiredFields();
                           setCodeMeaning(e.target.value);
                         }}
@@ -674,8 +707,13 @@ export default function HomePage({
                     handleDeleteLink={deleteLinkFromJson}
                     creation={false}
                     getList={list => {
-                      setQuestions(list);
-                      formCompleteTemplate(list);
+                      const newList = updateQuestionMetadata(
+                        'itemNumber',
+                        null,
+                        list
+                      );
+                      setQuestions(newList);
+                      formCompleteTemplate(newList);
                     }}
                   />
                 </>
