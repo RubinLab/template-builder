@@ -5,6 +5,7 @@ import AppBar from '@material-ui/core/AppBar';
 import AddCircle from '@material-ui/icons/AddCircle';
 import GetApp from '@material-ui/icons/GetApp';
 import Button from '@material-ui/core/Button';
+import PublishIcon from '@material-ui/icons/Publish';
 import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles(theme => ({
@@ -47,7 +48,7 @@ const useStyles = makeStyles(theme => ({
 
 export default function Navbar(props) {
   const classes = useStyles();
-  const { handleAddQuestion, handleDownload } = props;
+  const { handleAddQuestion, handleDownload, handleUpload } = props;
 
   return (
     <AppBar position="static" className={classes.root}>
@@ -74,6 +75,14 @@ export default function Navbar(props) {
         >
           Download
         </Button>
+        <Button
+          className={classes.button}
+          variant="outlined"
+          startIcon={<PublishIcon />}
+          onClick={handleUpload}
+        >
+          Upload Template
+        </Button>
       </div>
     </AppBar>
   );
@@ -81,5 +90,6 @@ export default function Navbar(props) {
 
 Navbar.propTypes = {
   handleAddQuestion: PropTypes.func,
-  handleDownload: PropTypes.func
+  handleDownload: PropTypes.func,
+  handleUpload: PropTypes.func
 };
