@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { SnackbarProvider } from 'notistack';
+// import loadJsonFile from 'load-json-file';
 import { makeStyles } from '@material-ui/core/styles';
 import Snackbar from '@material-ui/core/Snackbar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Navbar from './components/navbar/index.jsx';
 import Homepage from './components/homepage/index.jsx';
+import UploadTemplate from './components/homepage/UploadTemplate.jsx';
 
 const useStyles = makeStyles(theme => ({
   app: {
@@ -29,6 +31,13 @@ function App() {
   const [misingInfo, setMissingInfo] = useState(false);
   const [showSnackbar, setShowSnackbar] = useState(false);
   const [template, setTemplate] = useState({});
+  const [uploaded, setUploaded] = useState(false);
+  const [uploadTemplate, setUploadTemplate] = useState(false);
+
+  const onUploadTemplate = uploadedTemplate => {
+    setTemplate(uploadedTemplate);
+    setUploaded(true);
+  };
 
   const handleAddQuestion = value => {
     // const preview = document.getElementById('questionaire');
@@ -68,6 +77,7 @@ function App() {
         <Navbar
           handleAddQuestion={handleAddQuestion}
           handleDownload={handleDownload}
+          handleUpload={() => setUploadTemplate(true)}
         />
         <Homepage
           showDialog={showDialog}
@@ -75,6 +85,7 @@ function App() {
           setValidTemplate={val => setValidTemplate(val)}
           setMissingInfo={val => setMissingInfo(val)}
           getTemplate={temp => setTemplate(temp)}
+          uploaded={uploaded ? template : null}
         />
       </div>
       <Snackbar
@@ -98,6 +109,13 @@ function App() {
           </React.Fragment>
         }
       />
+      {uploadTemplate && (
+        <UploadTemplate
+          open={uploadTemplate}
+          onCancel={() => setUploadTemplate(false)}
+          onUpload={onUploadTemplate}
+        />
+      )}
     </SnackbarProvider>
   );
 }

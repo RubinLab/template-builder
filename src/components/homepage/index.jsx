@@ -123,8 +123,9 @@ export default function HomePage({
   showDialog,
   handleAddQuestion,
   setValidTemplate,
-  setMissingInfo,
-  getTemplate
+  // setMissingInfo,
+  getTemplate,
+  uploaded
 }) {
   const classes = materialUseStyles();
   const [templateName, setTemplateName] = useState('');
@@ -167,11 +168,17 @@ export default function HomePage({
       const containerExists = cont.TemplateContainer !== undefined;
       const temp = cont.TemplateContainer.Template;
       const templatexists = temp && temp.length > 0;
-      const questionExists = temp[0].Component.length > 0;
+      // const questionExists = temp[0].Component.length > 0;
+      console.log(
+        ' ---> validationErrors.length === 0',
+        validationErrors.length === 0
+      );
+      console.log(' ---> containerExists', containerExists);
+      console.log(' ---> templatexists', templatexists);
       const valTemplate =
         validationErrors.length === 0 && containerExists && templatexists;
       setValidTemplate(valTemplate);
-      setMissingInfo(!questionExists);
+      // setMissingInfo(!questionExists);
       getTemplate(cont);
     }
   };
@@ -312,6 +319,32 @@ export default function HomePage({
   useEffect(() => {
     setTempContUID(createID());
   }, []);
+
+  const populateTemplateMetada = () => {
+    console.log(uploaded.TemplateContainer.name);
+    setTemplateName(uploaded.TemplateContainer.name);
+    console.log(uploaded.TemplateContainer.Template[0].templateType);
+    setTemplateType(
+      uploaded.TemplateContainer.Template[0].templateType?.toLowerCase()
+    );
+    console.log(uploaded.TemplateContainer.authors);
+    setAuthor(uploaded.TemplateContainer.authors);
+    console.log(uploaded.TemplateContainer.description);
+    setDescription(uploaded.TemplateContainer.description);
+    console.log(uploaded.TemplateContainer.version);
+    setVersion(uploaded.TemplateContainer.version);
+  };
+
+  useEffect(() => {
+    if (uploaded) {
+      setCompTemplate(uploaded);
+      populateTemplateMetada();
+      const uploadedQuestions = [
+        ...uploaded.TemplateContainer.Template[0].Component
+      ];
+      setQuestions(uploadedQuestions);
+    }
+  }, [uploaded]);
 
   const createLink = newLinkedIdMap => {
     const { linkedAnswer, linkedQuestion } = newLinkedIdMap;
@@ -532,6 +565,7 @@ export default function HomePage({
                         checkRequiredFields();
                         setTemplateName(e.target.value);
                       }}
+                      value={templateName}
                     />
                     <FormControl className={classes.formControl}>
                       <InputLabel id="templateLevel">
@@ -555,6 +589,7 @@ export default function HomePage({
                         onChange={e => setAuthor(e.target.value)}
                         required={true}
                         error={requiredError && !author}
+                        value={author}
                       />
                       <TextField
                         error={requiredError && !description}
@@ -567,6 +602,7 @@ export default function HomePage({
                           checkRequiredFields();
                           setDescription(e.target.value);
                         }}
+                        value={description}
                       />
                       <TextField
                         error={requiredError && !version}
@@ -578,6 +614,7 @@ export default function HomePage({
                           checkRequiredFields();
                           setVersion(e.target.value);
                         }}
+                        value={version}
                       />
 
                       <TextField
@@ -751,6 +788,7 @@ HomePage.propTypes = {
   showDialog: PropTypes.bool,
   handleAddQuestion: PropTypes.func,
   setValidTemplate: PropTypes.func,
-  setMissingInfo: PropTypes.func,
-  getTemplate: PropTypes.func
+  // setMissingInfo: PropTypes.func,
+  getTemplate: PropTypes.func,
+  uploaded: PropTypes.object
 };
