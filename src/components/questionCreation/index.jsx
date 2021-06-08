@@ -229,6 +229,14 @@ export default function QuestionCreation(props) {
     question.questionType === 'anatomic' ||
     question.questionType === 'observation';
 
+  const renumberDetails = detailsList => {
+    return detailsList.map((el, i) => {
+      const newItem = { ...el };
+      newItem.itemNumber = i + 1;
+      return newItem;
+    });
+  };
+
   return (
     <React.Fragment>
       <Dialog
@@ -271,7 +279,11 @@ export default function QuestionCreation(props) {
               creation={true}
               handleDelete={handleDelete}
               characteristics={details}
-              getDetails={newDetails => setDetails(newDetails)}
+              getDetails={newDetails => {
+                const observation = renumberDetails(newDetails.observation);
+                const anatomic = renumberDetails(newDetails.anatomic);
+                setDetails({ observation, anatomic });
+              }}
               handleEdit={(e, i) => {
                 setShowDetailCreation(true);
                 handleEdit(i);
