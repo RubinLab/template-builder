@@ -169,12 +169,6 @@ export default function HomePage({
       const temp = cont.TemplateContainer.Template;
       const templatexists = temp && temp.length > 0;
       // const questionExists = temp[0].Component.length > 0;
-      console.log(
-        ' ---> validationErrors.length === 0',
-        validationErrors.length === 0
-      );
-      console.log(' ---> containerExists', containerExists);
-      console.log(' ---> templatexists', templatexists);
       const valTemplate =
         validationErrors.length === 0 && containerExists && templatexists;
       setValidTemplate(valTemplate);
@@ -321,22 +315,18 @@ export default function HomePage({
   }, []);
 
   const populateTemplateMetada = () => {
-    console.log(uploaded.TemplateContainer.name);
-    setTemplateName(uploaded.TemplateContainer.name);
-    console.log(uploaded.TemplateContainer.Template[0].templateType);
-    setTemplateType(
-      uploaded.TemplateContainer.Template[0].templateType?.toLowerCase()
-    );
-    console.log(uploaded.TemplateContainer.authors);
-    setAuthor(uploaded.TemplateContainer.authors);
-    console.log(uploaded.TemplateContainer.description);
-    setDescription(uploaded.TemplateContainer.description);
-    console.log(uploaded.TemplateContainer.version);
-    setVersion(uploaded.TemplateContainer.version);
+    const temp = uploaded ? uploaded.TemplateContainer : null;
+    if (temp) {
+      setTemplateName(temp.name);
+      setTemplateType(temp.Template[0].templateType?.toLowerCase());
+      setAuthor(temp.authors);
+      setDescription(temp.description);
+      setVersion(temp.version);
+    }
   };
 
   useEffect(() => {
-    if (uploaded) {
+    if (uploaded && Object.keys(uploaded).length > 0) {
       setCompTemplate(uploaded);
       populateTemplateMetada();
       const uploadedQuestions = [
@@ -564,6 +554,7 @@ export default function HomePage({
                       onChange={e => {
                         checkRequiredFields();
                         setTemplateName(e.target.value);
+                        formCompleteTemplate(questions);
                       }}
                       value={templateName}
                     />
@@ -576,7 +567,10 @@ export default function HomePage({
                         labelId="templateLevel"
                         id="demo-controlled-open-select"
                         value={templateType || ''}
-                        onChange={e => setTemplateType(e.target.value)}
+                        onChange={e => {
+                          setTemplateType(e.target.value);
+                          formCompleteTemplate(questions);
+                        }}
                       >
                         <MenuItem value={'study'}>Study</MenuItem>
                         <MenuItem value={'series'}>Series</MenuItem>
@@ -586,7 +580,10 @@ export default function HomePage({
                         className={classes.textField}
                         id="standard-basic"
                         label="Author"
-                        onChange={e => setAuthor(e.target.value)}
+                        onChange={e => {
+                          setAuthor(e.target.value);
+                          formCompleteTemplate(questions);
+                        }}
                         required={true}
                         error={requiredError && !author}
                         value={author}
@@ -601,6 +598,7 @@ export default function HomePage({
                         onChange={e => {
                           checkRequiredFields();
                           setDescription(e.target.value);
+                          formCompleteTemplate(questions);
                         }}
                         value={description}
                       />
@@ -613,6 +611,7 @@ export default function HomePage({
                         onChange={e => {
                           checkRequiredFields();
                           setVersion(e.target.value);
+                          formCompleteTemplate(questions);
                         }}
                         value={version}
                       />
@@ -626,6 +625,7 @@ export default function HomePage({
                         onChange={e => {
                           checkRequiredFields();
                           setCodeMeaning(e.target.value);
+                          formCompleteTemplate(questions);
                         }}
                       />
 
@@ -638,6 +638,7 @@ export default function HomePage({
                         onChange={e => {
                           checkRequiredFields();
                           setCodeValue(e.target.value);
+                          formCompleteTemplate(questions);
                         }}
                       />
 
@@ -650,6 +651,7 @@ export default function HomePage({
                         onChange={e => {
                           checkRequiredFields();
                           setcodingSchemeDesignator(e.target.value);
+                          formCompleteTemplate(questions);
                         }}
                       />
                     </FormControl>

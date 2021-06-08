@@ -32,11 +32,16 @@ function App() {
   const [showSnackbar, setShowSnackbar] = useState(false);
   const [template, setTemplate] = useState({});
   const [uploaded, setUploaded] = useState(false);
-  const [uploadTemplate, setUploadTemplate] = useState(false);
+  const [uploadTemplateClicked, setUploadTemplateClicked] = useState(false);
 
   const onUploadTemplate = uploadedTemplate => {
+    const temp = uploadedTemplate.TemplateContainer.Template[0];
+    temp.codeMeaning = '';
+    temp.codeValue = '';
+    temp.codingSchemeDesignator = '';
     setTemplate(uploadedTemplate);
     setUploaded(true);
+    setUploadTemplateClicked(false);
   };
 
   const handleAddQuestion = value => {
@@ -77,12 +82,16 @@ function App() {
         <Navbar
           handleAddQuestion={handleAddQuestion}
           handleDownload={handleDownload}
-          handleUpload={() => setUploadTemplate(true)}
+          handleUpload={() => {
+            setUploadTemplateClicked(true);
+          }}
         />
         <Homepage
           showDialog={showDialog}
           handleAddQuestion={handleAddQuestion}
-          setValidTemplate={val => setValidTemplate(val)}
+          setValidTemplate={val => {
+            setValidTemplate(val);
+          }}
           setMissingInfo={val => setMissingInfo(val)}
           getTemplate={temp => setTemplate(temp)}
           uploaded={uploaded ? template : null}
@@ -109,13 +118,13 @@ function App() {
           </React.Fragment>
         }
       />
-      {uploadTemplate && (
-        <UploadTemplate
-          open={uploadTemplate}
-          onCancel={() => setUploadTemplate(false)}
-          onUpload={onUploadTemplate}
-        />
-      )}
+      <UploadTemplate
+        open={uploadTemplateClicked}
+        onCancel={() => {
+          setUploadTemplateClicked(false);
+        }}
+        onUpload={onUploadTemplate}
+      />
     </SnackbarProvider>
   );
 }
