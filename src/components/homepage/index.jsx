@@ -247,6 +247,9 @@ export default function HomePage({
       }
       newCompleteTemplate.TemplateContainer.Template[0][key] = value;
       setCompTemplate(newCompleteTemplate);
+      formCompleteTemplate(
+        newCompleteTemplate.TemplateContainer.Template[0].Component
+      );
     }
   };
 
@@ -575,7 +578,7 @@ export default function HomePage({
                         updateTemplateMetadata('name', e.target.value);
                         checkRequiredFields();
                         setTemplateName(e.target.value);
-                        formCompleteTemplate(questions);
+                        // formCompleteTemplate(questions);
                       }}
                       value={templateName}
                     />
@@ -590,7 +593,7 @@ export default function HomePage({
                         value={templateType || ''}
                         onChange={e => {
                           setTemplateType(e.target.value);
-                          formCompleteTemplate(questions);
+                          // formCompleteTemplate(questions);
                           updateTemplateMetadata(
                             'templateType',
                             e.target.value
@@ -607,7 +610,7 @@ export default function HomePage({
                         label="Author"
                         onChange={e => {
                           setAuthor(e.target.value);
-                          formCompleteTemplate(questions);
+                          // formCompleteTemplate(questions);
                           updateTemplateMetadata('authors', e.target.value);
                         }}
                         required={true}
@@ -625,7 +628,7 @@ export default function HomePage({
                           updateTemplateMetadata('description', e.target.value);
                           checkRequiredFields();
                           setDescription(e.target.value);
-                          formCompleteTemplate(questions);
+                          // formCompleteTemplate(questions);
                         }}
                         value={description}
                       />
@@ -639,7 +642,7 @@ export default function HomePage({
                           updateTemplateMetadata('version', e.target.value);
                           checkRequiredFields();
                           setVersion(e.target.value);
-                          formCompleteTemplate(questions);
+                          // formCompleteTemplate(questions);
                         }}
                         value={version}
                       />
@@ -654,7 +657,7 @@ export default function HomePage({
                           updateTemplateMetadata('codeMeaning', e.target.value);
                           checkRequiredFields();
                           setCodeMeaning(e.target.value);
-                          formCompleteTemplate(questions);
+                          // formCompleteTemplate(questions);
                         }}
                       />
 
@@ -667,7 +670,7 @@ export default function HomePage({
                         onChange={e => {
                           checkRequiredFields();
                           setCodeValue(e.target.value);
-                          formCompleteTemplate(questions);
+                          // formCompleteTemplate(questions);
                         }}
                       />
 
@@ -680,7 +683,7 @@ export default function HomePage({
                         onChange={e => {
                           checkRequiredFields();
                           setcodingSchemeDesignator(e.target.value);
-                          formCompleteTemplate(questions);
+                          // formCompleteTemplate(questions);
                         }}
                       />
                     </FormControl>
