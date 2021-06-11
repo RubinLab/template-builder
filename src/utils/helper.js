@@ -127,6 +127,15 @@ function getIndecesFromAnswerID(answerID) {
   };
 }
 
+const updateQuestionMetadata = (key, value, list) => {
+  return list.map((el, i) => {
+    const newQuestion = { ...el };
+    if (key === 'authors') newQuestion[key] = value;
+    else if (key === 'itemNumber') newQuestion[key] = i + 1;
+    return newQuestion;
+  });
+};
+
 export {
   createTemplateQuestion,
   createID,
@@ -134,5 +143,6 @@ export {
   formAnswerIDFromIndeces,
   getIndecesFromAnswerID,
   shapeSelectedTermData,
-  geometricShapes
+  geometricShapes,
+  updateQuestionMetadata
 };

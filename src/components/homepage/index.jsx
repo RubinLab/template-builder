@@ -125,7 +125,8 @@ export default function HomePage({
   handleAddQuestion,
   setValidTemplate,
   setMissingInfo,
-  getTemplate
+  getTemplate,
+  uploaded
 }) {
   const classes = materialUseStyles();
   const [templateName, setTemplateName] = useState('');
@@ -246,6 +247,9 @@ export default function HomePage({
       }
       newCompleteTemplate.TemplateContainer.Template[0][key] = value;
       setCompTemplate(newCompleteTemplate);
+      formCompleteTemplate(
+        newCompleteTemplate.TemplateContainer.Template[0].Component
+      );
     }
   };
 
@@ -332,6 +336,31 @@ export default function HomePage({
   useEffect(() => {
     setTempContUID(createID());
   }, []);
+
+  const populateTemplateMetada = () => {
+    const temp = uploaded ? uploaded.TemplateContainer : null;
+    if (temp) {
+      setTemplateName(temp.name);
+      setTemplateType(temp.Template[0].templateType?.toLowerCase());
+      setAuthor(temp.authors);
+      setDescription(temp.description);
+      setVersion(temp.version);
+      setCodeMeaning(temp.Template[0].codeMeaning);
+      setCodeValue(temp.Template[0].codeValue);
+      setcodingSchemeDesignator(temp.Template[0].codingSchemeDesignator);
+    }
+  };
+
+  useEffect(() => {
+    if (uploaded && Object.keys(uploaded).length > 0) {
+      setCompTemplate(uploaded);
+      populateTemplateMetada();
+      const uploadedQuestions = [
+        ...uploaded.TemplateContainer.Template[0].Component
+      ];
+      setQuestions(uploadedQuestions);
+    }
+  }, [uploaded]);
 
   const createLink = newLinkedIdMap => {
     const { linkedAnswer, linkedQuestion } = newLinkedIdMap;
@@ -552,7 +581,9 @@ export default function HomePage({
                         updateTemplateMetadata('name', e.target.value);
                         checkRequiredFields();
                         setTemplateName(e.target.value);
+                        // formCompleteTemplate(questions);
                       }}
+                      value={templateName}
                     />
                     <FormControl className={classes.formControl}>
                       <InputLabel id="templateLevel">
@@ -564,11 +595,12 @@ export default function HomePage({
                         id="demo-controlled-open-select"
                         value={templateType || ''}
                         onChange={e => {
+                          setTemplateType(e.target.value);
+                          // formCompleteTemplate(questions);
                           updateTemplateMetadata(
                             'templateType',
                             e.target.value
                           );
-                          setTemplateType(e.target.value);
                         }}
                       >
                         <MenuItem value={'Study'}>Study</MenuItem>
@@ -580,11 +612,13 @@ export default function HomePage({
                         id="standard-basic"
                         label="Author"
                         onChange={e => {
-                          updateTemplateMetadata('authors', e.target.value);
                           setAuthor(e.target.value);
+                          // formCompleteTemplate(questions);
+                          updateTemplateMetadata('authors', e.target.value);
                         }}
                         required={true}
                         error={requiredError && !author}
+                        value={author}
                       />
                       <TextField
                         error={requiredError && !description}
@@ -597,7 +631,9 @@ export default function HomePage({
                           updateTemplateMetadata('description', e.target.value);
                           checkRequiredFields();
                           setDescription(e.target.value);
+                          // formCompleteTemplate(questions);
                         }}
+                        value={description}
                       />
                       <TextField
                         error={requiredError && !version}
@@ -609,7 +645,9 @@ export default function HomePage({
                           updateTemplateMetadata('version', e.target.value);
                           checkRequiredFields();
                           setVersion(e.target.value);
+                          // formCompleteTemplate(questions);
                         }}
+                        value={version}
                       />
 
                       <TextField
@@ -622,7 +660,9 @@ export default function HomePage({
                           updateTemplateMetadata('codeMeaning', e.target.value);
                           checkRequiredFields();
                           setCodeMeaning(e.target.value);
+                          // formCompleteTemplate(questions);
                         }}
+                        value={codeMeaning}
                       />
 
                       <TextField
@@ -634,7 +674,9 @@ export default function HomePage({
                         onChange={e => {
                           checkRequiredFields();
                           setCodeValue(e.target.value);
+                          // formCompleteTemplate(questions);
                         }}
+                        value={codeValue}
                       />
 
                       <TextField
@@ -646,7 +688,9 @@ export default function HomePage({
                         onChange={e => {
                           checkRequiredFields();
                           setcodingSchemeDesignator(e.target.value);
+                          // formCompleteTemplate(questions);
                         }}
+                        value={codingSchemeDesignator}
                       />
                     </FormControl>
 
@@ -790,5 +834,6 @@ HomePage.propTypes = {
   handleAddQuestion: PropTypes.func,
   setValidTemplate: PropTypes.func,
   setMissingInfo: PropTypes.func,
-  getTemplate: PropTypes.func
+  getTemplate: PropTypes.func,
+  uploaded: PropTypes.object
 };

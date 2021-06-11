@@ -6,6 +6,7 @@ import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Navbar from './components/navbar/index.jsx';
 import Homepage from './components/homepage/index.jsx';
+import UploadTemplate from './components/homepage/UploadTemplate.jsx';
 
 const useStyles = makeStyles(theme => ({
   app: {
@@ -29,6 +30,14 @@ function App() {
   const [misingInfo, setMissingInfo] = useState(false);
   const [showSnackbar, setShowSnackbar] = useState(false);
   const [template, setTemplate] = useState({});
+  const [uploaded, setUploaded] = useState(false);
+  const [uploadTemplateClicked, setUploadTemplateClicked] = useState(false);
+
+  const onUploadTemplate = uploadedTemplate => {
+    setTemplate(uploadedTemplate);
+    setUploaded(true);
+    setUploadTemplateClicked(false);
+  };
 
   const handleAddQuestion = value => {
     // const preview = document.getElementById('questionaire');
@@ -68,13 +77,19 @@ function App() {
         <Navbar
           handleAddQuestion={handleAddQuestion}
           handleDownload={handleDownload}
+          handleUpload={() => {
+            setUploadTemplateClicked(true);
+          }}
         />
         <Homepage
           showDialog={showDialog}
           handleAddQuestion={handleAddQuestion}
-          setValidTemplate={val => setValidTemplate(val)}
+          setValidTemplate={val => {
+            setValidTemplate(val);
+          }}
           setMissingInfo={val => setMissingInfo(val)}
           getTemplate={temp => setTemplate(temp)}
+          uploaded={uploaded ? template : null}
         />
       </div>
       <Snackbar
@@ -97,6 +112,13 @@ function App() {
             </Button>
           </React.Fragment>
         }
+      />
+      <UploadTemplate
+        open={uploadTemplateClicked}
+        onCancel={() => {
+          setUploadTemplateClicked(false);
+        }}
+        onUpload={onUploadTemplate}
       />
     </SnackbarProvider>
   );
