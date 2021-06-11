@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { SnackbarProvider } from 'notistack';
-// import loadJsonFile from 'load-json-file';
 import { makeStyles } from '@material-ui/core/styles';
 import Snackbar from '@material-ui/core/Snackbar';
 import Button from '@material-ui/core/Button';
@@ -35,10 +34,6 @@ function App() {
   const [uploadTemplateClicked, setUploadTemplateClicked] = useState(false);
 
   const onUploadTemplate = uploadedTemplate => {
-    const temp = uploadedTemplate.TemplateContainer.Template[0];
-    temp.codeMeaning = '';
-    temp.codeValue = '';
-    temp.codingSchemeDesignator = '';
     setTemplate(uploadedTemplate);
     setUploaded(true);
     setUploadTemplateClicked(false);

@@ -124,7 +124,7 @@ export default function HomePage({
   showDialog,
   handleAddQuestion,
   setValidTemplate,
-  // setMissingInfo,
+  setMissingInfo,
   getTemplate,
   uploaded
 }) {
@@ -169,11 +169,11 @@ export default function HomePage({
       const containerExists = cont.TemplateContainer !== undefined;
       const temp = cont.TemplateContainer.Template;
       const templatexists = temp && temp.length > 0;
-      // const questionExists = temp[0].Component.length > 0;
+      const questionExists = temp[0].Component.length > 0;
       const valTemplate =
         validationErrors.length === 0 && containerExists && templatexists;
       setValidTemplate(valTemplate);
-      // setMissingInfo(!questionExists);
+      setMissingInfo(!questionExists);
       getTemplate(cont);
     }
   };
@@ -345,6 +345,9 @@ export default function HomePage({
       setAuthor(temp.authors);
       setDescription(temp.description);
       setVersion(temp.version);
+      setCodeMeaning(temp.Template[0].codeMeaning);
+      setCodeValue(temp.Template[0].codeValue);
+      setcodingSchemeDesignator(temp.Template[0].codingSchemeDesignator);
     }
   };
 
@@ -659,6 +662,7 @@ export default function HomePage({
                           setCodeMeaning(e.target.value);
                           // formCompleteTemplate(questions);
                         }}
+                        value={codeMeaning}
                       />
 
                       <TextField
@@ -672,6 +676,7 @@ export default function HomePage({
                           setCodeValue(e.target.value);
                           // formCompleteTemplate(questions);
                         }}
+                        value={codeValue}
                       />
 
                       <TextField
@@ -685,6 +690,7 @@ export default function HomePage({
                           setcodingSchemeDesignator(e.target.value);
                           // formCompleteTemplate(questions);
                         }}
+                        value={codingSchemeDesignator}
                       />
                     </FormControl>
 
@@ -827,7 +833,7 @@ HomePage.propTypes = {
   showDialog: PropTypes.bool,
   handleAddQuestion: PropTypes.func,
   setValidTemplate: PropTypes.func,
-  // setMissingInfo: PropTypes.func,
+  setMissingInfo: PropTypes.func,
   getTemplate: PropTypes.func,
   uploaded: PropTypes.object
 };
