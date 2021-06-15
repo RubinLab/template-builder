@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SnackbarProvider } from 'notistack';
 import { makeStyles } from '@material-ui/core/styles';
 import Snackbar from '@material-ui/core/Snackbar';
@@ -22,9 +22,9 @@ const messages = {
   invalidTemp: 'Template is not valid!',
   miisngIInfo: 'Please create a question before downloading the template!'
 };
+
 function App() {
   const classes = useStyles();
-
   const [showDialog, setShowDialog] = useState(false);
   const [validTemplate, setValidTemplate] = useState(false);
   const [misingInfo, setMissingInfo] = useState(false);
@@ -45,6 +45,10 @@ function App() {
     setShowDialog(value);
   };
 
+  useEffect(() => {
+    sessionStorage.setItem('lexicon', '{}');
+  });
+
   const downloadFile = async () => {
     const fileName = template.TemplateContainer.name;
     const json = JSON.stringify(template);
@@ -63,6 +67,7 @@ function App() {
       setShowSnackbar(true);
     } else {
       try {
+        //
         await downloadFile();
       } catch (err) {
         console.error(err);

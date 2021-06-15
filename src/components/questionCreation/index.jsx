@@ -57,6 +57,7 @@ export default function QuestionCreation(props) {
   });
   const [question, setQuestion] = useState({});
   const [editPath, setEditPath] = useState(['', null]);
+  const [detailsID, setDetailsID] = useState('');
 
   const { enqueueSnackbar } = useSnackbar();
 
@@ -155,7 +156,7 @@ export default function QuestionCreation(props) {
       if (valid) newDetails[editPath[0]][editPath[1]] = newDetail;
       setEditPath(['', null]);
     } else {
-      id = createID();
+      id = detailsID;
       newDetail = { ...detail };
       newDetail.id = id;
       newDetail.questionID = questionID;
@@ -255,19 +256,26 @@ export default function QuestionCreation(props) {
             {`Fill the form and save to add a new question to the template ${templateName}`}
           </DialogContentText>
           <QuestionForm
-            postQuestion={setQuestion}
+            postQuestion={q => {
+              console.log(q);
+              setQuestion(q);
+            }}
             ontology={ontology}
             edit={edit}
             authors={authors}
             templateName={templateName}
             templateUID={templateUID}
+            questionID={questionID}
           />
 
           {showCharCreateButton && (
             <Button
               variant="outlined"
               className={classes.button}
-              onClick={() => setShowDetailCreation(true)}
+              onClick={() => {
+                setDetailsID(createID());
+                setShowDetailCreation(true);
+              }}
             >
               Add Characteristics
             </Button>
@@ -295,6 +303,7 @@ export default function QuestionCreation(props) {
               open={showDetailCreation}
               handleClose={bool => {
                 setShowDetailCreation(bool);
+                setDetailsID('');
                 setEditPath(['', null]);
               }}
               handleSave={handleSaveDetail}
@@ -306,6 +315,8 @@ export default function QuestionCreation(props) {
               detailEdit={editPath}
               templateName={templateName}
               templateUID={templateUID}
+              questionID={questionID}
+              UID={detailsID}
             />
           )}
         </DialogContent>

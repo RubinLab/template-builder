@@ -25,7 +25,8 @@ export default function DetailsCreation(props) {
     characteristic,
     ontology,
     edit,
-    detailEdit
+    detailEdit,
+    UID
   } = props;
   const classes = materialUseStyles();
   const [question, setQuestion] = useState({});
@@ -53,6 +54,7 @@ export default function DetailsCreation(props) {
             ontology={ontology}
             edit={edit}
             detailEdit={detailEdit}
+            questionID={UID}
           />
         </DialogContent>
         <DialogActions>
@@ -77,5 +79,6 @@ DetailsCreation.propTypes = {
   setQuestion: PropTypes.func,
   authors: PropTypes.string,
   edit: PropTypes.object,
-  detailEdit: PropTypes.array
+  detailEdit: PropTypes.array,
+  UID: PropTypes.string
 };
