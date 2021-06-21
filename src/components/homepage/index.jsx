@@ -37,6 +37,8 @@ const materialUseStyles = makeStyles(theme => ({
   root: {
     margin: theme.spacing(3),
     padding: theme.spacing(3),
+    marginTop: theme.spacing(2),
+    paddingTop: theme.spacing(2),
     width: '-webkit-fill-available',
     [theme.breakpoints.down('sm')]: {
       margin: theme.spacing(1),

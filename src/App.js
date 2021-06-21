@@ -3,6 +3,7 @@ import { SnackbarProvider } from 'notistack';
 import { makeStyles } from '@material-ui/core/styles';
 import Snackbar from '@material-ui/core/Snackbar';
 import Button from '@material-ui/core/Button';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import Navbar from './components/navbar/index.jsx';
 import Homepage from './components/homepage/index.jsx';
@@ -17,6 +18,11 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.up('sm')]: {
       width: '-webkit-fill-available'
     }
+  },
+  progress: {
+    width: '100%',
+    marginTop: theme.spacing(2),
+    height: theme.spacing(1)
   }
 }));
 
@@ -35,6 +41,7 @@ function App() {
   const [uploaded, setUploaded] = useState(false);
   const [uploadTemplateClicked, setUploadTemplateClicked] = useState(false);
   const [lexicon, setLexicon] = useState({});
+  const [downloading, setDownloading] = useState(false);
 
   const onUploadTemplate = uploadedTemplate => {
     setTemplate(uploadedTemplate);
@@ -189,6 +196,7 @@ function App() {
   };
 
   const handleDownload = async () => {
+    setDownloading(true);
     if (!validTemplate || misingInfo) {
       setShowSnackbar(true);
     } else {
@@ -205,6 +213,7 @@ function App() {
         // codeValues with the ones from the db
         saveTermCodeValues(questionIDTermsMap);
         await downloadFile();
+        setDownloading(false);
       } catch (err) {
         console.error(err);
       }
@@ -221,7 +230,13 @@ function App() {
           handleUpload={() => {
             setUploadTemplateClicked(true);
           }}
+          downloading={downloading}
         />
+        {downloading && (
+          <div className={classes.progress}>
+            <LinearProgress color="secondary" />
+          </div>
+        )}
         <Homepage
           showDialog={showDialog}
           handleAddQuestion={handleAddQuestion}
