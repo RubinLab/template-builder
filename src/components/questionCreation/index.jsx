@@ -49,7 +49,8 @@ export default function QuestionCreation(props) {
     ontology,
     edit,
     templateUID,
-    populateLexicon
+    populateLexicon,
+    deleteTermFromLexicon
   } = props;
   const [showDetailCreation, setShowDetailCreation] = useState(false);
   const [details, setDetails] = useState({
@@ -268,6 +269,7 @@ export default function QuestionCreation(props) {
             templateUID={templateUID}
             questionID={questionID}
             populateLexicon={populateLexicon}
+            deleteTermFromLexicon={deleteTermFromLexicon}
           />
 
           {showCharCreateButton && (
@@ -347,5 +349,6 @@ QuestionCreation.propTypes = {
   ontology: PropTypes.string,
   edit: PropTypes.object,
   templateUID: PropTypes.string,
-  populateLexicon: PropTypes.fun
+  populateLexicon: PropTypes.func,
+  deleteTermFromLexicon: PropTypes.func
 };

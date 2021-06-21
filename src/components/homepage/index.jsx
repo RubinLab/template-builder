@@ -129,7 +129,8 @@ export default function HomePage({
   setMissingInfo,
   getTemplate,
   uploaded,
-  populateLexicon
+  populateLexicon,
+  deleteTermFromLexicon
 }) {
   const classes = materialUseStyles();
   const [templateName, setTemplateName] = useState('');
@@ -802,6 +803,7 @@ export default function HomePage({
           edit={questions[editIndex]}
           templateUID={tempContUID}
           populateLexicon={populateLexicon}
+          deleteTermFromLexicon={deleteTermFromLexicon}
         />
       )}
       <Snackbar
@@ -840,5 +842,6 @@ HomePage.propTypes = {
   setMissingInfo: PropTypes.func,
   getTemplate: PropTypes.func,
   uploaded: PropTypes.object,
-  populateLexicon: PropTypes.func
+  populateLexicon: PropTypes.func,
+  deleteTermFromLexicon: PropTypes.func
 };

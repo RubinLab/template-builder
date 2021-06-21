@@ -220,6 +220,19 @@ function App() {
     }
   };
 
+  const deleteTermFromLexicon = (term, questionID) => {
+    const newLexicon = { ...lexicon };
+    if (newLexicon[term]?.ids.length === 1) {
+      delete newLexicon[term];
+    } else if (newLexicon[term]?.ids.length > 1) {
+      const index = newLexicon[term].ids.includes(questionID);
+      if (index > -1) {
+        newLexicon[term].ids.splice(index, 1);
+      }
+    }
+    setLexicon(newLexicon);
+  };
+
   return (
     <SnackbarProvider maxSnack={5}>
       <div className={classes.app}>
@@ -247,6 +260,7 @@ function App() {
           getTemplate={temp => setTemplate(temp)}
           uploaded={uploaded ? template : null}
           populateLexicon={populateLexicon}
+          deleteTermFromLexicon={deleteTermFromLexicon}
         />
       </div>
       <Snackbar

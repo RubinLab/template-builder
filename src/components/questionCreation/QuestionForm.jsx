@@ -117,7 +117,8 @@ const QuestionForm = props => {
     // authors,
     // templateName,
     // templateUID,
-    questionID
+    questionID,
+    deleteTermFromLexicon
   } = props;
   const [searchResults, setSearchResults] = useState({});
   const [question, setQuestion] = useState('');
@@ -697,6 +698,12 @@ const QuestionForm = props => {
 
   const handleDeleteSelectedTerm = item => {
     const currentSelectedTerms = { ...selectedTerms };
+    // if the allowed term has codevalue and schemadesignator is epad
+    // delete lexicon term from the cache
+    const term = item.allowedTerm;
+    if (!term.codeValue && term.codingSchemeDesignator === '99EPAD') {
+      deleteTermFromLexicon(term.codeMeaning, questionID);
+    }
     delete currentSelectedTerms[item.id];
     setTermSelection(currentSelectedTerms);
   };
@@ -984,5 +991,6 @@ QuestionForm.propTypes = {
   templateName: PropTypes.string,
   templateUID: PropTypes.string,
   questionID: PropTypes.string,
-  populateLexicon: PropTypes.func
+  populateLexicon: PropTypes.func,
+  deleteTermFromLexicon: PropTypes.func
 };
