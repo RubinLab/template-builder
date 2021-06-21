@@ -106,8 +106,6 @@ const materialUseStyles = makeStyles(theme => ({
   }
 }));
 
-const storedLexicon = JSON.parse(localStorage.getItem('lexicon'));
-
 const QuestionForm = props => {
   const classes = materialUseStyles();
   const {
@@ -260,19 +258,18 @@ const QuestionForm = props => {
   const saveTermToEPAD = (term, description) => {
     const codeMeaningToSave = searchTerm.trim();
     const termToSave = term.trim() || codeMeaningToSave;
-    console.log(storedLexicon);
-    console.log(storedLexicon[questionID]);
-    if (storedLexicon[questionID])
-      storedLexicon[questionID].push({ termToSave, description });
-    else storedLexicon[questionID] = [{ termToSave, description }];
-    sessionStorage.setItem('lexicon', JSON.stringify(storedLexicon));
+
+    const newTerm = { id: questionID, term: termToSave, description };
+
+    props.populateLexicon(newTerm);
+
     setOpenSearch(false);
     const id = createID();
     const newSelectedTerms = { ...selectedTerms };
     newSelectedTerms[id] = {
       allowedTerm: {
         codeMeaning: termToSave,
-        codeValue: 'TBD',
+        codeValue: '',
         codingSchemeDesignator: constants.localLexicon
       },
       id,
@@ -280,50 +277,6 @@ const QuestionForm = props => {
     };
     setTermSelection(newSelectedTerms);
     postQuestion({ ...formInput, selectedTerms: newSelectedTerms });
-
-    // insertTermToEPAD(
-    //   termToSave,
-    //   description,
-    //   authors,
-    //   templateName,
-    //   templateUID,
-    //   'T'
-    // )
-    //   .then(res => {
-    //     setOpenSearch(false);
-    //     const id = createID();
-    //     const newSelectedTerms = { ...selectedTerms };
-    //     const { codemeaning, codevalue } = res.data;
-    //     newSelectedTerms[id] = {
-    //       allowedTerm: {
-    //         codeMeaning: codemeaning,
-    //         codeValue: codevalue,
-    //         codingSchemeDesignator: '99EPAD'
-    //       },
-    //       id,
-    //       title: '99EPAD'
-    //     };
-    //     setTermSelection(newSelectedTerms);
-
-    //     enqueueSnackbar(
-    //       `${termToSave} successfully saved to the EPAD lexicon`,
-    //       {
-    //         variant: 'success'
-    //       }
-    //     );
-    //   })
-    //   .catch(err => {
-    //     const errMessage =
-    //       err.response && err.response.data && err.response.data.message
-    //         ? err.response.data.message
-    //         : '';
-    //     enqueueSnackbar(
-    //       `Couln't save ${termToSave} to the EPAD lexicon! ${errMessage}`,
-    //       {
-    //         variant: 'error'
-    //       }
-    //     );
-    //   });
   };
 
   const formCombinedSearchResult = async () => {
@@ -1030,5 +983,6 @@ QuestionForm.propTypes = {
   authors: PropTypes.string,
   templateName: PropTypes.string,
   templateUID: PropTypes.string,
-  questionID: PropTypes.string
+  questionID: PropTypes.string,
+  populateLexicon: PropTypes.func
 };

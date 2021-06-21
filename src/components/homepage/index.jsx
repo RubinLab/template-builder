@@ -126,7 +126,8 @@ export default function HomePage({
   setValidTemplate,
   setMissingInfo,
   getTemplate,
-  uploaded
+  uploaded,
+  populateLexicon
 }) {
   const classes = materialUseStyles();
   const [templateName, setTemplateName] = useState('');
@@ -798,6 +799,7 @@ export default function HomePage({
           ontology={ontology}
           edit={questions[editIndex]}
           templateUID={tempContUID}
+          populateLexicon={populateLexicon}
         />
       )}
       <Snackbar
@@ -835,5 +837,6 @@ HomePage.propTypes = {
   setValidTemplate: PropTypes.func,
   setMissingInfo: PropTypes.func,
   getTemplate: PropTypes.func,
-  uploaded: PropTypes.object
+  uploaded: PropTypes.object,
+  populateLexicon: PropTypes.func
 };

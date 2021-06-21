@@ -48,7 +48,8 @@ export default function QuestionCreation(props) {
     index,
     ontology,
     edit,
-    templateUID
+    templateUID,
+    populateLexicon
   } = props;
   const [showDetailCreation, setShowDetailCreation] = useState(false);
   const [details, setDetails] = useState({
@@ -257,7 +258,7 @@ export default function QuestionCreation(props) {
           </DialogContentText>
           <QuestionForm
             postQuestion={q => {
-              console.log(q);
+              // console.log(q);
               setQuestion(q);
             }}
             ontology={ontology}
@@ -266,6 +267,7 @@ export default function QuestionCreation(props) {
             templateName={templateName}
             templateUID={templateUID}
             questionID={questionID}
+            populateLexicon={populateLexicon}
           />
 
           {showCharCreateButton && (
@@ -317,6 +319,7 @@ export default function QuestionCreation(props) {
               templateUID={templateUID}
               questionID={questionID}
               UID={detailsID}
+              populateLexicon={populateLexicon}
             />
           )}
         </DialogContent>
@@ -343,5 +346,6 @@ QuestionCreation.propTypes = {
   index: PropTypes.number,
   ontology: PropTypes.string,
   edit: PropTypes.object,
-  templateUID: PropTypes.string
+  templateUID: PropTypes.string,
+  populateLexicon: PropTypes.fun
 };
