@@ -146,8 +146,6 @@ function App() {
   };
 
   const saveTermCodeValues = map => {
-    /* eslint-disable no-debugger */
-    // debugger;
     const newTemplate = { ...template };
     const questions = newTemplate.TemplateContainer.Template[0].Component;
 

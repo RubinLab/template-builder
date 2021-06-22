@@ -30,7 +30,6 @@ import {
   getCollectionResults,
   getDetail,
   getTermFromEPAD
-  // insertTermToEPAD
 } from '../../services/apiServices';
 import {
   createID,
@@ -114,9 +113,6 @@ const QuestionForm = props => {
     ontology,
     edit,
     detailEdit,
-    // authors,
-    // templateName,
-    // templateUID,
     questionID,
     deleteTermFromLexicon
   } = props;
