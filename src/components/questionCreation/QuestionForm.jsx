@@ -20,6 +20,9 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Drawer from '@material-ui/core/Drawer';
 import Button from '@material-ui/core/Button';
 import Select from '@material-ui/core/Select';
+import AddIcon from '@material-ui/icons/Add';
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
 import SearchResults from './searchResults.jsx';
 import AnswerList from './answersList.jsx';
 import TermSearchDialog from './TermSearchDialog.jsx';
@@ -102,6 +105,16 @@ const materialUseStyles = makeStyles(theme => ({
   },
   geometricShape: {
     width: 150
+  },
+  iconButton: {
+    width: 'fit-content',
+    background: '#E3E0D8',
+    height: 'fit-content',
+    marginLeft: theme.spacing(1),
+    padding: theme.spacing(1),
+    '&:hover': {
+      background: '#CCBC8E'
+    }
   }
 }));
 
@@ -786,6 +799,11 @@ const QuestionForm = props => {
           onChange={handleQuestion}
           defaultValue={question}
         />
+        <Tooltip title="Add allowed term as question type" aria-label="add">
+          <IconButton color="primary" className={classes.iconButton}>
+            <AddIcon />
+          </IconButton>
+        </Tooltip>
       </div>
       <div>
         <TextField
