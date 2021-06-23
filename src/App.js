@@ -223,7 +223,7 @@ function App() {
     if (newLexicon[term]?.ids.length === 1) {
       delete newLexicon[term];
     } else if (newLexicon[term]?.ids.length > 1) {
-      const index = newLexicon[term].ids.includes(questionID);
+      const index = newLexicon[term].ids.indexOf(questionID);
       if (index > -1) {
         newLexicon[term].ids.splice(index, 1);
       }
