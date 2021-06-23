@@ -20,16 +20,16 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Drawer from '@material-ui/core/Drawer';
 import Button from '@material-ui/core/Button';
 import Select from '@material-ui/core/Select';
-import SearchResults from './searchResults.jsx';
+import SearchResults from './SearchResults.jsx';
 import AnswerList from './answersList.jsx';
 import TermSearchDialog from './TermSearchDialog.jsx';
 import QuantificationDialog from './quantification/QuantificationDialog.jsx';
+import constants from '../../utils/constants';
 
 import {
   getCollectionResults,
   getDetail,
-  getTermFromEPAD,
-  insertTermToEPAD
+  getTermFromEPAD
 } from '../../services/apiServices';
 import {
   createID,
@@ -113,9 +113,8 @@ const QuestionForm = props => {
     ontology,
     edit,
     detailEdit,
-    authors,
-    templateName,
-    templateUID
+    questionID,
+    deleteTermFromLexicon
   } = props;
   const [searchResults, setSearchResults] = useState({});
   const [question, setQuestion] = useState('');
@@ -257,49 +256,24 @@ const QuestionForm = props => {
     const codeMeaningToSave = searchTerm.trim();
     const termToSave = term.trim() || codeMeaningToSave;
 
-    insertTermToEPAD(
-      termToSave,
-      description,
-      authors,
-      templateName,
-      templateUID,
-      'T'
-    )
-      .then(res => {
-        setOpenSearch(false);
-        const id = createID();
-        const newSelectedTerms = { ...selectedTerms };
-        const { codemeaning, codevalue } = res.data;
-        newSelectedTerms[id] = {
-          allowedTerm: {
-            codeMeaning: codemeaning,
-            codeValue: codevalue,
-            codingSchemeDesignator: '99EPAD'
-          },
-          id,
-          title: '99EPAD'
-        };
-        setTermSelection(newSelectedTerms);
+    const newTerm = { id: questionID, term: termToSave, description };
 
-        enqueueSnackbar(
-          `${termToSave} successfully saved to the EPAD lexicon`,
-          {
-            variant: 'success'
-          }
-        );
-      })
-      .catch(err => {
-        const errMessage =
-          err.response && err.response.data && err.response.data.message
-            ? err.response.data.message
-            : '';
-        enqueueSnackbar(
-          `Couln't save ${termToSave} to the EPAD lexicon! ${errMessage}`,
-          {
-            variant: 'error'
-          }
-        );
-      });
+    props.populateLexicon(newTerm);
+
+    setOpenSearch(false);
+    const id = createID();
+    const newSelectedTerms = { ...selectedTerms };
+    newSelectedTerms[id] = {
+      allowedTerm: {
+        codeMeaning: termToSave,
+        codeValue: '',
+        codingSchemeDesignator: constants.localLexicon
+      },
+      id,
+      title: constants.localLexicon
+    };
+    setTermSelection(newSelectedTerms);
+    postQuestion({ ...formInput, selectedTerms: newSelectedTerms });
   };
 
   const formCombinedSearchResult = async () => {
@@ -720,6 +694,12 @@ const QuestionForm = props => {
 
   const handleDeleteSelectedTerm = item => {
     const currentSelectedTerms = { ...selectedTerms };
+    // if the allowed term has codevalue and schemadesignator is epad
+    // delete lexicon term from the cache
+    const term = item.allowedTerm;
+    if (!term.codeValue && term.codingSchemeDesignator === '99EPAD') {
+      deleteTermFromLexicon(term.codeMeaning, questionID);
+    }
     delete currentSelectedTerms[item.id];
     setTermSelection(currentSelectedTerms);
   };
@@ -1005,5 +985,8 @@ QuestionForm.propTypes = {
   detailEdit: PropTypes.array,
   authors: PropTypes.string,
   templateName: PropTypes.string,
-  templateUID: PropTypes.string
+  templateUID: PropTypes.string,
+  questionID: PropTypes.string,
+  populateLexicon: PropTypes.func,
+  deleteTermFromLexicon: PropTypes.func
 };

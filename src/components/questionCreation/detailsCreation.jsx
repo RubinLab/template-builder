@@ -25,7 +25,10 @@ export default function DetailsCreation(props) {
     characteristic,
     ontology,
     edit,
-    detailEdit
+    detailEdit,
+    UID,
+    populateLexicon,
+    deleteTermFromLexicon
   } = props;
   const classes = materialUseStyles();
   const [question, setQuestion] = useState({});
@@ -53,6 +56,9 @@ export default function DetailsCreation(props) {
             ontology={ontology}
             edit={edit}
             detailEdit={detailEdit}
+            questionID={UID}
+            populateLexicon={populateLexicon}
+            deleteTermFromLexicon={deleteTermFromLexicon}
           />
         </DialogContent>
         <DialogActions>
@@ -77,5 +83,8 @@ DetailsCreation.propTypes = {
   setQuestion: PropTypes.func,
   authors: PropTypes.string,
   edit: PropTypes.object,
-  detailEdit: PropTypes.array
+  detailEdit: PropTypes.array,
+  UID: PropTypes.string,
+  populateLexicon: PropTypes.func,
+  deleteTermFromLexicon: PropTypes.func
 };

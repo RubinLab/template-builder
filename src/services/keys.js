@@ -1,1 +1,4 @@
-module.exports = { API_KEY: '' };
+module.exports = {
+  bioportal: '',
+  epad: ''
+};
