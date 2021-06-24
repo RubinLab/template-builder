@@ -4,7 +4,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Accessibility from '@material-ui/icons/Accessibility';
 import { useSnackbar } from 'notistack';
 import Visibility from '@material-ui/icons/Visibility';
-import BubbleChart from '@material-ui/icons/BubbleChart';
+// import BubbleChart from '@material-ui/icons/BubbleChart';
 // import Search from '@material-ui/icons/Search';
 // import LocalHospital from '@material-ui/icons/LocalHospital';
 import RadioButtonChecked from '@material-ui/icons/RadioButtonChecked';
@@ -744,10 +744,10 @@ const QuestionForm = props => {
                 <Visibility className={classes.icon} />
                 Imaging Observation
               </MenuItem>
-              <MenuItem value={'inference'}>
+              {/* <MenuItem value={'inference'}>
                 <BubbleChart className={classes.icon} />
                 Inference
-              </MenuItem>
+              </MenuItem> */}
               {/* {!characteristic && (
                 <MenuItem value={'history'}>
                   <LocalHospital className={classes.icon} />
