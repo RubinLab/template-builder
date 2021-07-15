@@ -115,6 +115,12 @@ const materialUseStyles = makeStyles(theme => ({
     '&:hover': {
       background: '#CCBC8E'
     }
+  },
+  questionTermGroup: {
+    display: 'flex',
+    width: 600,
+    justifyContent: 'space-between',
+    alignItems: 'baseline'
   }
 }));
 
@@ -149,6 +155,8 @@ const QuestionForm = props => {
   const [termID, setTermID] = useState(false);
   const [GeometricShape, setGeometricShape] = useState('');
   const [addTerm, setAddTerm] = useState(false);
+  const [questionTypeTermSearch, setQuestionTypeTermSearch] = useState(false);
+  const [questionTypeTerm, setQuestionTypeTerm] = useState(null);
 
   // const [quantificationName, setquantificationName] = useState('');
   const [searchStatus, _setSearchStatus] = useState({
@@ -194,7 +202,8 @@ const QuestionForm = props => {
     maxCard,
     showConfidence,
     GeometricShape,
-    requireComment
+    requireComment,
+    questionTypeTerm
   };
 
   const addToEpad = () => {};
@@ -564,6 +573,7 @@ const QuestionForm = props => {
     setOpenSearch(false);
     setOntologyLibs([]);
     setSearchTerm('');
+    setQuestionTypeTermSearch(false);
     setSearchStatus({
       explanation: null,
       message: null,
@@ -572,50 +582,64 @@ const QuestionForm = props => {
     });
   };
 
+  const formTermFromSearchResult = async (termIndex, title) => {
+    let allowedTerm = {};
+    let newSelected = selectedTerms ? { ...selectedTerms } : {};
+    const id = createID();
+    if (title !== '99EPAD') {
+      const acronym = searchResults.collection[termIndex].links.ontology
+        .split('/')
+        .pop();
+      const url = searchResults.collection[termIndex][`@id`];
+      const details = await getDetail(acronym, url);
+      allowedTerm = returnSelection(acronym, details.data);
+      if (allowedTerm || (allowedTerm && !allowedTerm.codeMeaning)) {
+        const newTerm = {
+          [id]: {
+            allowedTerm,
+            title,
+            id
+          }
+        };
+        newSelected = { ...selectedTerms, ...newTerm };
+      } else {
+        setShowSearchResults(false);
+        const message = `Couldnt find ${
+          allowedTerm ? 'preferred name' : 'cui or notation'
+        } for this term in ${acronym}. You can upload the term with a .csv file!`;
+        enqueueSnackbar(message, {
+          variant: 'error'
+        });
+      }
+    } else {
+      allowedTerm = {
+        codeValue: searchResults.collection[termIndex].codevalue,
+        codeMeaning: searchResults.collection[termIndex].codemeaning,
+        codingSchemeDesignator:
+          searchResults.collection[termIndex].schemadesignator
+      };
+      const newTerm = { [id]: { allowedTerm, title, id } };
+      newSelected = { ...selectedTerms, ...newTerm };
+    }
+    return { newSelected, allowedTerm };
+  };
+
   const handleTermSelection = async (termIndex, title) => {
     try {
-      let allowedTerm = {};
-      let newSelected = selectedTerms ? { ...selectedTerms } : {};
-      const id = createID();
-      if (title !== '99EPAD') {
-        const acronym = searchResults.collection[termIndex].links.ontology
-          .split('/')
-          .pop();
-        const url = searchResults.collection[termIndex][`@id`];
-        const details = await getDetail(acronym, url);
-        allowedTerm = returnSelection(acronym, details.data);
-        if (allowedTerm || (allowedTerm && !allowedTerm.codeMeaning)) {
-          const newTerm = {
-            [id]: {
-              allowedTerm,
-              title,
-              id
-            }
-          };
-          newSelected = { ...selectedTerms, ...newTerm };
-        } else {
-          setShowSearchResults(false);
-          const message = `Couldnt find ${
-            allowedTerm ? 'preferred name' : 'cui or notation'
-          } for this term in ${acronym}. You can upload the term with a .csv file!`;
-          enqueueSnackbar(message, {
-            variant: 'error'
-          });
-        }
-      } else {
-        allowedTerm = {
-          codeValue: searchResults.collection[termIndex].codevalue,
-          codeMeaning: searchResults.collection[termIndex].codemeaning,
-          codingSchemeDesignator:
-            searchResults.collection[termIndex].schemadesignator
-        };
-        const newTerm = { [id]: { allowedTerm, title, id } };
-        newSelected = { ...selectedTerms, ...newTerm };
-      }
-      if (addQuantification) {
+      const { allowedTerm, newSelected } = await formTermFromSearchResult(
+        termIndex,
+        title
+      );
+      if (questionTypeTermSearch) {
+        setQuestionTypeTerm(allowedTerm);
+        postQuestion({ ...formInput, questionTypeTerm: allowedTerm });
+        clearSearchSetup();
+      } else if (addQuantification) {
         setNonquantifiableTerm(allowedTerm);
         clearSearchSetup();
         setTermID('');
+        // TODO
+        // verifiy this code block -> addTerm
       } else if (addTerm) {
         if (selectedTerms[termID].allowedTerm.ValidTerm) {
           selectedTerms[termID].allowedTerm.ValidTerm.push(allowedTerm);
@@ -791,7 +815,7 @@ const QuestionForm = props => {
           </FormControl>
         </div>
       )}
-      <div>
+      <div className={classes.questionTermGroup}>
         <TextField
           className={classes.textField}
           label="Question"
@@ -799,11 +823,20 @@ const QuestionForm = props => {
           onChange={handleQuestion}
           defaultValue={question}
         />
-        <Tooltip title="Add allowed term as question type" aria-label="add">
-          <IconButton color="primary" className={classes.iconButton}>
-            <AddIcon />
-          </IconButton>
-        </Tooltip>
+        {!questionTypeTerm && (
+          <Tooltip title="Add allowed term as question type" aria-label="add">
+            <IconButton
+              color="primary"
+              className={classes.iconButton}
+              onClick={() => {
+                setQuestionTypeTermSearch(true);
+                setOpenSearch(true);
+              }}
+            >
+              <AddIcon />
+            </IconButton>
+          </Tooltip>
+        )}
       </div>
       <div>
         <TextField
