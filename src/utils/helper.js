@@ -32,6 +32,7 @@ function createTemplateQuestion(ques, authors, index, characteristic) {
     id
   };
   if (questionTypeTerm) component.QuestionType = questionTypeTerm;
+
   if (ques.GeometricShape) {
     component.GeometricShape = ques.GeometricShape;
   } else {

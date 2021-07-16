@@ -415,12 +415,15 @@ const QuestionForm = props => {
         explanatoryText: edit.explanatoryText,
         maxCard: edit.maxCardinality,
         minCard: edit.minCardinality,
-        question: edit.label
+        question: edit.label,
+        questionTypeTerm: edit.QuestionType || null
       };
       setQuestion(edit.label);
       setExplanatoryText(edit.explanatoryText);
       setMinCard(edit.minCardinality);
       setMaxCard(edit.maxCardinality);
+      setQuestionTypeTerm(edit.QuestionType || null);
+
       if (edit.maxCardinality === 1 && edit.minCardinality === 1) {
         setAnswerType('single');
       } else if (
@@ -827,7 +830,10 @@ const QuestionForm = props => {
         {questionTypeTerm && (
           <QuestionTypeTerm
             term={questionTypeTerm}
-            handleDelete={() => setQuestionTypeTerm(null)}
+            handleDelete={() => {
+              setQuestionTypeTerm(null);
+              postQuestion({ ...formInput, questionTypeTerm: null });
+            }}
           />
         )}
         {!questionTypeTerm && (
