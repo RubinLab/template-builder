@@ -48,7 +48,12 @@ const useStyles = makeStyles(theme => ({
 
 export default function Navbar(props) {
   const classes = useStyles();
-  const { handleAddQuestion, handleDownload, handleUpload } = props;
+  const {
+    handleAddQuestion,
+    handleDownload,
+    handleUpload,
+    downloading
+  } = props;
 
   return (
     <AppBar position="static" className={classes.root}>
@@ -72,6 +77,7 @@ export default function Navbar(props) {
           variant="outlined"
           startIcon={<GetApp />}
           onClick={handleDownload}
+          disabled={downloading}
         >
           Download
         </Button>
@@ -91,5 +97,6 @@ export default function Navbar(props) {
 Navbar.propTypes = {
   handleAddQuestion: PropTypes.func,
   handleDownload: PropTypes.func,
-  handleUpload: PropTypes.func
+  handleUpload: PropTypes.func,
+  downloading: PropTypes.bool
 };

@@ -37,6 +37,8 @@ const materialUseStyles = makeStyles(theme => ({
   root: {
     margin: theme.spacing(3),
     padding: theme.spacing(3),
+    marginTop: theme.spacing(2),
+    paddingTop: theme.spacing(2),
     width: '-webkit-fill-available',
     [theme.breakpoints.down('sm')]: {
       margin: theme.spacing(1),
@@ -126,7 +128,9 @@ export default function HomePage({
   setValidTemplate,
   setMissingInfo,
   getTemplate,
-  uploaded
+  uploaded,
+  populateLexicon,
+  deleteTermFromLexicon
 }) {
   const classes = materialUseStyles();
   const [templateName, setTemplateName] = useState('');
@@ -798,6 +802,8 @@ export default function HomePage({
           ontology={ontology}
           edit={questions[editIndex]}
           templateUID={tempContUID}
+          populateLexicon={populateLexicon}
+          deleteTermFromLexicon={deleteTermFromLexicon}
         />
       )}
       <Snackbar
@@ -835,5 +841,7 @@ HomePage.propTypes = {
   setValidTemplate: PropTypes.func,
   setMissingInfo: PropTypes.func,
   getTemplate: PropTypes.func,
-  uploaded: PropTypes.object
+  uploaded: PropTypes.object,
+  populateLexicon: PropTypes.func,
+  deleteTermFromLexicon: PropTypes.func
 };

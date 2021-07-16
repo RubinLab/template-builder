@@ -88,7 +88,7 @@ export default function AnswerLinkButton({
     );
   }
 
-  if (!linkedIdMap.linkedAnswer && !linkTextMap[answerID]) {
+  if (!linkedIdMap?.linkedAnswer && !linkTextMap[answerID]) {
     answerLink = (
       <IconButton
         className={classes.answerIcon}
