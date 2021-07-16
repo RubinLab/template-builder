@@ -16,7 +16,9 @@ export default function QuestionTypeTerm(props) {
 
   return (
     <div>
-      <span>{props.term.codeMeaning}</span>
+      <Tooltip title="Question Type">
+        <span>{props.term.codeMeaning}</span>
+      </Tooltip>
       <Tooltip title="Delete">
         <IconButton
           onClick={() => props.handleDelete()}

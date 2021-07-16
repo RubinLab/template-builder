@@ -12,7 +12,8 @@ function createTemplateQuestion(ques, authors, index, characteristic) {
     explanatoryText,
     id,
     showConfidence,
-    requireComment
+    requireComment,
+    questionTypeTerm
   } = ques;
   // eslint-disable-next-line radix
   const minCardinality = parseInt(ques.minCard);
@@ -30,7 +31,7 @@ function createTemplateQuestion(ques, authors, index, characteristic) {
     shouldDisplay: true,
     id
   };
-
+  if (questionTypeTerm) component.QuestionType = questionTypeTerm;
   if (ques.GeometricShape) {
     component.GeometricShape = ques.GeometricShape;
   } else {

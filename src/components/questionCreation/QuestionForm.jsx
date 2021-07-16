@@ -787,7 +787,7 @@ const QuestionForm = props => {
       {(characteristic === 'anatomic' || characteristic === undefined) && (
         <div>
           <FormControl className={classes.formControl}>
-            <InputLabel id="questionType">Question type</InputLabel>
+            <InputLabel id="questionType">Question group</InputLabel>
             <Select
               labelId="questionType"
               id="questionType-controlled-open-select"
