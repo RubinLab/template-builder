@@ -39,6 +39,7 @@ import {
   shapeSelectedTermData,
   geometricShapes
 } from '../../utils/helper';
+import QuestionTypeTerm from './QuestionTypeTerm.jsx';
 
 const materialUseStyles = makeStyles(theme => ({
   root: { direction: 'row', marginLeft: theme.spacing(1) },
@@ -823,6 +824,12 @@ const QuestionForm = props => {
           onChange={handleQuestion}
           defaultValue={question}
         />
+        {questionTypeTerm && (
+          <QuestionTypeTerm
+            term={questionTypeTerm}
+            handleDelete={() => setQuestionTypeTerm(null)}
+          />
+        )}
         {!questionTypeTerm && (
           <Tooltip title="Add allowed term as question type" aria-label="add">
             <IconButton
