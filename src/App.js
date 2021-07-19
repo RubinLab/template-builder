@@ -131,6 +131,18 @@ function App() {
     }
   };
 
+  const replaceSingleTerm = (term, savedList) => {
+    const updatedTerm = { ...term };
+    savedList.forEach(newTerm => {
+      if (
+        newTerm.codemeaning === updatedTerm.codeMeaning &&
+        !updatedTerm.codeValue
+      )
+        updatedTerm.codeValue = newTerm.codevalue;
+    });
+    return updatedTerm;
+  };
+
   const replaceTerm = (templateList, savedList) => {
     const newTempLateList = [];
     savedList.forEach(newTerm => {
@@ -158,6 +170,17 @@ function App() {
           map[question.id]
         );
       }
+      if (
+        map[question.id] &&
+        question.QuestionType &&
+        !question.QuestionType.codeValue
+      ) {
+        newQuestion.QuestionType = replaceSingleTerm(
+          newQuestion.QuestionType,
+          map[question.id]
+        );
+      }
+
       if (question.ImagingObservation) {
         if (
           question.ImagingObservation.ImagingObservationCharacteristic?.length >

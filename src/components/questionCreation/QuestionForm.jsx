@@ -23,7 +23,7 @@ import Select from '@material-ui/core/Select';
 import AddIcon from '@material-ui/icons/Add';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
-import SearchResults from './searchResults.jsx';
+import SearchResults from './SearchResults.jsx';
 import AnswerList from './answersList.jsx';
 import TermSearchDialog from './TermSearchDialog.jsx';
 import QuantificationDialog from './quantification/QuantificationDialog.jsx';
@@ -279,24 +279,38 @@ const QuestionForm = props => {
     const codeMeaningToSave = searchTerm.trim();
     const termToSave = term.trim() || codeMeaningToSave;
 
-    const newTerm = { id: questionID, term: termToSave, description };
+    const newTerm = {
+      id: questionID,
+      term: termToSave,
+      description
+    };
 
     props.populateLexicon(newTerm);
 
     setOpenSearch(false);
-    const id = createID();
-    const newSelectedTerms = { ...selectedTerms };
-    newSelectedTerms[id] = {
-      allowedTerm: {
+    if (questionTypeTermSearch) {
+      const questionTypeSaved = {
         codeMeaning: termToSave,
         codeValue: '',
         codingSchemeDesignator: constants.localLexicon
-      },
-      id,
-      title: constants.localLexicon
-    };
-    setTermSelection(newSelectedTerms);
-    postQuestion({ ...formInput, selectedTerms: newSelectedTerms });
+      };
+      setQuestionTypeTerm(questionTypeSaved);
+      postQuestion({ ...formInput, questionTypeTerm: questionTypeSaved });
+    } else {
+      const id = createID();
+      const newSelectedTerms = { ...selectedTerms };
+      newSelectedTerms[id] = {
+        allowedTerm: {
+          codeMeaning: termToSave,
+          codeValue: '',
+          codingSchemeDesignator: constants.localLexicon
+        },
+        id,
+        title: constants.localLexicon
+      };
+      setTermSelection(newSelectedTerms);
+      postQuestion({ ...formInput, selectedTerms: newSelectedTerms });
+    }
   };
 
   const formCombinedSearchResult = async () => {
