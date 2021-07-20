@@ -825,6 +825,7 @@ const QuestionForm = props => {
           <QuestionTypeTerm
             term={questionTypeTerm}
             handleDelete={() => {
+              deleteTermFromLexicon(questionTypeTerm.codeMeaning, questionID);
               setQuestionTypeTerm(null);
               postQuestion({ ...formInput, questionTypeTerm: null });
             }}
