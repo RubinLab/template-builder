@@ -41,7 +41,7 @@ function App() {
   const [uploaded, setUploaded] = useState(false);
   const [uploadTemplateClicked, setUploadTemplateClicked] = useState(false);
   const [lexicon, setLexicon] = useState({});
-  const [downloading, setDownloading] = useState(false);
+  const [progress, setProgress] = useState(false);
 
   const onUploadTemplate = uploadedTemplate => {
     setTemplate(uploadedTemplate);
@@ -194,7 +194,7 @@ function App() {
   };
 
   const handleDownload = async () => {
-    setDownloading(true);
+    setProgress(true);
     if (!validTemplate || misingInfo) {
       setShowSnackbar(true);
     } else {
@@ -211,7 +211,7 @@ function App() {
         // codeValues with the ones from the db
         saveTermCodeValues(questionIDTermsMap);
         await downloadFile();
-        setDownloading(false);
+        setProgress(false);
       } catch (err) {
         console.error(err);
       }
@@ -241,9 +241,9 @@ function App() {
           handleUpload={() => {
             setUploadTemplateClicked(true);
           }}
-          downloading={downloading}
+          downloading={progress}
         />
-        {downloading && (
+        {progress && (
           <div className={classes.progress}>
             <LinearProgress color="secondary" />
           </div>
