@@ -50,7 +50,7 @@ export default function TemplatePreview(props) {
     );
     semanticAnswers.loadTemplates([props.template, recist]);
     semanticAnswers.showTemplatePreview();
-  });
+  }, [props.template]);
 
   const classes = materialUseStyles();
   return (

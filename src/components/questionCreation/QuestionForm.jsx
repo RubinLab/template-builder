@@ -923,7 +923,7 @@ const QuestionForm = props => {
           variant="outlined"
           className={classes.button}
           onClick={() => setOpenSearch(true)}
-          disabled={GeometricShape}
+          disabled={!!GeometricShape}
         >
           Add Controlled Term
         </Button>

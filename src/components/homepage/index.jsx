@@ -344,8 +344,12 @@ export default function HomePage({
   const populateTemplateMetada = () => {
     const temp = uploaded ? uploaded.TemplateContainer : null;
     if (temp) {
+      let tempType = temp.Template[0].templateType;
+      tempType = tempType
+        ? tempType[0].toUpperCase() + tempType.substring(1).toLowerCase()
+        : '';
       setTemplateName(temp.name);
-      setTemplateType(temp.Template[0].templateType?.toLowerCase());
+      setTemplateType(tempType);
       setAuthor(temp.authors);
       setDescription(temp.description);
       setVersion(temp.version);
