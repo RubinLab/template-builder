@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import LinearScale from '@material-ui/icons/LinearScale';
@@ -8,6 +8,8 @@ import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
+import Pagination from '@mui/material/Pagination';
+// import TablePagination from '@mui/material/TablePagination';
 
 const useStyles = makeStyles(theme => ({
   listItem: {
@@ -48,56 +50,87 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-export default function AnswersList(props) {
+const defaultPageSize = 100;
+
+export default function AnswersList({
+  handleDelete,
+  handleAddCalculation,
+  handleAddTerm,
+  answers
+}) {
   const classes = useStyles();
-  const { handleDelete, handleAddCalculation, handleAddTerm, answers } = props;
+  const [page, setPage] = useState(1);
+  const [count, setCount] = useState(1);
+  const [display, setDisplay] = useState([]);
+
+  useEffect(() => {
+    const noOfPages = Math.ceil(answers.length / defaultPageSize);
+    setCount(noOfPages);
+    const displayList =
+      answers.length < defaultPageSize
+        ? [...answers]
+        : answers.slice((page - 1) * defaultPageSize, page * defaultPageSize);
+    setDisplay(displayList);
+  }, [answers, page]);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
 
   return (
-    <List className={classes.list}>
-      {answers.map((el, i) => {
-        const title =
-          typeof el.title === 'string'
-            ? el.title
-            : `(${el.title.acronym} - ${el.title.name})`;
-        return (
-          <ListItem
-            className={classes.listItem}
-            key={`${el.allowedTerm.codeMeaning}-${i}`}
-          >
-            <div className={classes.itemTextGrp}>
-              <span className={classes.listItemTerm}>
-                {el.allowedTerm.codeMeaning}
-              </span>
-              <span className={classes.ontologyTitle}>{title}</span>
-            </div>
-            <Tooltip title="Add Quantification">
-              <IconButton
-                onClick={() => handleAddCalculation(el.id)}
-                className={classes.listItemIcon}
-              >
-                <LinearScale />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Add Term">
-              <IconButton
-                onClick={() => handleAddTerm(el.id)}
-                className={classes.listItemIcon}
-              >
-                <AddCircle />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Delete">
-              <IconButton
-                onClick={() => handleDelete(el)}
-                className={classes.listItemIcon}
-              >
-                <Delete />
-              </IconButton>
-            </Tooltip>
-          </ListItem>
-        );
-      })}
-    </List>
+    <>
+      <List className={classes.list}>
+        {display.map((el, i) => {
+          const title =
+            typeof el.title === 'string'
+              ? el.title
+              : `(${el.title.acronym} - ${el.title.name})`;
+          return (
+            <ListItem
+              className={classes.listItem}
+              key={`${el.allowedTerm.codeMeaning}-${i}`}
+            >
+              <div className={classes.itemTextGrp}>
+                <span className={classes.listItemTerm}>
+                  {el.allowedTerm.codeMeaning}
+                </span>
+                <span className={classes.ontologyTitle}>{title}</span>
+              </div>
+              <Tooltip title="Add Quantification">
+                <IconButton
+                  onClick={() => handleAddCalculation(el.id)}
+                  className={classes.listItemIcon}
+                >
+                  <LinearScale />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Add Term">
+                <IconButton
+                  onClick={() => handleAddTerm(el.id)}
+                  className={classes.listItemIcon}
+                >
+                  <AddCircle />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Delete">
+                <IconButton
+                  onClick={() => handleDelete(el)}
+                  className={classes.listItemIcon}
+                >
+                  <Delete />
+                </IconButton>
+              </Tooltip>
+            </ListItem>
+          );
+        })}
+      </List>
+      <Pagination
+        count={count}
+        page={page}
+        onChange={handleChangePage}
+        showLastButton
+      />
+    </>
   );
 }
 
