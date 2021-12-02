@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import Delete from '@material-ui/icons/Delete';
@@ -12,6 +12,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import IconButton from '@material-ui/core/IconButton';
 import Collapse from '@material-ui/core/Collapse';
+import Pagination from '@mui/material/Pagination';
 import AnswerLinkButton from './AnswerLinkButton.jsx';
 
 const useStyles = makeStyles(theme => ({
@@ -64,6 +65,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+const defaultPageSize = 250;
 export default function QuestionItem(props) {
   const classes = useStyles();
   const {
@@ -81,6 +83,24 @@ export default function QuestionItem(props) {
     combinedIndex
   } = props;
   const [open, setOpen] = useState(false);
+  const [page, setPage] = useState(1);
+  const [count, setCount] = useState(1);
+  const [display, setDisplay] = useState([]);
+
+  useEffect(() => {
+    const answers = Object.values(question.AllowedTerm);
+    const noOfPages = Math.ceil(answers.length / defaultPageSize);
+    setCount(noOfPages);
+    const displayList =
+      answers.length < defaultPageSize
+        ? [...answers]
+        : answers.slice((page - 1) * defaultPageSize, page * defaultPageSize);
+    setDisplay(displayList);
+  }, [question, page]);
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
 
   return (
     <>
@@ -127,7 +147,7 @@ export default function QuestionItem(props) {
       {question.AllowedTerm && (
         <Collapse in={open} timeout="auto" unmountOnExit>
           <List component="div" className={classes.answerList}>
-            {Object.values(question.AllowedTerm).map((term, i) => {
+            {display.map((term, i) => {
               return (
                 <ListItem
                   className={classes.listItem}
@@ -150,6 +170,12 @@ export default function QuestionItem(props) {
               );
             })}
           </List>
+          <Pagination
+            count={count}
+            page={page}
+            onChange={handleChangePage}
+            showLastButton
+          />
         </Collapse>
       )}
     </>
