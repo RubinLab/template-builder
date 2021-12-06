@@ -91,7 +91,7 @@ function App() {
       const { codemeaning, codevalue } = templateTerm.data;
       const newTemplate = { ...template };
       newTemplate.TemplateContainer.Template[0].codeMeaning = codemeaning;
-      newTemplate.TemplateContainer.Template[0].codevalue = codevalue;
+      newTemplate.TemplateContainer.Template[0].codeValue = codevalue;
       newTemplate.TemplateContainer.Template[0].codingSchemeDesignator =
         constants.localLexicon;
       setTemplate(newTemplate);
