@@ -153,7 +153,9 @@ export default function HomePage({
   const [editIndex, setEditIndex] = useState(null);
   const [codeMeaning, setCodeMeaning] = useState('');
   const [codeValue, setCodeValue] = useState('');
-  const [codingSchemeDesignator, setcodingSchemeDesignator] = useState('');
+  const [codingSchemeDesignator, setcodingSchemeDesignator] = useState(
+    '99EPAD'
+  );
   const [showForm, setShowForm] = useState(true);
   const { enqueueSnackbar } = useSnackbar();
 
@@ -316,7 +318,7 @@ export default function HomePage({
       !version ||
       !author ||
       !codeMeaning ||
-      !codeValue ||
+      // !codeValue ||
       !codingSchemeDesignator;
 
     if (showError && showDialog) {
@@ -673,7 +675,8 @@ export default function HomePage({
                         value={codeMeaning}
                       />
 
-                      <TextField
+                      {/* <TextField
+                        disabled
                         error={requiredError && !codeValue}
                         required={true}
                         className={classes.textField}
@@ -685,9 +688,11 @@ export default function HomePage({
                           // formCompleteTemplate(questions);
                         }}
                         value={codeValue}
-                      />
+                      /> */}
 
                       <TextField
+                        disabled
+                        defaultValue={'99EPAD'}
                         error={requiredError && !codingSchemeDesignator}
                         required={true}
                         className={classes.textField}
