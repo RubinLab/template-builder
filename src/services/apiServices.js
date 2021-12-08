@@ -1,5 +1,5 @@
-import axios from 'axios';
 import formurlencoded from 'form-urlencoded';
+import axios from 'axios';
 import config from './keys';
 import { ontologies } from '../utils/helper';
 
@@ -34,7 +34,8 @@ const getCollectionResults = (keyword, ontologiesList, page) => {
 };
 
 const getDetail = (ontology, url) => {
-  const encodedURL = formurlencoded({ url })
+  const encodedURL = formurlencoded
+    .default({ url })
     .split('=')
     .pop();
   return axios.get(
