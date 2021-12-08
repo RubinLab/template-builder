@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { makeStyles } from '@material-ui/core/styles';
 import Select from '@material-ui/core/Select';
 import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import Dialog from '@material-ui/core/Dialog';
@@ -199,7 +198,6 @@ const QuantificationDialog = props => {
             required
             error={!name && submitted}
           />
-          <InputLabel>Quantification type:</InputLabel>
           <Select
             onChange={e => {
               setValue(e.target.value);
