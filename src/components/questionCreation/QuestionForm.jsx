@@ -757,6 +757,7 @@ const QuestionForm = props => {
     }
     delete currentSelectedTerms[item.id];
     setTermSelection(currentSelectedTerms);
+    postQuestion({ ...formInput, selectedTerms: currentSelectedTerms });
   };
 
   const handleOntologyInput = (e, options) => {
