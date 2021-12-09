@@ -17,10 +17,12 @@ const materialUseStyles = makeStyles(theme => ({
     color: '#8c1717'
   },
   questionaire: {
+    /* eslint-disable no-dupe-keys */
     margin: theme.spacing(4),
     padding: theme.spacing(6),
     border: '1px solid #8c1717',
     width: '-webkit-fill-available',
+    width: '-moz-available',
     minWidth: 300,
     background: '#E3E0D8',
     [theme.breakpoints.down('sm')]: {
