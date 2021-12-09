@@ -1,3 +1,4 @@
+// eslint-disable
 import React, { useState } from 'react';
 import { SnackbarProvider } from 'notistack';
 import { makeStyles } from '@material-ui/core/styles';
@@ -14,9 +15,10 @@ import constants from './utils/constants';
 const useStyles = makeStyles(theme => ({
   app: {
     flexGrow: 1,
-    width: 'fit-content',
     [theme.breakpoints.up('sm')]: {
-      width: '-webkit-fill-available'
+      /* eslint-disable no-dupe-keys */
+      width: '-webkit-fill-available',
+      width: '-moz-available'
     }
   },
   progress: {
