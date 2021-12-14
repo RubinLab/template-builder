@@ -10,11 +10,11 @@ WORKDIR /home/node/app
 RUN git clone https://github.com/RubinLab/template-builder.git /home/node/app/
 COPY keys.js /home/node/app/src/services
 
-RUN sed -i 's/react-scripts build/react-scripts --max_old_space_size=6144 build/g' /home/node/app/package.json
+RUN sed -i 's/react-scripts build/react-scripts --max_old_space_size=4096 build/g' /home/node/app/package.json
 
 # Install app dependencies
 ENV NPM_CONFIG_LOGLEVEL warn
-ENV NODE_OPTIONS "--max-old-space-size=6144"
+ENV NODE_OPTIONS "--max-old-space-size=4096"
 RUN npm install 
 RUN npm run build 
 
