@@ -631,13 +631,14 @@ const QuestionForm = props => {
         clearSearchSetup();
         setTermID('');
         // TODO
-        // verifiy this code block -> addTerm
+        // verify this code block -> addTerm
       } else if (addTerm) {
         if (selectedTerms[termID].allowedTerm.ValidTerm) {
           selectedTerms[termID].allowedTerm.ValidTerm.push(allowedTerm);
         } else {
           selectedTerms[termID].allowedTerm.ValidTerm = [allowedTerm];
         }
+        setAddTerm(false);
         clearSearchSetup();
       } else {
         postQuestion({ ...formInput, selectedTerms: newSelected });
