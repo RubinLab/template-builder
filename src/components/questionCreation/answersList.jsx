@@ -4,12 +4,13 @@ import PropTypes from 'prop-types';
 import LinearScale from '@material-ui/icons/LinearScale';
 import AddCircle from '@material-ui/icons/AddCircle';
 import Delete from '@material-ui/icons/Delete';
+import ViewList from '@material-ui/icons/ViewList';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import Pagination from '@mui/material/Pagination';
-// import TablePagination from '@mui/material/TablePagination';
+import Menu from '@material-ui/core/Menu';
 
 const useStyles = makeStyles(theme => ({
   listItem: {
@@ -62,6 +63,9 @@ export default function AnswersList({
   const [page, setPage] = useState(1);
   const [count, setCount] = useState(1);
   const [display, setDisplay] = useState([]);
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const showInfo = Boolean(anchorEl);
 
   useEffect(() => {
     const noOfPages = Math.ceil(answers.length / defaultPageSize);
@@ -77,6 +81,14 @@ export default function AnswersList({
     setPage(newPage);
   };
 
+  const showDetails = event => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   return (
     <>
       <List className={classes.list}>
@@ -85,6 +97,9 @@ export default function AnswersList({
             typeof el.title === 'string'
               ? el.title
               : `(${el.title.acronym} - ${el.title.name})`;
+          const hasDetail =
+            !!el.allowedTerm.ValidTerm ||
+            !!el.allowedTerm.CharacteristicQuantification;
           return (
             <ListItem
               className={classes.listItem}
@@ -120,6 +135,16 @@ export default function AnswersList({
                   <Delete />
                 </IconButton>
               </Tooltip>
+              {hasDetail && (
+                <Tooltip title="Show Details">
+                  <IconButton
+                    onClick={showDetails}
+                    className={classes.listItemIcon}
+                  >
+                    <ViewList />
+                  </IconButton>
+                </Tooltip>
+              )}
             </ListItem>
           );
         })}
@@ -130,6 +155,20 @@ export default function AnswersList({
         onChange={handleChangePage}
         showLastButton
       />
+      <Menu open={showInfo} anchorEl={anchorEl} onClose={handleClose}>
+        <div className={classes.popupContent}>
+          HERE!!!
+          {/* <div
+          className={classes.contentText}
+        >{`Next: ${linkTextMap[answerID]}`}</div>
+        <IconButton
+          className={classes.listItemIcon}
+          onClick={() => handleDeleteLink(answerID)}
+        >
+          <DeleteForever />
+        </IconButton> */}
+        </div>
+      </Menu>
     </>
   );
 }
