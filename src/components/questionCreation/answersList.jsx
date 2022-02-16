@@ -25,6 +25,15 @@ const useStyles = makeStyles(theme => ({
     //   width: 300,
     // },
   },
+  listItemDetails: {
+    direction: 'column',
+    width: 'fit-content',
+    paddingTop: theme.spacing(0),
+    paddingBottom: theme.spacing(0),
+    marginTop: theme.spacing(0.5),
+    marginBottom: theme.spacing(0.5),
+    fontSize: '1rem'
+  },
   listItemTerm: {
     witdh: '-webkit-fill-available',
     fontSize: '1.2rem',
@@ -64,6 +73,7 @@ export default function AnswersList({
   const [count, setCount] = useState(1);
   const [display, setDisplay] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
+  const [detailIndex, setDetailIndex] = useState(null);
 
   const showInfo = Boolean(anchorEl);
 
@@ -81,12 +91,14 @@ export default function AnswersList({
     setPage(newPage);
   };
 
-  const showDetails = event => {
+  const showDetails = (event, i) => {
     setAnchorEl(event.currentTarget);
+    setDetailIndex(i);
   };
 
   const handleClose = () => {
     setAnchorEl(null);
+    setDetailIndex(null);
   };
 
   return (
@@ -138,7 +150,7 @@ export default function AnswersList({
               {hasDetail && (
                 <Tooltip title="Show Details">
                   <IconButton
-                    onClick={showDetails}
+                    onClick={e => showDetails(e, i)}
                     className={classes.listItemIcon}
                   >
                     <ViewList />
@@ -157,16 +169,48 @@ export default function AnswersList({
       />
       <Menu open={showInfo} anchorEl={anchorEl} onClose={handleClose}>
         <div className={classes.popupContent}>
-          HERE!!!
-          {/* <div
-          className={classes.contentText}
-        >{`Next: ${linkTextMap[answerID]}`}</div>
-        <IconButton
-          className={classes.listItemIcon}
-          onClick={() => handleDeleteLink(answerID)}
-        >
-          <DeleteForever />
-        </IconButton> */}
+          <List>
+            {display[detailIndex]?.allowedTerm?.ValidTerm?.map(el => {
+              return (
+                <ListItem
+                  key={el.codeValue}
+                  className={classes.listItemDetails}
+                >
+                  {<div>{`Term: ${el.codeMeaning}`}</div>}
+                  <Tooltip title="Delete">
+                    <IconButton
+                      // onClick={() => handleDelete(el)}
+                      className={classes.listItemIcon}
+                    >
+                      <Delete />
+                    </IconButton>
+                  </Tooltip>
+                </ListItem>
+              );
+            })}
+          </List>
+          <List>
+            {display[
+              detailIndex
+            ]?.allowedTerm?.CharacteristicQuantification?.map(el => {
+              return (
+                <ListItem
+                  key={el.codeValue}
+                  className={classes.listItemDetails}
+                >
+                  {<div>{`Quantification: ${el.name}`}</div>}
+                  <Tooltip title="Delete">
+                    <IconButton
+                      // onClick={() => handleDelete(el)}
+                      className={classes.listItemIcon}
+                    >
+                      <Delete />
+                    </IconButton>
+                  </Tooltip>
+                </ListItem>
+              );
+            })}
+          </List>
         </div>
       </Menu>
     </>
