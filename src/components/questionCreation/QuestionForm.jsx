@@ -23,6 +23,7 @@ import Select from '@material-ui/core/Select';
 import AddIcon from '@material-ui/icons/Add';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
+import _ from 'lodash';
 import SearchResults from './SearchResults.jsx';
 import AnswerList from './answersList.jsx';
 import TermSearchDialog from './TermSearchDialog.jsx';
@@ -760,6 +761,17 @@ const QuestionForm = props => {
     postQuestion({ ...formInput, selectedTerms: currentSelectedTerms });
   };
 
+  const handleDeleteTermDetails = (id, collection, index) => {
+    const newSelectedTerms = _.cloneDeep(selectedTerms);
+    const arr = newSelectedTerms[id].allowedTerm[collection];
+    arr?.splice(index, 1);
+    if (arr?.length === 0) {
+      delete newSelectedTerms[id].allowedTerm[collection];
+    }
+    setTermSelection(newSelectedTerms);
+    postQuestion({ ...formInput, selectedTerms: newSelectedTerms });
+  };
+
   const handleOntologyInput = (e, options) => {
     if (Array.isArray(options)) {
       if (options.length === 0) setOntologyLibs(options);
@@ -962,6 +974,7 @@ const QuestionForm = props => {
         <div>
           <AnswerList
             answers={Object.values(selectedTerms)}
+            answersIDs={Object.keys(selectedTerms)}
             handleDelete={handleDeleteSelectedTerm}
             characteristic={characteristic}
             handleAddTerm={index => {
@@ -973,6 +986,7 @@ const QuestionForm = props => {
               setAddQuantification(true);
               setTermID(index);
             }}
+            handleDeleteTermDetails={handleDeleteTermDetails}
           />
         </div>
       )}

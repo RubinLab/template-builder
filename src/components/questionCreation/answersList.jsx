@@ -66,14 +66,16 @@ export default function AnswersList({
   handleDelete,
   handleAddCalculation,
   handleAddTerm,
-  answers
+  answers,
+  handleDeleteTermDetails,
+  answersIDs
 }) {
   const classes = useStyles();
   const [page, setPage] = useState(1);
   const [count, setCount] = useState(1);
   const [display, setDisplay] = useState([]);
   const [anchorEl, setAnchorEl] = useState(null);
-  const [detailIndex, setDetailIndex] = useState(null);
+  const [termIndex, setTermIndex] = useState(null);
 
   const showInfo = Boolean(anchorEl);
 
@@ -93,12 +95,12 @@ export default function AnswersList({
 
   const showDetails = (event, i) => {
     setAnchorEl(event.currentTarget);
-    setDetailIndex(i);
+    setTermIndex(i);
   };
 
   const handleClose = () => {
     setAnchorEl(null);
-    setDetailIndex(null);
+    setTermIndex(null);
   };
 
   return (
@@ -170,7 +172,7 @@ export default function AnswersList({
       <Menu open={showInfo} anchorEl={anchorEl} onClose={handleClose}>
         <div className={classes.popupContent}>
           <List>
-            {display[detailIndex]?.allowedTerm?.ValidTerm?.map(el => {
+            {display[termIndex]?.allowedTerm?.ValidTerm?.map((el, i) => {
               return (
                 <ListItem
                   key={el.codeValue}
@@ -179,7 +181,13 @@ export default function AnswersList({
                   {<div>{`Term: ${el.codeMeaning}`}</div>}
                   <Tooltip title="Delete">
                     <IconButton
-                      // onClick={() => handleDelete(el)}
+                      onClick={() =>
+                        handleDeleteTermDetails(
+                          answersIDs[termIndex],
+                          'ValidTerm',
+                          i
+                        )
+                      }
                       className={classes.listItemIcon}
                     >
                       <Delete />
@@ -190,26 +198,32 @@ export default function AnswersList({
             })}
           </List>
           <List>
-            {display[
-              detailIndex
-            ]?.allowedTerm?.CharacteristicQuantification?.map(el => {
-              return (
-                <ListItem
-                  key={el.codeValue}
-                  className={classes.listItemDetails}
-                >
-                  {<div>{`Quantification: ${el.name}`}</div>}
-                  <Tooltip title="Delete">
-                    <IconButton
-                      // onClick={() => handleDelete(el)}
-                      className={classes.listItemIcon}
-                    >
-                      <Delete />
-                    </IconButton>
-                  </Tooltip>
-                </ListItem>
-              );
-            })}
+            {display[termIndex]?.allowedTerm?.CharacteristicQuantification?.map(
+              (el, i) => {
+                return (
+                  <ListItem
+                    key={el.codeValue}
+                    className={classes.listItemDetails}
+                  >
+                    {<div>{`Quantification: ${el.name}`}</div>}
+                    <Tooltip title="Delete">
+                      <IconButton
+                        onClick={() =>
+                          handleDeleteTermDetails(
+                            answersIDs[termIndex],
+                            'CharacteristicQuantification',
+                            i
+                          )
+                        }
+                        className={classes.listItemIcon}
+                      >
+                        <Delete />
+                      </IconButton>
+                    </Tooltip>
+                  </ListItem>
+                );
+              }
+            )}
           </List>
         </div>
       </Menu>
@@ -222,5 +236,7 @@ AnswersList.propTypes = {
   handleAddCalculation: PropTypes.func,
   handleAddTerm: PropTypes.func,
   chracteristic: PropTypes.bool,
-  answers: PropTypes.array
+  answers: PropTypes.array,
+  handleDeleteTermDetails: PropTypes.func,
+  answersIDs: PropTypes.array
 };
