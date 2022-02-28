@@ -300,6 +300,7 @@ function App() {
               // size="small"
               onClick={() => {
                 setShowSnackbar(false);
+                setProgress(false);
               }}
             >
               OK
