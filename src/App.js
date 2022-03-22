@@ -11,6 +11,7 @@ import Homepage from './components/homepage/index.jsx';
 import UploadTemplate from './components/homepage/UploadTemplate.jsx';
 import { insertTermToEPAD } from './services/apiServices';
 import constants from './utils/constants';
+import { validateTemplate } from './utils/helper';
 
 const useStyles = makeStyles(theme => ({
   app: {
@@ -36,7 +37,6 @@ const messages = {
 function App() {
   const classes = useStyles();
   const [showDialog, setShowDialog] = useState(false);
-  const [validTemplate, setValidTemplate] = useState(false);
   const [misingInfo, setMissingInfo] = useState(false);
   const [showSnackbar, setShowSnackbar] = useState(false);
   const [template, setTemplate] = useState({});
@@ -44,6 +44,7 @@ function App() {
   const [uploadTemplateClicked, setUploadTemplateClicked] = useState(false);
   const [lexicon, setLexicon] = useState({});
   const [progress, setProgress] = useState(false);
+  const [validationErrors, setValErrors] = useState([]);
 
   const onUploadTemplate = uploadedTemplate => {
     setTemplate(uploadedTemplate);
@@ -218,9 +219,26 @@ function App() {
     setTemplate(newTemplate);
   };
 
+  const validateTemplateContainer = () => {
+    const { valTemplate, questionExists, valid, errors } = validateTemplate(
+      template,
+      validationErrors
+    );
+    if (!valTemplate || !valid) {
+      console.log('not valid errors:');
+      console.log(errors);
+      setValErrors(validationErrors.concat(errors));
+    } else {
+      setMissingInfo(!questionExists);
+    }
+    return valid;
+  };
+
   const handleDownload = async () => {
     setProgress(true);
-    if (!validTemplate || misingInfo) {
+    const valid = validateTemplateContainer();
+
+    if (!valid || misingInfo) {
       setShowSnackbar(true);
     } else {
       try {
@@ -276,9 +294,6 @@ function App() {
         <Homepage
           showDialog={showDialog}
           handleAddQuestion={handleAddQuestion}
-          setValidTemplate={val => {
-            setValidTemplate(val);
-          }}
           setMissingInfo={val => setMissingInfo(val)}
           getTemplate={temp => setTemplate(temp)}
           uploaded={uploaded ? template : null}

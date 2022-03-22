@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import Ajv from 'ajv';
-import ajvDraft from 'ajv/lib/refs/json-schema-draft-04.json';
 import _ from 'lodash';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
@@ -21,7 +19,6 @@ import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-// import AlertDialog from '../common/AlertDialog.jsx';
 import QuestionList from '../question/QuestionList.jsx';
 import QuestionCreation from '../questionCreation/index.jsx';
 import TemplatePreview from './templatePreview.jsx';
@@ -31,7 +28,6 @@ import {
   formAnswerIDFromIndeces,
   updateQuestionMetadata
 } from '../../utils/helper';
-import schema from '../../utils/AIMTemplate_v2rvStanford_schema.json';
 
 const materialUseStyles = makeStyles(theme => ({
   root: {
@@ -127,8 +123,6 @@ const ontologies = {
 export default function HomePage({
   showDialog,
   handleAddQuestion,
-  setValidTemplate,
-  setMissingInfo,
   getTemplate,
   uploaded,
   populateLexicon,
@@ -149,7 +143,6 @@ export default function HomePage({
     linkedQuestion: null
   });
   const [completeTemplate, setCompTemplate] = useState({});
-  const [validationErrors, setValErrors] = useState([]);
   const [tempContUID, setTempContUID] = useState('');
   const [requiredError, setRequiredError] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
@@ -164,27 +157,6 @@ export default function HomePage({
   // TODO
   // CLARIFY how and whre to get data like version codemeaning, codevalue etc.
   // clarify the difference between template and the container
-
-  const validateTemplate = cont => {
-    const ajv = new Ajv({ schemaId: 'id' });
-    ajv.addMetaSchema(ajvDraft);
-    const valid = ajv.validate(schema, cont);
-    if (!valid) {
-      console.log('not valid errors:');
-      console.log(ajv.errors);
-      setValErrors(validationErrors.concat(ajv.errors));
-    } else {
-      const containerExists = cont.TemplateContainer !== undefined;
-      const temp = cont.TemplateContainer.Template;
-      const templatexists = temp && temp.length > 0;
-      const questionExists = temp[0].Component.length > 0;
-      const valTemplate =
-        validationErrors.length === 0 && containerExists && templatexists;
-      setValidTemplate(valTemplate);
-      setMissingInfo(!questionExists);
-      getTemplate(cont);
-    }
-  };
 
   const getDate = () => {
     const date = new Date();
@@ -232,7 +204,7 @@ export default function HomePage({
       TemplateContainer: { ...formContainerData(), Template: [temp] }
     };
     setCompTemplate({ ...cont });
-    validateTemplate(cont);
+    getTemplate(cont);
   };
 
   // TODO
