@@ -297,6 +297,7 @@ function App() {
           setMissingInfo={val => setMissingInfo(val)}
           getTemplate={temp => setTemplate(temp)}
           uploaded={uploaded ? template : null}
+          setUploaded={setUploaded}
           populateLexicon={populateLexicon}
           deleteTermFromLexicon={deleteTermFromLexicon}
         />

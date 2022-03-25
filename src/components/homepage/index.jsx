@@ -125,6 +125,7 @@ export default function HomePage({
   handleAddQuestion,
   getTemplate,
   uploaded,
+  setUploaded,
   populateLexicon,
   deleteTermFromLexicon
 }) {
@@ -225,6 +226,7 @@ export default function HomePage({
           newCompleteTemplate.TemplateContainer.Template[0].Component = list;
         }
       }
+
       newCompleteTemplate.TemplateContainer.Template[0][key] = value;
       setCompTemplate(newCompleteTemplate);
       formCompleteTemplate(
@@ -343,6 +345,7 @@ export default function HomePage({
         ...uploaded.TemplateContainer.Template[0].Component
       ];
       setQuestions(uploadedQuestions);
+      setUploaded(false);
     }
   }, [uploaded]);
 
@@ -825,6 +828,7 @@ HomePage.propTypes = {
   setMissingInfo: PropTypes.func,
   getTemplate: PropTypes.func,
   uploaded: PropTypes.object,
+  setUploaded: PropTypes.func,
   populateLexicon: PropTypes.func,
   deleteTermFromLexicon: PropTypes.func
 };
