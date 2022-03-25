@@ -88,7 +88,9 @@ export default function QuestionItem(props) {
   const [display, setDisplay] = useState([]);
 
   useEffect(() => {
-    const answers = Object.values(question.AllowedTerm);
+    const answers = question.AllowedTerm
+      ? Object.values(question.AllowedTerm)
+      : [];
     const noOfPages = Math.ceil(answers.length / defaultPageSize);
     setCount(noOfPages);
     const displayList =
