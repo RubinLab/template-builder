@@ -78,6 +78,7 @@ function App() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    setValErrors([]);
   };
 
   const saveTemplateToDB = async (authors, name, uid) => {
@@ -295,7 +296,9 @@ function App() {
           showDialog={showDialog}
           handleAddQuestion={handleAddQuestion}
           setMissingInfo={val => setMissingInfo(val)}
-          getTemplate={temp => setTemplate(temp)}
+          getTemplate={temp => {
+            setTemplate(temp);
+          }}
           uploaded={uploaded ? template : null}
           setUploaded={setUploaded}
           populateLexicon={populateLexicon}
