@@ -9,8 +9,9 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import Navbar from './components/navbar/index.jsx';
 import Homepage from './components/homepage/index.jsx';
 import UploadTemplate from './components/homepage/UploadTemplate.jsx';
-import { insertTermToEPAD } from './services/apiServices';
+import ErrorDisplay from './components/common/ErrorDisplay.jsx';
 import constants from './utils/constants';
+import { insertTermToEPAD } from './services/apiServices';
 import { validateTemplate } from './utils/helper';
 
 const useStyles = makeStyles(theme => ({
@@ -26,7 +27,8 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
     marginTop: theme.spacing(2),
     height: theme.spacing(1)
-  }
+  },
+  option: { color: '#7482cf' }
 }));
 
 const messages = {
@@ -45,6 +47,7 @@ function App() {
   const [lexicon, setLexicon] = useState({});
   const [progress, setProgress] = useState(false);
   const [validationErrors, setValErrors] = useState([]);
+  const [displayErrors, setDisplayErrors] = useState(false);
 
   const onUploadTemplate = uploadedTemplate => {
     setTemplate(uploadedTemplate);
@@ -315,6 +318,15 @@ function App() {
         action={
           <React.Fragment>
             <Button
+              className={classes.option}
+              onClick={() => {
+                setDisplayErrors(true);
+                setShowSnackbar(false);
+              }}
+            >
+              Show Errors
+            </Button>
+            <Button
               color="secondary"
               // size="small"
               onClick={() => {
@@ -333,6 +345,21 @@ function App() {
           setUploadTemplateClicked(false);
         }}
         onUpload={onUploadTemplate}
+      />
+      <ErrorDisplay
+        open={displayErrors}
+        onOK={async () => {
+          setDisplayErrors(false);
+          setValErrors([]);
+          setProgress(false);
+        }}
+        errors={validationErrors}
+        onDownload={async () => {
+          await downloadFile();
+          setValErrors([]);
+          setDisplayErrors(false);
+          setProgress(false);
+        }}
       />
     </SnackbarProvider>
   );
