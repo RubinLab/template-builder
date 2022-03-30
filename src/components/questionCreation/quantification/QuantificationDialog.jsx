@@ -101,6 +101,7 @@ const QuantificationDialog = props => {
     }
 
     setQuantification(result);
+
     return result;
   };
 
@@ -180,6 +181,7 @@ const QuantificationDialog = props => {
       setSubmitted(true);
     } else {
       props.saveQuantification(quantification);
+      setQuantification([]);
       setSubmitted(false);
       setName('');
     }
