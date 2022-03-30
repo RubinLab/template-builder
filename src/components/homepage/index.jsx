@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import Ajv from 'ajv';
-import ajvDraft from 'ajv/lib/refs/json-schema-draft-04.json';
 import _ from 'lodash';
 import { makeStyles } from '@material-ui/core/styles';
 import { useSnackbar } from 'notistack';
@@ -21,7 +19,6 @@ import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-// import AlertDialog from '../common/AlertDialog.jsx';
 import QuestionList from '../question/QuestionList.jsx';
 import QuestionCreation from '../questionCreation/index.jsx';
 import TemplatePreview from './templatePreview.jsx';
@@ -31,7 +28,6 @@ import {
   formAnswerIDFromIndeces,
   updateQuestionMetadata
 } from '../../utils/helper';
-import schema from '../../utils/AIMTemplate_v2rvStanford_schema.json';
 
 const materialUseStyles = makeStyles(theme => ({
   root: {
@@ -127,10 +123,9 @@ const ontologies = {
 export default function HomePage({
   showDialog,
   handleAddQuestion,
-  setValidTemplate,
-  setMissingInfo,
   getTemplate,
   uploaded,
+  setUploaded,
   populateLexicon,
   deleteTermFromLexicon
 }) {
@@ -149,7 +144,6 @@ export default function HomePage({
     linkedQuestion: null
   });
   const [completeTemplate, setCompTemplate] = useState({});
-  const [validationErrors, setValErrors] = useState([]);
   const [tempContUID, setTempContUID] = useState('');
   const [requiredError, setRequiredError] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
@@ -165,27 +159,6 @@ export default function HomePage({
   // CLARIFY how and whre to get data like version codemeaning, codevalue etc.
   // clarify the difference between template and the container
 
-  const validateTemplate = cont => {
-    const ajv = new Ajv({ schemaId: 'id' });
-    ajv.addMetaSchema(ajvDraft);
-    const valid = ajv.validate(schema, cont);
-    if (!valid) {
-      console.log('not valid errors:');
-      console.log(ajv.errors);
-      setValErrors(validationErrors.concat(ajv.errors));
-    } else {
-      const containerExists = cont.TemplateContainer !== undefined;
-      const temp = cont.TemplateContainer.Template;
-      const templatexists = temp && temp.length > 0;
-      const questionExists = temp[0].Component.length > 0;
-      const valTemplate =
-        validationErrors.length === 0 && containerExists && templatexists;
-      setValidTemplate(valTemplate);
-      setMissingInfo(!questionExists);
-      getTemplate(cont);
-    }
-  };
-
   const getDate = () => {
     const date = new Date();
     const year = date.getFullYear();
@@ -195,29 +168,30 @@ export default function HomePage({
     return `${year}-${month}-${day}`;
   };
 
-  const formContainerData = () => {
+  const formContainerData = (key, value) => {
     const newcontainer = {};
     newcontainer.uid = tempContUID;
-    newcontainer.name = templateName; // ??
-    newcontainer.authors = author; // ??
-    newcontainer.version = version;
+    newcontainer.name = key === 'name' ? value : templateName; // ??
+    newcontainer.authors = key === 'authors' ? value : author; // ??
+    newcontainer.version = key === 'version' ? value : version;
     newcontainer.creationDate = getDate();
-    newcontainer.description = description; // ??
+    newcontainer.description = key === 'description' ? value : description; // ??
     return newcontainer;
   };
 
-  const formTemplateData = () => {
+  const formTemplateData = (key, value) => {
     const newTemplate = {};
     newTemplate.uid = createID();
-    newTemplate.name = templateName;
-    newTemplate.templateType = templateType;
-    newTemplate.authors = author;
-    newTemplate.version = version;
+    newTemplate.name = key === 'name' ? value : templateName;
+    newTemplate.authors = key === 'authors' ? value : author;
+    newTemplate.templateType = key === 'templateType' ? value : templateType;
+    newTemplate.version = key === 'version' ? value : version;
     newTemplate.creationDate = getDate();
-    newTemplate.description = description;
-    newTemplate.codeMeaning = codeMeaning; // ???
-    newTemplate.codeValue = codeValue; // ??
-    newTemplate.codingSchemeDesignator = codingSchemeDesignator; // ??
+    newTemplate.description = key === 'description' ? value : description;
+    newTemplate.codeMeaning = key === 'codeMeaning' ? value : codeMeaning; // ???
+    newTemplate.codeValue = key === 'codeValue' ? value : codeValue; // ??
+    newTemplate.codingSchemeDesignator =
+      key === 'codingSchemeDesignator' ? value : codingSchemeDesignator; // ??
     // newTemplate.codingSchemeVersion = ''; // ??
     return newTemplate;
   };
@@ -226,13 +200,13 @@ export default function HomePage({
   // refactor: at the end formCompleteTemplate with download click
   // remove questionslist parameter and take all data from the state
   // for now it's passed as parameter to speed up the development to see the template in aimEditor
-  const formCompleteTemplate = questionsList => {
-    const temp = { ...formTemplateData(), Component: questionsList };
+  const formCompleteTemplate = (questionsList, key, value) => {
+    const temp = { ...formTemplateData(key, value), Component: questionsList };
     const cont = {
-      TemplateContainer: { ...formContainerData(), Template: [temp] }
+      TemplateContainer: { ...formContainerData(key, value), Template: [temp] }
     };
     setCompTemplate({ ...cont });
-    validateTemplate(cont);
+    getTemplate(cont);
   };
 
   // TODO
@@ -253,10 +227,13 @@ export default function HomePage({
           newCompleteTemplate.TemplateContainer.Template[0].Component = list;
         }
       }
+
       newCompleteTemplate.TemplateContainer.Template[0][key] = value;
       setCompTemplate(newCompleteTemplate);
       formCompleteTemplate(
-        newCompleteTemplate.TemplateContainer.Template[0].Component
+        newCompleteTemplate.TemplateContainer.Template[0].Component,
+        key,
+        value
       );
     }
   };
@@ -371,6 +348,7 @@ export default function HomePage({
         ...uploaded.TemplateContainer.Template[0].Component
       ];
       setQuestions(uploadedQuestions);
+      setUploaded(false);
     }
   }, [uploaded]);
 
@@ -590,9 +568,9 @@ export default function HomePage({
                       id="standard-basic"
                       label="Template Name"
                       onChange={e => {
+                        setTemplateName(e.target.value);
                         updateTemplateMetadata('name', e.target.value);
                         checkRequiredFields();
-                        setTemplateName(e.target.value);
                         // formCompleteTemplate(questions);
                       }}
                       value={templateName}
@@ -640,9 +618,9 @@ export default function HomePage({
                         id="standard-basic"
                         label="Description"
                         onChange={e => {
+                          setDescription(e.target.value);
                           updateTemplateMetadata('description', e.target.value);
                           checkRequiredFields();
-                          setDescription(e.target.value);
                           // formCompleteTemplate(questions);
                         }}
                         value={description}
@@ -654,9 +632,9 @@ export default function HomePage({
                         id="standard-basic"
                         label="Version"
                         onChange={e => {
+                          setVersion(e.target.value);
                           updateTemplateMetadata('version', e.target.value);
                           checkRequiredFields();
-                          setVersion(e.target.value);
                           // formCompleteTemplate(questions);
                         }}
                         value={version}
@@ -669,9 +647,9 @@ export default function HomePage({
                         id="standard-basic"
                         label="Code Meaning"
                         onChange={e => {
+                          setCodeMeaning(e.target.value);
                           updateTemplateMetadata('codeMeaning', e.target.value);
                           checkRequiredFields();
-                          setCodeMeaning(e.target.value);
                           // formCompleteTemplate(questions);
                         }}
                         value={codeMeaning}
@@ -701,8 +679,8 @@ export default function HomePage({
                         id="standard-basic"
                         label="Coding Schema Designator"
                         onChange={e => {
-                          checkRequiredFields();
                           setcodingSchemeDesignator(e.target.value);
+                          checkRequiredFields();
                           // formCompleteTemplate(questions);
                         }}
                         value={codingSchemeDesignator}
@@ -853,6 +831,7 @@ HomePage.propTypes = {
   setMissingInfo: PropTypes.func,
   getTemplate: PropTypes.func,
   uploaded: PropTypes.object,
+  setUploaded: PropTypes.func,
   populateLexicon: PropTypes.func,
   deleteTermFromLexicon: PropTypes.func
 };

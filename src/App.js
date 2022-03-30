@@ -9,8 +9,10 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import Navbar from './components/navbar/index.jsx';
 import Homepage from './components/homepage/index.jsx';
 import UploadTemplate from './components/homepage/UploadTemplate.jsx';
-import { insertTermToEPAD } from './services/apiServices';
+import ErrorDisplay from './components/common/ErrorDisplay.jsx';
 import constants from './utils/constants';
+import { insertTermToEPAD } from './services/apiServices';
+import { validateTemplate } from './utils/helper';
 
 const useStyles = makeStyles(theme => ({
   app: {
@@ -25,7 +27,8 @@ const useStyles = makeStyles(theme => ({
     width: '100%',
     marginTop: theme.spacing(2),
     height: theme.spacing(1)
-  }
+  },
+  option: { color: '#7482cf' }
 }));
 
 const messages = {
@@ -36,7 +39,6 @@ const messages = {
 function App() {
   const classes = useStyles();
   const [showDialog, setShowDialog] = useState(false);
-  const [validTemplate, setValidTemplate] = useState(false);
   const [misingInfo, setMissingInfo] = useState(false);
   const [showSnackbar, setShowSnackbar] = useState(false);
   const [template, setTemplate] = useState({});
@@ -44,6 +46,8 @@ function App() {
   const [uploadTemplateClicked, setUploadTemplateClicked] = useState(false);
   const [lexicon, setLexicon] = useState({});
   const [progress, setProgress] = useState(false);
+  const [validationErrors, setValErrors] = useState([]);
+  const [displayErrors, setDisplayErrors] = useState(false);
 
   const onUploadTemplate = uploadedTemplate => {
     setTemplate(uploadedTemplate);
@@ -77,6 +81,7 @@ function App() {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    setValErrors([]);
   };
 
   const saveTemplateToDB = async (authors, name, uid) => {
@@ -218,9 +223,26 @@ function App() {
     setTemplate(newTemplate);
   };
 
+  const validateTemplateContainer = () => {
+    const { valTemplate, questionExists, valid, errors } = validateTemplate(
+      template,
+      validationErrors
+    );
+    if (!valTemplate || !valid) {
+      console.log('not valid errors:');
+      console.log(errors);
+      setValErrors(validationErrors.concat(errors));
+    } else {
+      setMissingInfo(!questionExists);
+    }
+    return valid;
+  };
+
   const handleDownload = async () => {
     setProgress(true);
-    if (!validTemplate || misingInfo) {
+    const valid = validateTemplateContainer();
+
+    if (!valid || misingInfo) {
       setShowSnackbar(true);
     } else {
       try {
@@ -276,12 +298,12 @@ function App() {
         <Homepage
           showDialog={showDialog}
           handleAddQuestion={handleAddQuestion}
-          setValidTemplate={val => {
-            setValidTemplate(val);
-          }}
           setMissingInfo={val => setMissingInfo(val)}
-          getTemplate={temp => setTemplate(temp)}
+          getTemplate={temp => {
+            setTemplate(temp);
+          }}
           uploaded={uploaded ? template : null}
+          setUploaded={setUploaded}
           populateLexicon={populateLexicon}
           deleteTermFromLexicon={deleteTermFromLexicon}
         />
@@ -296,10 +318,20 @@ function App() {
         action={
           <React.Fragment>
             <Button
+              className={classes.option}
+              onClick={() => {
+                setDisplayErrors(true);
+                setShowSnackbar(false);
+              }}
+            >
+              Show Errors
+            </Button>
+            <Button
               color="secondary"
               // size="small"
               onClick={() => {
                 setShowSnackbar(false);
+                setProgress(false);
               }}
             >
               OK
@@ -313,6 +345,21 @@ function App() {
           setUploadTemplateClicked(false);
         }}
         onUpload={onUploadTemplate}
+      />
+      <ErrorDisplay
+        open={displayErrors}
+        onOK={async () => {
+          setDisplayErrors(false);
+          setValErrors([]);
+          setProgress(false);
+        }}
+        errors={validationErrors}
+        onDownload={async () => {
+          await downloadFile();
+          setValErrors([]);
+          setDisplayErrors(false);
+          setProgress(false);
+        }}
       />
     </SnackbarProvider>
   );

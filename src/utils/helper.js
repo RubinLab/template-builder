@@ -1,3 +1,7 @@
+import Ajv from 'ajv';
+import ajvDraft from 'ajv/lib/refs/json-schema-draft-04.json';
+import schema from './AIMTemplate_v2rvStanford_schema.json';
+
 function createID() {
   let uid = `2.25.${Math.floor(1 + Math.random() * 9)}`;
   for (let index = 0; index < 38; index += 1) {
@@ -138,6 +142,23 @@ const updateQuestionMetadata = (key, value, list) => {
   });
 };
 
+const validateTemplate = (cont, previousErrors) => {
+  const ajv = new Ajv({ schemaId: 'id' });
+  ajv.addMetaSchema(ajvDraft);
+  const valid = ajv.validate(schema, cont);
+  const errors = valid ? [] : ajv.errors;
+  const containerExists = cont.TemplateContainer !== undefined;
+  const temp = cont.TemplateContainer.Template;
+  const templatexists = temp && temp.length > 0;
+  const questionExists = temp[0].Component.length > 0;
+  const valTemplate =
+    previousErrors.length === 0 &&
+    errors.length === 0 &&
+    containerExists &&
+    templatexists;
+  return { valTemplate, questionExists, valid, errors };
+};
+
 export {
   createTemplateQuestion,
   createID,
@@ -146,5 +167,6 @@ export {
   getIndecesFromAnswerID,
   shapeSelectedTermData,
   geometricShapes,
-  updateQuestionMetadata
+  updateQuestionMetadata,
+  validateTemplate
 };
