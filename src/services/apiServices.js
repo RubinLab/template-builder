@@ -85,10 +85,15 @@ const insertTermToEPAD = (
   );
 };
 
+const getAPIKey = appid => {
+  return axios.get(`${EPAD_URL}/apikeys/${appid}`);
+};
+
 export {
   getCollectionResults,
   getSelectedDetails,
   getDetail,
   getTermFromEPAD,
-  insertTermToEPAD
+  insertTermToEPAD,
+  getAPIKey
 };

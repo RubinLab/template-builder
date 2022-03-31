@@ -50,7 +50,8 @@ export default function QuestionCreation(props) {
     edit,
     templateUID,
     populateLexicon,
-    deleteTermFromLexicon
+    deleteTermFromLexicon,
+    apiKeys
   } = props;
   const [showDetailCreation, setShowDetailCreation] = useState(false);
   const [details, setDetails] = useState({
@@ -270,6 +271,7 @@ export default function QuestionCreation(props) {
             questionID={questionID}
             populateLexicon={populateLexicon}
             deleteTermFromLexicon={deleteTermFromLexicon}
+            apiKeys={apiKeys}
           />
 
           {showCharCreateButton && (
@@ -300,6 +302,7 @@ export default function QuestionCreation(props) {
                 setShowDetailCreation(true);
                 handleEdit(i);
               }}
+              apiKeys={apiKeys}
             />
           )}
           {showDetailCreation && (
@@ -350,5 +353,6 @@ QuestionCreation.propTypes = {
   edit: PropTypes.object,
   templateUID: PropTypes.string,
   populateLexicon: PropTypes.func,
-  deleteTermFromLexicon: PropTypes.func
+  deleteTermFromLexicon: PropTypes.func,
+  apiKeys: PropTypes.array
 };

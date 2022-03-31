@@ -127,7 +127,8 @@ export default function HomePage({
   uploaded,
   setUploaded,
   populateLexicon,
-  deleteTermFromLexicon
+  deleteTermFromLexicon,
+  apiKeys
 }) {
   const classes = materialUseStyles();
   const [templateName, setTemplateName] = useState('');
@@ -743,6 +744,7 @@ export default function HomePage({
                     linkedIdMap={linkedIdMap}
                     handleDeleteLink={deleteLinkFromJson}
                     creation={false}
+                    apiKeys={apiKeys}
                     getList={list => {
                       const newList = updateQuestionMetadata(
                         'itemNumber',
@@ -793,6 +795,7 @@ export default function HomePage({
           templateUID={tempContUID}
           populateLexicon={populateLexicon}
           deleteTermFromLexicon={deleteTermFromLexicon}
+          apiKeys={apiKeys}
         />
       )}
       <Snackbar
@@ -833,5 +836,6 @@ HomePage.propTypes = {
   uploaded: PropTypes.object,
   setUploaded: PropTypes.func,
   populateLexicon: PropTypes.func,
-  deleteTermFromLexicon: PropTypes.func
+  deleteTermFromLexicon: PropTypes.func,
+  apiKeys: PropTypes.array
 };

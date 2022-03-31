@@ -1,5 +1,5 @@
 // eslint-disable
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SnackbarProvider } from 'notistack';
 import { makeStyles } from '@material-ui/core/styles';
 import Snackbar from '@material-ui/core/Snackbar';
@@ -11,7 +11,7 @@ import Homepage from './components/homepage/index.jsx';
 import UploadTemplate from './components/homepage/UploadTemplate.jsx';
 import ErrorDisplay from './components/common/ErrorDisplay.jsx';
 import constants from './utils/constants';
-import { insertTermToEPAD } from './services/apiServices';
+import { insertTermToEPAD, getAPIKey } from './services/apiServices';
 import { validateTemplate } from './utils/helper';
 
 const useStyles = makeStyles(theme => ({
@@ -48,6 +48,7 @@ function App() {
   const [progress, setProgress] = useState(false);
   const [validationErrors, setValErrors] = useState([]);
   const [displayErrors, setDisplayErrors] = useState(false);
+  const [apiKeys, setApiKeys] = useState(false);
 
   const onUploadTemplate = uploadedTemplate => {
     setTemplate(uploadedTemplate);
@@ -69,6 +70,22 @@ function App() {
 
     setLexicon(newLexicon);
   };
+
+  useEffect(() => {
+    const promises = [];
+    promises.push(getAPIKey('bioportal'));
+    promises.push(getAPIKey('epad'));
+
+    Promise.all(promises)
+      .then(res => {
+        const apiKeysReceived = res.map(el => el.data);
+        setApiKeys(apiKeysReceived);
+      })
+      .catch(err => {
+        // show error to refresh page if not contact admin
+        console.log(err);
+      });
+  }, []);
 
   const downloadFile = async () => {
     const fileName = template.TemplateContainer.name;
@@ -306,6 +323,7 @@ function App() {
           setUploaded={setUploaded}
           populateLexicon={populateLexicon}
           deleteTermFromLexicon={deleteTermFromLexicon}
+          apiKeys={apiKeys}
         />
       </div>
       <Snackbar
