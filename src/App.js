@@ -33,13 +33,14 @@ const useStyles = makeStyles(theme => ({
 
 const messages = {
   invalidTemp: 'Template is not valid!',
-  miisngIInfo: 'Please create a question before downloading the template!'
+  error: `Can't get initial info, please refresh the page. If the problem still persists, please contact ePAD team!`
+  // miisngIInfo: 'Please create a question before downloading the template!'
 };
 
 function App() {
   const classes = useStyles();
   const [showDialog, setShowDialog] = useState(false);
-  const [misingInfo, setMissingInfo] = useState(false);
+  const [missingInfo, setMissingInfo] = useState(false);
   const [showSnackbar, setShowSnackbar] = useState(false);
   const [template, setTemplate] = useState({});
   const [uploaded, setUploaded] = useState(false);
@@ -48,7 +49,8 @@ function App() {
   const [progress, setProgress] = useState(false);
   const [validationErrors, setValErrors] = useState([]);
   const [displayErrors, setDisplayErrors] = useState(false);
-  const [apiKeys, setApiKeys] = useState(false);
+  const [apiKeys, setApiKeys] = useState([]);
+  const [showError, setShowError] = useState(false);
 
   const onUploadTemplate = uploadedTemplate => {
     setTemplate(uploadedTemplate);
@@ -82,8 +84,8 @@ function App() {
         setApiKeys(apiKeysReceived);
       })
       .catch(err => {
-        // show error to refresh page if not contact admin
-        console.log(err);
+        console.error(err);
+        setShowError(true);
       });
   }, []);
 
@@ -259,7 +261,7 @@ function App() {
     setProgress(true);
     const valid = validateTemplateContainer();
 
-    if (!valid || misingInfo) {
+    if (!valid || missingInfo) {
       setShowSnackbar(true);
     } else {
       try {
@@ -332,7 +334,7 @@ function App() {
           horizontal: 'left'
         }}
         open={showSnackbar}
-        message={misingInfo ? messages.misingInfo : messages.invalidTemp}
+        message={missingInfo ? messages.missingInfo : messages.invalidTemp}
         action={
           <React.Fragment>
             <Button
@@ -378,6 +380,26 @@ function App() {
           setDisplayErrors(false);
           setProgress(false);
         }}
+      />
+      <Snackbar
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left'
+        }}
+        open={showError}
+        message={messages.error}
+        action={
+          <React.Fragment>
+            <Button
+              color="secondary"
+              onClick={() => {
+                setShowError(false);
+              }}
+            >
+              OK
+            </Button>
+          </React.Fragment>
+        }
       />
     </SnackbarProvider>
   );
