@@ -49,7 +49,7 @@ function App() {
   const [progress, setProgress] = useState(false);
   const [validationErrors, setValErrors] = useState([]);
   const [displayErrors, setDisplayErrors] = useState(false);
-  const [apiKeys, setApiKeys] = useState([]);
+  const [apiKeys, setApiKeys] = useState({});
   const [showError, setShowError] = useState(false);
 
   const onUploadTemplate = uploadedTemplate => {
@@ -80,7 +80,7 @@ function App() {
 
     Promise.all(promises)
       .then(res => {
-        const apiKeysReceived = res.map(el => el.data);
+        const apiKeysReceived = { bioportal: res[0].data, epad: res[1].data };
         setApiKeys(apiKeysReceived);
       })
       .catch(err => {
@@ -112,7 +112,8 @@ function App() {
         authors,
         name,
         uid,
-        'T'
+        'T',
+        apiKeys
       );
       const { codemeaning, codevalue } = templateTerm.data;
       const newTemplate = { ...template };
@@ -138,7 +139,15 @@ function App() {
 
       terms.forEach((term, i) => {
         promises.push(
-          insertTermToEPAD(term, descriptions[i], authors, name, uid, 'T')
+          insertTermToEPAD(
+            term,
+            descriptions[i],
+            authors,
+            name,
+            uid,
+            'T',
+            apiKeys
+          )
         );
       });
 

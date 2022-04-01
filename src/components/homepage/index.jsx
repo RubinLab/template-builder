@@ -837,5 +837,5 @@ HomePage.propTypes = {
   setUploaded: PropTypes.func,
   populateLexicon: PropTypes.func,
   deleteTermFromLexicon: PropTypes.func,
-  apiKeys: PropTypes.array
+  apiKeys: PropTypes.object
 };

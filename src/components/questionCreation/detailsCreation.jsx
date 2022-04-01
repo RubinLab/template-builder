@@ -89,5 +89,5 @@ DetailsCreation.propTypes = {
   UID: PropTypes.string,
   populateLexicon: PropTypes.func,
   deleteTermFromLexicon: PropTypes.func,
-  apiKeys: PropTypes.array
+  apiKeys: PropTypes.object
 };
