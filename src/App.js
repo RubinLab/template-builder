@@ -51,6 +51,7 @@ function App() {
   const [displayErrors, setDisplayErrors] = useState(false);
   const [apiKeys, setApiKeys] = useState({});
   const [showError, setShowError] = useState(false);
+  // const [errorMessage, setErrorMessage] = useState('');
 
   const onUploadTemplate = uploadedTemplate => {
     setTemplate(uploadedTemplate);
@@ -85,6 +86,7 @@ function App() {
       })
       .catch(err => {
         console.error(err);
+        // setErrorMessage(err.message);
         setShowError(true);
       });
   }, []);
@@ -396,13 +398,14 @@ function App() {
           horizontal: 'left'
         }}
         open={showError}
-        message={messages.error}
+        message={`${messages.error}`}
         action={
           <React.Fragment>
             <Button
               color="secondary"
               onClick={() => {
                 setShowError(false);
+                // setErrorMessage('');
               }}
             >
               OK
