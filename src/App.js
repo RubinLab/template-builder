@@ -1,5 +1,5 @@
 // eslint-disable
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SnackbarProvider } from 'notistack';
 import { makeStyles } from '@material-ui/core/styles';
 import Snackbar from '@material-ui/core/Snackbar';
@@ -11,7 +11,7 @@ import Homepage from './components/homepage/index.jsx';
 import UploadTemplate from './components/homepage/UploadTemplate.jsx';
 import ErrorDisplay from './components/common/ErrorDisplay.jsx';
 import constants from './utils/constants';
-import { insertTermToEPAD } from './services/apiServices';
+import { insertTermToEPAD, getAPIKey } from './services/apiServices';
 import { validateTemplate } from './utils/helper';
 
 const useStyles = makeStyles(theme => ({
@@ -33,13 +33,14 @@ const useStyles = makeStyles(theme => ({
 
 const messages = {
   invalidTemp: 'Template is not valid!',
-  miisngIInfo: 'Please create a question before downloading the template!'
+  error: `Can't get initial info, please refresh the page. If the problem still persists, please contact ePAD team!`
+  // miisngIInfo: 'Please create a question before downloading the template!'
 };
 
 function App() {
   const classes = useStyles();
   const [showDialog, setShowDialog] = useState(false);
-  const [misingInfo, setMissingInfo] = useState(false);
+  const [missingInfo, setMissingInfo] = useState(false);
   const [showSnackbar, setShowSnackbar] = useState(false);
   const [template, setTemplate] = useState({});
   const [uploaded, setUploaded] = useState(false);
@@ -48,6 +49,9 @@ function App() {
   const [progress, setProgress] = useState(false);
   const [validationErrors, setValErrors] = useState([]);
   const [displayErrors, setDisplayErrors] = useState(false);
+  const [apiKeys, setApiKeys] = useState({});
+  const [showError, setShowError] = useState(false);
+  // const [errorMessage, setErrorMessage] = useState('');
 
   const onUploadTemplate = uploadedTemplate => {
     setTemplate(uploadedTemplate);
@@ -69,6 +73,23 @@ function App() {
 
     setLexicon(newLexicon);
   };
+
+  useEffect(() => {
+    const promises = [];
+    promises.push(getAPIKey('bioportal'));
+    promises.push(getAPIKey('epad'));
+
+    Promise.all(promises)
+      .then(res => {
+        const apiKeysReceived = { bioportal: res[0].data, epad: res[1].data };
+        setApiKeys(apiKeysReceived);
+      })
+      .catch(err => {
+        console.error(err);
+        // setErrorMessage(err.message);
+        setShowError(true);
+      });
+  }, []);
 
   const downloadFile = async () => {
     const fileName = template.TemplateContainer.name;
@@ -93,7 +114,8 @@ function App() {
         authors,
         name,
         uid,
-        'T'
+        'T',
+        apiKeys
       );
       const { codemeaning, codevalue } = templateTerm.data;
       const newTemplate = { ...template };
@@ -119,7 +141,15 @@ function App() {
 
       terms.forEach((term, i) => {
         promises.push(
-          insertTermToEPAD(term, descriptions[i], authors, name, uid, 'T')
+          insertTermToEPAD(
+            term,
+            descriptions[i],
+            authors,
+            name,
+            uid,
+            'T',
+            apiKeys
+          )
         );
       });
 
@@ -242,7 +272,7 @@ function App() {
     setProgress(true);
     const valid = validateTemplateContainer();
 
-    if (!valid || misingInfo) {
+    if (!valid || missingInfo) {
       setShowSnackbar(true);
     } else {
       try {
@@ -306,6 +336,7 @@ function App() {
           setUploaded={setUploaded}
           populateLexicon={populateLexicon}
           deleteTermFromLexicon={deleteTermFromLexicon}
+          apiKeys={apiKeys}
         />
       </div>
       <Snackbar
@@ -314,7 +345,7 @@ function App() {
           horizontal: 'left'
         }}
         open={showSnackbar}
-        message={misingInfo ? messages.misingInfo : messages.invalidTemp}
+        message={missingInfo ? messages.missingInfo : messages.invalidTemp}
         action={
           <React.Fragment>
             <Button
@@ -360,6 +391,27 @@ function App() {
           setDisplayErrors(false);
           setProgress(false);
         }}
+      />
+      <Snackbar
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left'
+        }}
+        open={showError}
+        message={`${messages.error}`}
+        action={
+          <React.Fragment>
+            <Button
+              color="secondary"
+              onClick={() => {
+                setShowError(false);
+                // setErrorMessage('');
+              }}
+            >
+              OK
+            </Button>
+          </React.Fragment>
+        }
       />
     </SnackbarProvider>
   );
