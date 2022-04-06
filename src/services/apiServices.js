@@ -1,6 +1,5 @@
 import formurlencoded from 'form-urlencoded';
 import axios from 'axios';
-import config from './keys';
 import { ontologies } from '../utils/helper';
 
 const BIOPORTAL_URL = 'http://data.bioontology.org';
@@ -20,7 +19,7 @@ const validatOntologyFilter = list => {
   return result.join(',');
 };
 
-const getCollectionResults = (keyword, ontologiesList, page) => {
+const getCollectionResults = (keyword, keys, ontologiesList, page) => {
   let params = `/search?q=${keyword}`;
   const ontologyFilter = validatOntologyFilter(ontologiesList);
   params = `${params}&ontologies=${ontologyFilter}`;
@@ -28,12 +27,12 @@ const getCollectionResults = (keyword, ontologiesList, page) => {
   return axios.get(
     `${BIOPORTAL_URL}${params}&pagesize=150&display=prefLabel,synonym,definition,notation,cui,semanticType,properties`,
     {
-      headers: { Authorization: `apikey token=${config.bioportal}` }
+      headers: { Authorization: `apikey token=${keys.bioportal}` }
     }
   );
 };
 
-const getDetail = (ontology, url) => {
+const getDetail = (ontology, url, keys) => {
   const encodedURL = formurlencoded
     .default({ url })
     .split('=')
@@ -41,23 +40,23 @@ const getDetail = (ontology, url) => {
   return axios.get(
     `${BIOPORTAL_URL}/ontologies/${ontology}/classes/${encodedURL}?display=all`,
     {
-      headers: { Authorization: `apikey token=${config.bioportal}` }
+      headers: { Authorization: `apikey token=${keys.bioportal}` }
     }
   );
 };
 
-const getSelectedDetails = (ontology, url) => {
+const getSelectedDetails = (ontology, url, keys) => {
   return axios.get(
     `${BIOPORTAL_URL}/ontologies/${ontology}/${url}?display=all`,
     {
-      headers: { Authorization: `apikey token=${config.bioportal}` }
+      headers: { Authorization: `apikey token=${keys.bioportal}` }
     }
   );
 };
 
-const getTermFromEPAD = term => {
+const getTermFromEPAD = (term, keys) => {
   return axios.get(`${EPAD_URL}/ontology?codemeaning=${term}`, {
-    headers: { Authorization: `apikey ${config.epad}` }
+    headers: { Authorization: `apikey ${keys.epad}` }
   });
 };
 
@@ -67,7 +66,8 @@ const insertTermToEPAD = (
   creator,
   referencename,
   referenceuid,
-  referencetype
+  referencetype,
+  keys
 ) => {
   return axios.post(
     `${EPAD_URL}/ontology`,
@@ -80,9 +80,13 @@ const insertTermToEPAD = (
       referencetype
     },
     {
-      headers: { Authorization: `apikey ${config.epad}` }
+      headers: { Authorization: `apikey ${keys.epad}` }
     }
   );
+};
+
+const getAPIKey = appid => {
+  return axios.get(`${EPAD_URL}/apikeys/${appid}`);
 };
 
 export {
@@ -90,5 +94,6 @@ export {
   getSelectedDetails,
   getDetail,
   getTermFromEPAD,
-  insertTermToEPAD
+  insertTermToEPAD,
+  getAPIKey
 };
