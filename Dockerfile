@@ -19,9 +19,10 @@ RUN npm install
 RUN npm run build 
 
 FROM nginx:1.15
-COPY --from=build-stage /home/node/app/build/ /usr/share/nginx/html
+RUN mkdir /usr/share/nginx/html/templatebuilder
+COPY --from=build-stage /home/node/app/build/ /usr/share/nginx/html/templatebuilder
 COPY nginx.conf /etc/nginx/conf.d/default.conf
-#COPY entrypoint.sh /usr/local/bin/entrypoint
-EXPOSE 80
-#ENTRYPOINT [ "entrypoint" ]
+COPY entrypoint.sh /usr/local/bin/entrypoint
+EXPOSE 8080
+ENTRYPOINT [ "entrypoint" ]
 CMD ["nginx", "-g", "daemon off;"]

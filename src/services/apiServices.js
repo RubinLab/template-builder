@@ -4,7 +4,8 @@ import { ontologies } from '../utils/helper';
 
 const BIOPORTAL_URL = 'http://data.bioontology.org';
 // const EPAD_URL = 'http://localhost:8080';
-const EPAD_URL = 'http://bds-c02xf0r0jhd5.local:8080';
+const EPAD_URL = `${process.env.REACT_APP_EPAD_URL}`;
+console.log('EPAD_URL', EPAD_URL);
 
 const validatOntologyFilter = list => {
   let result = [];
