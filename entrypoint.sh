@@ -64,9 +64,9 @@ then
     cp "$INDEX_HTML".original "$INDEX_HTML"
 fi
 cp "$INDEX_HTML" "$INDEX_HTML".original
-#sed -i -e "s/manifest.json/templatebuilder\/manifest.json/g" "$INDEX_HTML"
-#sed -i -e "s/favicon/templatebuilder\/favicon/g" "$INDEX_HTML"
-#sed -i -e "s/logo/templatebuilder\/logo/g" "$INDEX_HTML"
+sed -i -e "s/manifest.json/templatebuilder\/manifest.json/g" "$INDEX_HTML"
+sed -i -e "s/favicon/templatebuilder\/favicon/g" "$INDEX_HTML"
+sed -i -e "s/logo/templatebuilder\/logo/g" "$INDEX_HTML"
 sed -i -e "s/static/templatebuilder\/static/g" "$INDEX_HTML"
 echo "Replaced index.html"
 
