@@ -2,7 +2,8 @@ import formurlencoded from 'form-urlencoded';
 import axios from 'axios';
 import { ontologies } from '../utils/helper';
 
-const BIOPORTAL_URL = process.env.REACT_APP_BIOPORTAL_URL || 'http://data.bioontology.org';
+const BIOPORTAL_URL = 
+  process.env.REACT_APP_BIOPORTAL_URL || 'http://data.bioontology.org';
 const EPAD_URL = process.env.REACT_APP_EPAD_URL;
 console.log('EPAD_URL', EPAD_URL);
 
