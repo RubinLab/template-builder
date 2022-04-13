@@ -582,7 +582,9 @@ const QuestionForm = props => {
     let allowedTerm = {};
     let newSelected = selectedTerms ? { ...selectedTerms } : {};
     const id = createID();
+    console.log('title', title, searchResults.collection);
     if (title !== '99EPAD') {
+      console.log('not epad');
       const acronym = searchResults.collection[termIndex].links.ontology
         .split('/')
         .pop();
@@ -608,6 +610,7 @@ const QuestionForm = props => {
         });
       }
     } else {
+      console.log('epad');
       allowedTerm = {
         codeValue: searchResults.collection[termIndex].codevalue,
         codeMeaning: searchResults.collection[termIndex].codemeaning,
