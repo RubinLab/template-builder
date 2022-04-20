@@ -4,7 +4,7 @@ import { ontologies } from '../utils/helper';
 
 const BIOPORTAL_URL = 'http://data.bioontology.org';
 // const EPAD_URL = 'http://localhost:8080';
-const EPAD_URL = 'http://bds-c02xf0r0jhd5.local:8080';
+const EPAD_URL = 'http://ch4.local:8080';
 
 const validatOntologyFilter = list => {
   let result = [];
@@ -33,8 +33,7 @@ const getCollectionResults = (keyword, keys, ontologiesList, page) => {
 };
 
 const getDetail = (ontology, url, keys) => {
-  const encodedURL = formurlencoded
-    .default({ url })
+  const encodedURL = formurlencoded({ url })
     .split('=')
     .pop();
   return axios.get(

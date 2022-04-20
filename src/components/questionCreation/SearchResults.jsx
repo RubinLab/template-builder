@@ -86,7 +86,7 @@ const SearchResults = props => {
                 isSourceEPAD
                   ? null
                   : () => {
-                      window.open(item.links.ui, '_blank', '');
+                      window.open(decodeURIComponent(item.links.ui), '_blank', '');
                     }
               }
             >
