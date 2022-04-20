@@ -33,8 +33,7 @@ const getCollectionResults = (keyword, keys, ontologiesList, page) => {
 };
 
 const getDetail = (ontology, url, keys) => {
-  const encodedURL = formurlencoded
-    .default({ url })
+  const encodedURL = formurlencoded({ url })
     .split('=')
     .pop();
   return axios.get(
