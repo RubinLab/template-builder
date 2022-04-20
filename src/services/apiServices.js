@@ -2,9 +2,9 @@ import formurlencoded from 'form-urlencoded';
 import axios from 'axios';
 import { ontologies } from '../utils/helper';
 
-const BIOPORTAL_URL = 'http://data.bioontology.org';
-// const EPAD_URL = 'http://localhost:8080';
-const EPAD_URL = 'http://ch4.local:8080';
+const BIOPORTAL_URL =
+  process.env.REACT_APP_BIOPORTAL_URL || 'http://data.bioontology.org';
+const EPAD_URL = process.env.REACT_APP_EPAD_URL || 'http://ch4.local:8080';
 
 const validatOntologyFilter = list => {
   let result = [];
