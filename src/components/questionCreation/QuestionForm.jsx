@@ -1089,5 +1089,5 @@ QuestionForm.propTypes = {
   questionID: PropTypes.string,
   populateLexicon: PropTypes.func,
   deleteTermFromLexicon: PropTypes.func,
-  apiKeys: PropTypes.apiKeys
+  apiKeys: PropTypes.string
 };
