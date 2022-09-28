@@ -8,8 +8,10 @@ import Button from '@material-ui/core/Button';
 
 const UploadTemplate = props => {
   const [template, setTemplate] = useState({});
+  const [existingUID, setExistingUID] = useState('');
   const onReaderLoad = event => {
     const file = JSON.parse(event.target.result);
+    setExistingUID(file.TemplateContainer.uid);
     setTemplate(file);
   };
 
@@ -29,7 +31,17 @@ const UploadTemplate = props => {
       </DialogContent>
       <DialogActions>
         <Button
-          onClick={() => props.onUpload(template)}
+          onClick={() => {
+            props.onUpload(template);
+            if (
+              existingUID !== '' &&
+              // Replace the following line with a better method.
+              window.confirm("Use the template's UID?")
+            ) {
+              props.setUID(existingUID);
+            }
+            setExistingUID('');
+          }}
           color="primary"
           autoFocus
         >
@@ -48,5 +60,6 @@ export default UploadTemplate;
 UploadTemplate.propTypes = {
   onCancel: PropTypes.func,
   open: PropTypes.bool,
-  onUpload: PropTypes.func
+  onUpload: PropTypes.func,
+  setUID: PropTypes.func
 };

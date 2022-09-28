@@ -308,6 +308,8 @@ function App() {
     setLexicon(newLexicon);
   };
 
+  const [tempContUID, setTempContUID] = useState('');
+
   return (
     <SnackbarProvider maxSnack={5}>
       <div className={classes.app}>
@@ -337,6 +339,8 @@ function App() {
           populateLexicon={populateLexicon}
           deleteTermFromLexicon={deleteTermFromLexicon}
           apiKeys={apiKeys}
+          tempContUID={tempContUID}
+          setTempContUID={setTempContUID}
         />
       </div>
       <Snackbar
@@ -376,6 +380,7 @@ function App() {
           setUploadTemplateClicked(false);
         }}
         onUpload={onUploadTemplate}
+        setUID={setTempContUID}
       />
       <ErrorDisplay
         open={displayErrors}
