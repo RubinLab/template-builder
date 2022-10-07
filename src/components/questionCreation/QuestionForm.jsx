@@ -996,6 +996,68 @@ const QuestionForm = props => {
           />
         </div>
       )}
+      {selectedTerms && (
+        <Button
+          variant="outlined"
+          className={classes.button}
+          onClick={() => {
+            // Objects are ordered:
+            // https://stackoverflow.com/questions/30076219/does-es6-introduce-a-well-defined-order-of-enumeration-for-object-properties
+            // The following line returns an array which has the same order.
+            const arr = Object.entries(selectedTerms);
+            // We then sort that array and build a new object.
+            // The new object has the same order as the sorted array.
+            arr.sort((a, b) => {
+              const aName = a[1].allowedTerm.codeMeaning.toLowerCase();
+              const bName = b[1].allowedTerm.codeMeaning.toLowerCase();
+              if (aName > bName) {
+                return 1;
+              }
+              if (aName === bName) {
+                return 0;
+              }
+              return -1;
+            });
+            const newObj = Object.fromEntries(arr);
+            // The following line updates the list to *RENDER* in the sorted order.
+            // By itself it does nothing else.
+            setTermSelection(newObj);
+            // The following line updates the list to be in the sorted order.
+            // It does not update the rendered list, which can cause confusion.
+            postQuestion({ ...formInput, selectedTerms: newObj });
+          }}
+        >
+          Alphabetical Sort
+        </Button>
+      )}
+      {selectedTerms && (
+        <Button
+          variant="outlined"
+          className={classes.button}
+          onClick={() => {
+            // The same code as above, but the sorted array has its order swapped.
+            // This is for demonstration purposes, as I can't imagine anyone needs
+            // this option.
+            const arr = Object.entries(selectedTerms);
+            arr.sort((a, b) => {
+              const aName = a[1].allowedTerm.codeMeaning.toLowerCase();
+              const bName = b[1].allowedTerm.codeMeaning.toLowerCase();
+              if (aName > bName) {
+                return -1;
+              }
+              if (aName === bName) {
+                return 0;
+              }
+              return 1;
+            });
+            const newObj = Object.fromEntries(arr);
+            setTermSelection(newObj);
+            postQuestion({ ...formInput, selectedTerms: newObj });
+          }}
+        >
+          Reverse Alphabetical Sort
+        </Button>
+      )}
       <div className={classes.inputFieldGroup}>
         <TextField
           className={maxCard ? classes.filledText : classes.inputField}
