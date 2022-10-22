@@ -35,8 +35,16 @@ const UploadTemplate = props => {
             props.onUpload(template);
             if (
               existingUID !== '' &&
-              // Replace the following line with a better method.
-              window.confirm("Use the template's UID?")
+              // Todo: Instead of using window.confirm, make a
+              // custom confirm box, along the lines of:
+              // ______________________________________
+              // | Do you want to update the uploaded |
+              // |              template?             |
+              // |  _____ __________________________  |
+              // |  |Yes| |No (create new template)|  |
+              // |  ````` ``````````````````````````  |
+              // ``````````````````````````````````````
+              window.confirm('Do you want to update the uploaded template?')
             ) {
               props.setUID(existingUID);
             }
