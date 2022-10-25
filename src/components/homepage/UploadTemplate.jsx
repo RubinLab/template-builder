@@ -44,7 +44,7 @@ const UploadTemplate = props => {
               // |  |Yes| |No (create new template)|  |
               // |  ````` ``````````````````````````  |
               // ``````````````````````````````````````
-              window.confirm('Do you want to update the uploaded template?')
+              window.confirm('Do you want to update the existing template?')
             ) {
               props.setUID(existingUID);
             }
