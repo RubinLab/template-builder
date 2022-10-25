@@ -1113,13 +1113,17 @@ const QuestionForm = props => {
       <div>
         <FormControlLabel
           className={classes.checkbox}
-          value="showConfidence"
+          value={formInput.showConfidence}
+          // checked={formInput.showConfidence}
           control={<Checkbox color="primary" />}
           label="Show annotator confidence"
           labelPlacement="end"
           onChange={e => {
-            setshowConfidence(e.target.value);
-            postQuestion({ ...formInput, showConfidence: e.target.value });
+            console.log(typeof formInput.showConfidence);
+            console.log(formInput.showConfidence);
+            const newConfidence = !(e.target.value === 'true');
+            setshowConfidence(newConfidence);
+            postQuestion({ ...formInput, showConfidence: newConfidence });
           }}
         />
       </div>

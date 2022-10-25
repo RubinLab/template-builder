@@ -452,6 +452,9 @@ export default function HomePage({
   };
 
   const handleDelete = (combinedIndex, id) => {
+    if (!window.confirm('Are you sure you want to delete this question?')) {
+      return;
+    }
     const newQestions = _.cloneDeep(questions);
     const indeces = combinedIndex.split('-');
     let quesIndex;
