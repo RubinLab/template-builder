@@ -128,7 +128,9 @@ export default function HomePage({
   setUploaded,
   populateLexicon,
   deleteTermFromLexicon,
-  apiKeys
+  apiKeys,
+  tempContUID,
+  setTempContUID
 }) {
   const classes = materialUseStyles();
   const [templateName, setTemplateName] = useState('');
@@ -145,7 +147,9 @@ export default function HomePage({
     linkedQuestion: null
   });
   const [completeTemplate, setCompTemplate] = useState({});
-  const [tempContUID, setTempContUID] = useState('');
+  // Removed the following line. Instead, this hook is defined in App.js and passed to HomePage.
+  // This way, the hook can also be used when uploading files.
+  // const [tempContUID, setTempContUID] = useState('');
   const [requiredError, setRequiredError] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
   const [codeMeaning, setCodeMeaning] = useState('');
@@ -448,6 +452,9 @@ export default function HomePage({
   };
 
   const handleDelete = (combinedIndex, id) => {
+    if (!window.confirm('Are you sure you want to delete this question?')) {
+      return;
+    }
     const newQestions = _.cloneDeep(questions);
     const indeces = combinedIndex.split('-');
     let quesIndex;
@@ -837,5 +844,7 @@ HomePage.propTypes = {
   setUploaded: PropTypes.func,
   populateLexicon: PropTypes.func,
   deleteTermFromLexicon: PropTypes.func,
-  apiKeys: PropTypes.object
+  apiKeys: PropTypes.object,
+  setTempContUID: PropTypes.func,
+  tempContUID: PropTypes.obj
 };
