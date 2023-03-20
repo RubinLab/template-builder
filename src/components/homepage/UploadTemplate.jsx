@@ -5,8 +5,11 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogActions from '@material-ui/core/DialogActions';
 import Button from '@material-ui/core/Button';
+import ConfirmYesNo from './ConfirmYesNo.jsx';
+import { createID } from '../../utils/helper';
 
 const UploadTemplate = props => {
+  const [openUpdateBox, setOpenUpdateBox] = useState(false);
   const [template, setTemplate] = useState({});
   const [existingUID, setExistingUID] = useState('');
   const onReaderLoad = event => {
@@ -32,23 +35,15 @@ const UploadTemplate = props => {
       <DialogActions>
         <Button
           onClick={() => {
-            props.onUpload(template);
-            if (
-              existingUID !== '' &&
-              // Todo: Instead of using window.confirm, make a
-              // custom confirm box, along the lines of:
-              // ______________________________________
-              // | Do you want to update the uploaded |
-              // |              template?             |
-              // |  _____ __________________________  |
-              // |  |Yes| |No (create new template)|  |
-              // |  ````` ``````````````````````````  |
-              // ``````````````````````````````````````
-              window.confirm('Do you want to update the existing template?')
-            ) {
-              props.setUID(existingUID);
+            // The following lines open a configurable yes/no dialog. After the user
+            // clicks on something in the yes/no dialog, the yes/no dialog calls the
+            // methods props.onUpload and props.setUID.
+            // props.onUpload closes this dialog and updates the template.
+            // props.setUID tells App.js the new UID, and App.js passes the new UID to
+            // everywhere where it's needed.
+            if (existingUID !== '') {
+              setOpenUpdateBox(true);
             }
-            setExistingUID('');
           }}
           color="primary"
           autoFocus
@@ -59,6 +54,31 @@ const UploadTemplate = props => {
           Cancel
         </Button>
       </DialogActions>
+
+      <ConfirmYesNo
+        open={openUpdateBox}
+        onYes={() => {
+          props.onUpload(template);
+          props.setUID(existingUID);
+          setExistingUID('');
+          setOpenUpdateBox(false);
+        }}
+        onNo={() => {
+          props.onUpload(template);
+          // The following line re-generates the template's UID.
+          // Without it, if you upload a template with UID 12345, choose yes,
+          // then re-upload the same template and choose no,
+          // you will still end up with UID 12345.
+          // TODO: Only run the following line if the current UID matches
+          // the uploaded template's UID.
+          props.setUID(createID());
+          setExistingUID('');
+          setOpenUpdateBox(false);
+        }}
+        text="Do you want to update the existing template?"
+        yesText="Yes"
+        noText="No"
+      />
     </Dialog>
   );
 };

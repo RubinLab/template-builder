@@ -949,6 +949,38 @@ const QuestionForm = props => {
           Add Controlled Term
         </Button>
         {selectedTerms && (
+          <Button
+            variant="outlined"
+            className={classes.button}
+            onClick={() => {
+              let csvContent =
+                'data:text/csv;charset=utf-8,codeMeaning,codeValue,codingSchemeDesignator\n';
+              const arr = Object.values(selectedTerms);
+              for (let i = 0; i < arr.length; i += 1) {
+                console.log(arr[i]);
+                const term = arr[i].allowedTerm;
+                const termKeys = [
+                  term.codeMeaning,
+                  term.codeValue,
+                  term.codingSchemeDesignator
+                ];
+                // This handles any commas or quotation marks, in the off-chance that they appear.
+                // It replaces " with "", which is the CSV escape character for ".
+                // In either case, we then want to enclose the term in quotation marks to be safe.
+                for (let j = 0; j < termKeys.length; j += 1) {
+                  if (termKeys[j].includes('"') || termKeys[j].includes(',')) {
+                    termKeys[j] = `"${termKeys[j].replace('"', '""')}"`;
+                  }
+                }
+                csvContent = csvContent.concat(`${termKeys.join()}\n`);
+              }
+              window.open(encodeURI(csvContent));
+            }}
+          >
+            Download terms
+          </Button>
+        )}
+        {selectedTerms && (
           <>
             <Tooltip title="Sort terms alphabetically">
               <IconButton
