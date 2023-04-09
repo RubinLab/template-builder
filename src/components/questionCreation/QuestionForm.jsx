@@ -94,8 +94,8 @@ const materialUseStyles = makeStyles(theme => ({
   },
   answerTermGroup: {
     display: 'flex',
-    width: 430,
-    justifyContent: 'space-between',
+    width: 'auto',
+    // justifyContent: 'space-between',
     alignItems: 'baseline'
   },
   button: {
@@ -986,6 +986,7 @@ const QuestionForm = props => {
               <IconButton
                 // size="small"
                 className={classes.iconButton}
+                style={{ top: '6px' }}
                 onClick={() => {
                   // Objects are ordered:
                   // https://stackoverflow.com/questions/30076219/does-es6-introduce-a-well-defined-order-of-enumeration-for-object-properties
@@ -1024,6 +1025,7 @@ const QuestionForm = props => {
               <IconButton
                 // size="small"
                 className={classes.iconButton}
+                style={{ top: '6px' }}
                 onClick={() => {
                   // The same code as above, but the sorted array has its order swapped.
                   // This is for demonstration purposes, as I can't imagine anyone needs
@@ -1050,27 +1052,36 @@ const QuestionForm = props => {
             </Tooltip>
           </>
         )}
-        <FormControl className={classes.geometricShape}>
-          <InputLabel id="GeometricShape">Geometric Shape</InputLabel>
-          <Select
-            labelId="GeometricShape"
-            value={GeometricShape}
-            onChange={e => {
-              postQuestion({ ...formInput, GeometricShape: e.target.value });
-              setGeometricShape(e.target.value);
-            }}
-            disabled={selectedTerms && Object.keys(selectedTerms).length > 0}
-          >
-            <MenuItem value="">
-              <em>None</em>
-            </MenuItem>
-            {Object.keys(geometricShapes).map(el => (
-              <MenuItem value={el} key={el}>
-                {geometricShapes[el]}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        {questionType === 'anatomic' && (
+          <>
+            <FormControl className={classes.geometricShape}>
+              <InputLabel id="GeometricShape">Geometric Shape</InputLabel>
+              <Select
+                labelId="GeometricShape"
+                value={GeometricShape}
+                onChange={e => {
+                  postQuestion({
+                    ...formInput,
+                    GeometricShape: e.target.value
+                  });
+                  setGeometricShape(e.target.value);
+                }}
+                disabled={
+                  selectedTerms && Object.keys(selectedTerms).length > 0
+                }
+              >
+                <MenuItem value="">
+                  <em>None</em>
+                </MenuItem>
+                {Object.keys(geometricShapes).map(el => (
+                  <MenuItem value={el} key={el}>
+                    {geometricShapes[el]}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </>
+        )}
       </div>
       {/* </div> */}
       {/* {answerType === 'scale' && characteristic && (
