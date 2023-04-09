@@ -94,8 +94,8 @@ const materialUseStyles = makeStyles(theme => ({
   },
   answerTermGroup: {
     display: 'flex',
-    width: 430,
-    justifyContent: 'space-between',
+    width: 'auto',
+    // justifyContent: 'space-between',
     alignItems: 'baseline'
   },
   button: {
