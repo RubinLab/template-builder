@@ -210,7 +210,9 @@ const QuestionForm = props => {
     questionTypeTerm
   };
 
-  const addToEpad = () => {};
+  const addToEpad = () => {
+    // prettier-ignore
+  };
 
   const filterOntologyList = () => {
     let filteredOntology = [];
@@ -240,14 +242,14 @@ const QuestionForm = props => {
   const populateAlternativeSearch = (status, data) => {
     const trimmedTerm = searchTerm.trim();
     const ontList = filterOntologyList().join(', ');
+    // prettier-ignore
     switch (status) {
       case 'showOther':
         return {
           explanation: `Couldn't find ${trimmedTerm ||
             'the term'} in ${ontList || 'supported ontologies'} `,
-          link: `Show ${
-            data ? data.collection.length : 'all'
-          } results from other ontologies!`,
+          link: `Show ${data ? data.collection.length : 'all'
+            } results from other ontologies!`,
           onClick: () => {
             setSearchResults(data);
             setShowSearchResults(true);
@@ -403,19 +405,29 @@ const QuestionForm = props => {
   }, []);
 
   const filFormInputOnEdit = () => {
+    // AnatomicEntity, ImagingObservation
+    // annotatorConfidence
     try {
+      // prettier-ignore
+      const confidence = edit.AnatomicEntity
+        ? edit.AnatomicEntity : edit.ImagingObservation;
+
       const editFormInput = {
         explanatoryText: edit.explanatoryText,
         maxCard: edit.maxCardinality,
         minCard: edit.minCardinality,
         question: edit.label,
-        questionTypeTerm: edit.QuestionType || null
+        questionTypeTerm: edit.QuestionType || null,
+        requireComment: edit.requireComment,
+        showConfidence: confidence.annotatorConfidence
       };
       setQuestion(edit.label);
       setExplanatoryText(edit.explanatoryText);
       setMinCard(edit.minCardinality);
       setMaxCard(edit.maxCardinality);
       setQuestionTypeTerm(edit.QuestionType || null);
+      setRequireComment(edit.requireComment);
+      setshowConfidence(confidence.annotatorConfidence);
 
       if (edit.maxCardinality === 1 && edit.minCardinality === 1) {
         setAnswerType('single');
@@ -585,6 +597,7 @@ const QuestionForm = props => {
     let newSelected = selectedTerms ? { ...selectedTerms } : {};
     const id = createID();
     console.log('title', title, searchResults.collection);
+    // prettier-ignore
     if (title !== '99EPAD') {
       console.log('not epad');
       const acronym = searchResults.collection[termIndex].links.ontology
@@ -604,9 +617,8 @@ const QuestionForm = props => {
         newSelected = { ...selectedTerms, ...newTerm };
       } else {
         setShowSearchResults(false);
-        const message = `Couldnt find ${
-          allowedTerm ? 'preferred name' : 'cui or notation'
-        } for this term in ${acronym}. You can upload the term with a .csv file!`;
+        const message = `Couldnt find ${allowedTerm ? 'preferred name' : 'cui or notation'
+          } for this term in ${acronym}. You can upload the term with a .csv file!`;
         enqueueSnackbar(message, {
           variant: 'error'
         });
