@@ -596,7 +596,6 @@ const QuestionForm = props => {
     let allowedTerm = {};
     let newSelected = selectedTerms ? { ...selectedTerms } : {};
     const id = createID();
-    console.log('title', title, searchResults.collection);
     // prettier-ignore
     if (title !== '99EPAD') {
       console.log('not epad');
@@ -969,7 +968,6 @@ const QuestionForm = props => {
                 'data:text/csv;charset=utf-8,codeMeaning,codeValue,codingSchemeDesignator\n';
               const arr = Object.values(selectedTerms);
               for (let i = 0; i < arr.length; i += 1) {
-                console.log(arr[i]);
                 const term = arr[i].allowedTerm;
                 const termKeys = [
                   term.codeMeaning,
@@ -1158,13 +1156,11 @@ const QuestionForm = props => {
         <FormControlLabel
           className={classes.checkbox}
           value={formInput.showConfidence}
-          // checked={formInput.showConfidence}
+          checked={formInput.showConfidence}
           control={<Checkbox color="primary" />}
           label="Show annotator confidence"
           labelPlacement="end"
           onChange={e => {
-            console.log(typeof formInput.showConfidence);
-            console.log(formInput.showConfidence);
             const newConfidence = !(e.target.value === 'true');
             setshowConfidence(newConfidence);
             postQuestion({ ...formInput, showConfidence: newConfidence });
