@@ -67,8 +67,10 @@ const shapeSelectedTermData = data => {
   const shapedData = {};
   data.forEach(el => {
     const id = createID();
+    const term = el;
+    term.codeMeaning = `${el.codeMeaning}`;
     shapedData[id] = {
-      allowedTerm: el,
+      allowedTerm: term,
       title: el.codingSchemeDesignator,
       id
     };

@@ -210,7 +210,8 @@ const QuestionForm = props => {
     questionTypeTerm
   };
 
-  const addToEpad = () => {};
+  // prettier-ignore
+  const addToEpad = () => { };
 
   const filterOntologyList = () => {
     let filteredOntology = [];
@@ -242,12 +243,12 @@ const QuestionForm = props => {
     const ontList = filterOntologyList().join(', ');
     switch (status) {
       case 'showOther':
+        // prettier-ignore
         return {
           explanation: `Couldn't find ${trimmedTerm ||
             'the term'} in ${ontList || 'supported ontologies'} `,
-          link: `Show ${
-            data ? data.collection.length : 'all'
-          } results from other ontologies!`,
+          link: `Show ${data ? data.collection.length : 'all'
+            } results from other ontologies!`,
           onClick: () => {
             setSearchResults(data);
             setShowSearchResults(true);
@@ -403,28 +404,32 @@ const QuestionForm = props => {
   }, []);
 
   const filFormInputOnEdit = () => {
+    // prettier-ignore
     try {
+      // prettier-ignore
+      let answerTypeEdit;
+      if (edit.requireComment) answerTypeEdit = 'text';
+      else if (
+        edit.maxCardinality === 1 &&
+        edit.minCardinality === 1
+      ) answerTypeEdit = 'single';
+      else if (edit.maxCardinality > 1) answerTypeEdit = 'multi';
+
       const editFormInput = {
         explanatoryText: edit.explanatoryText,
         maxCard: edit.maxCardinality,
         minCard: edit.minCardinality,
         question: edit.label,
-        questionTypeTerm: edit.QuestionType || null
+        questionTypeTerm: edit.QuestionType || null,
+        answerType: answerTypeEdit
       };
       setQuestion(edit.label);
       setExplanatoryText(edit.explanatoryText);
       setMinCard(edit.minCardinality);
       setMaxCard(edit.maxCardinality);
       setQuestionTypeTerm(edit.QuestionType || null);
+      setAnswerType(answerTypeEdit);
 
-      if (edit.maxCardinality === 1 && edit.minCardinality === 1) {
-        setAnswerType('single');
-      } else if (
-        typeof edit.maxCardinality === 'number' &&
-        typeof edit.minCardinality === 'number'
-      ) {
-        setAnswerType('multi');
-      }
       if (edit && edit.AllowedTerm && edit.AllowedTerm.length > 0) {
         const selectedTermsfromEdit = shapeSelectedTermData(edit.AllowedTerm);
         setTermSelection(selectedTermsfromEdit);
@@ -604,9 +609,9 @@ const QuestionForm = props => {
         newSelected = { ...selectedTerms, ...newTerm };
       } else {
         setShowSearchResults(false);
-        const message = `Couldnt find ${
-          allowedTerm ? 'preferred name' : 'cui or notation'
-        } for this term in ${acronym}. You can upload the term with a .csv file!`;
+        // prettier-ignore
+        const message = `Couldnt find ${allowedTerm ? 'preferred name' : 'cui or notation'
+          } for this term in ${acronym}. You can upload the term with a .csv file!`;
         enqueueSnackbar(message, {
           variant: 'error'
         });
@@ -957,7 +962,6 @@ const QuestionForm = props => {
                 'data:text/csv;charset=utf-8,codeMeaning,codeValue,codingSchemeDesignator\n';
               const arr = Object.values(selectedTerms);
               for (let i = 0; i < arr.length; i += 1) {
-                console.log(arr[i]);
                 const term = arr[i].allowedTerm;
                 const termKeys = [
                   term.codeMeaning,
@@ -1151,8 +1155,6 @@ const QuestionForm = props => {
           label="Show annotator confidence"
           labelPlacement="end"
           onChange={e => {
-            console.log(typeof formInput.showConfidence);
-            console.log(formInput.showConfidence);
             const newConfidence = !(e.target.value === 'true');
             setshowConfidence(newConfidence);
             postQuestion({ ...formInput, showConfidence: newConfidence });
