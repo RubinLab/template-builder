@@ -546,9 +546,9 @@ const QuestionForm = props => {
       } else if (notation) {
         codeValue = notation;
       }
-    } else if (ontologyName === 'RADLEX') {
-      codeValue = item.prefixIRI;
-    } else if (ontologyName === 'NCIT') {
+      // } else if (ontologyName === 'RADLEX') {
+      //   codeValue = item.prefixIRI;
+    } else if (ontologyName === 'NCIT' || ontologyName === 'RADLEX') {
       codeValue = item.prefixIRI.split(':').pop();
     }
     return codeValue;
