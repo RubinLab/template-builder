@@ -554,12 +554,12 @@ const QuestionForm = props => {
     return codeValue;
   };
 
-  const returnSelection = (acronym, item) => {
+  const returnSelection = (acronym, item, prefLabel) => {
     const result = {};
     const codeValue = selectCodeValue(acronym, item);
     if (codeValue) {
       result.codeValue = codeValue;
-      result.codeMeaning = item.prefLabel;
+      result.codeMeaning = prefLabel || item.prefLabel;
       result.codingSchemeDesignator = acronym;
       return result;
     }
@@ -582,6 +582,7 @@ const QuestionForm = props => {
 
   const formTermFromSearchResult = async (termIndex, title) => {
     let allowedTerm = {};
+
     let newSelected = selectedTerms ? { ...selectedTerms } : {};
     const id = createID();
     console.log('title', title, searchResults.collection);
@@ -590,9 +591,10 @@ const QuestionForm = props => {
       const acronym = searchResults.collection[termIndex].links.ontology
         .split('/')
         .pop();
+      const { prefLabel } = searchResults.collection[termIndex];
       const url = searchResults.collection[termIndex][`@id`];
       const details = await getDetail(acronym, url, apiKeys);
-      allowedTerm = returnSelection(acronym, details.data);
+      allowedTerm = returnSelection(acronym, details.data, prefLabel);
       if (allowedTerm || (allowedTerm && !allowedTerm.codeMeaning)) {
         const newTerm = {
           [id]: {
