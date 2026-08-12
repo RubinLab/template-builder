@@ -6,6 +6,12 @@ const BIOPORTAL_URL =
   process.env.REACT_APP_BIOPORTAL_URL || 'http://data.bioontology.org';
 const EPAD_URL = process.env.REACT_APP_EPAD_URL || 'http://ch4.local:8080';
 
+// Force English labels from BioPortal. RadLex became multilingual (German
+// labels alongside English), so without an explicit ISO 639-1 language the API
+// can return a non-English prefLabel for some classes. Applied to every
+// BioPortal endpoint the app hits (search and class-detail).
+const BIOPORTAL_LANGUAGE = 'en';
+
 const validatOntologyFilter = list => {
   let result = [];
   // if there isn't any ontology filter search in all supported ontologies
@@ -25,7 +31,7 @@ const getCollectionResults = (keyword, keys, ontologiesList, page) => {
   params = `${params}&ontologies=${ontologyFilter}`;
   if (page) params = `${params}&page=${page}`;
   return axios.get(
-    `${BIOPORTAL_URL}${params}&pagesize=150&display=prefLabel,synonym,definition,notation,cui,semanticType,properties`,
+    `${BIOPORTAL_URL}${params}&language=${BIOPORTAL_LANGUAGE}&pagesize=150&display=prefLabel,synonym,definition,notation,cui,semanticType,properties`,
     {
       headers: { Authorization: `apikey token=${keys.bioportal}` }
     }
@@ -37,7 +43,7 @@ const getDetail = (ontology, url, keys) => {
     .split('=')
     .pop();
   return axios.get(
-    `${BIOPORTAL_URL}/ontologies/${ontology}/classes/${encodedURL}?display=all`,
+    `${BIOPORTAL_URL}/ontologies/${ontology}/classes/${encodedURL}?display=all&language=${BIOPORTAL_LANGUAGE}`,
     {
       headers: { Authorization: `apikey token=${keys.bioportal}` }
     }
@@ -46,7 +52,7 @@ const getDetail = (ontology, url, keys) => {
 
 const getSelectedDetails = (ontology, url, keys) => {
   return axios.get(
-    `${BIOPORTAL_URL}/ontologies/${ontology}/${url}?display=all`,
+    `${BIOPORTAL_URL}/ontologies/${ontology}/${url}?display=all&language=${BIOPORTAL_LANGUAGE}`,
     {
       headers: { Authorization: `apikey token=${keys.bioportal}` }
     }
